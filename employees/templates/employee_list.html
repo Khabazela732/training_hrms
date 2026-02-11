@@ -1,0 +1,36 @@
+<!DOCTYPE>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee List</title>
+</head>
+<body>  
+    <h1>Employee List Page</h1>
+    <p>This is where the list of employees will be displayed.</p>
+    <table>
+    <tr>
+        <th>First Name</th>
+        <th>Last Name</th>
+        <th>Department</th>
+        <th>Phone Number</th>
+        <th>Salary(R)</th>
+        <th>Join Date</th>
+        <th>Action</th>
+    </tr>
+    {% for employee in employees %}
+    <tr>
+        <td>{{employee.first_name}}</td>
+        <td>{{employee.last_name}}</td>
+        <td>{{employee.department}}</td>
+        <td>{{employee.phone}}</td>
+        <td>{{employee.amount}}</td>
+        <td>{{employee.joined_date}}</td>
+        <td><a href="{% url 'employee_detail' employee.id %}">View Details</a></td>
+        
+    </tr>
+    {% endfor %}
+    </table>
+<a href="{% url 'home' %}">home</a>
+</body>
+</html>
