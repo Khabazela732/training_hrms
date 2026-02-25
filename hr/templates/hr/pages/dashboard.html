@@ -1,0 +1,38 @@
+{% extends "hr/base/base.html" %}
+{% block content %}
+   <section class="content">
+            <h1>Welcome User</h1>
+           
+            <div class="cards">
+    <div class="card" onclick="location.href='calendar.html'">
+    Calendar
+</div>
+    <a href="recruitment.html" class="card">Recruitment</a>
+    <a href="applicants.html" class="card">Applicants</a>
+    <a href="onboarding.html" class="card">Onboarding/Offboarding</a>
+    <a href="achievements.html" class="card">Achievements</a>
+    <a href="{% url 'employees' %}" class="card">Number of Employees ({{ employee_count }}) </a>
+    
+</div>
+
+ <div class="dashboard-grid">
+
+    <div class="box large">
+        <h3>Departments stats</h3>
+        <canvas id="salaryChart"></canvas>
+    </div>
+
+   
+    <div class="box">
+        <h3>Training Statistics</h3>
+        <canvas id="revenueChart"></canvas>
+    </div>
+
+
+    <div class="box">
+        <p class="balance">Monthly Attendance</p>
+        <canvas id="balanceChart"></canvas>
+    </div>
+
+</div>
+{% endblock %}
