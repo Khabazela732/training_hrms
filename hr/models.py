@@ -27,3 +27,31 @@ class Employee(models.Model):
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
     
+class Attendance(models.Model):
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
+    date = models.DateField()
+    status = models.CharField(max_length=20)  # e.g., Present, Absent, Late
+
+    def __str__(self):
+        return f"{self.employee} - {self.date} - {self.status}"
+    
+
+class Leave(models.Model):
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
+    start_date = models.DateField()
+    end_date = models.DateField()
+    reason = models.TextField()
+
+    def __str__(self):
+        return f"{self.employee} - {self.start_date} to {self.end_date}"
+
+class Payroll(models.Model):
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
+    salary = models.DecimalField(max_digits=10, decimal_places=2)
+    bonus = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    deductions = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+
+    def __str__(self):
+        return f"{self.employee} - Salary: {self.salary}"
+
+
