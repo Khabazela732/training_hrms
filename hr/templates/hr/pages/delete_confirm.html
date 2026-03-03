@@ -1,0 +1,27 @@
+{% extends "hr/base/base.html" %}
+{% block content %}
+
+<div class="container" style="max-width: 500px; margin: 60px auto;">
+    
+    <h2 style="color: red;">Confirm Delete</h2>
+
+    <p>
+        Are you sure you want to delete payroll for 
+        <strong>{{ payroll.employee.first_name }} {{ payroll.employee.last_name }}</strong> 
+        for the month <strong>{{ payroll.month }}</strong>?
+    </p>
+
+    <form method="POST">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">
+            Yes, Delete
+        </button>
+
+        <a href="{% url 'payroll' %}" class="btn btn-secondary">
+            Cancel
+        </a>
+    </form>
+
+</div>
+
+{% endblock %}

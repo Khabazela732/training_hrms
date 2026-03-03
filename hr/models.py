@@ -28,12 +28,25 @@ class Employee(models.Model):
         return f"{self.first_name} {self.last_name}"
     
 class Attendance(models.Model):
-    employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
+    STATUS_CHOICES = (
+        ('present', 'Present'),
+        ('late', 'Late'),
+        ('absent', 'Absent'),
+    )
+    
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='attendances')
     date = models.DateField()
-    status = models.CharField(max_length=20)  # e.g., Present, Absent, Late
-
-    def __str__(self):
-        return f"{self.employee} - {self.date} - {self.status}"
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='present')
+    check_in_time = models.TimeField(null=True, blank=True)
+    check_out_time = models.TimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        unique_together = ('employee', 'date')
+        ordering = ['-date']
+    
+    def _str_(self):
+        return f"{self.employee} - {self.date} ({self.status})"
     
 
 class Leave(models.Model):
@@ -64,13 +77,30 @@ class Leave(models.Model):
 
 class Payroll(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
-    salary = models.DecimalField(max_digits=10, decimal_places=2)
-    bonus = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
-    deductions = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    basic_salary = models.DecimalField(max_digits=10, decimal_places=2)
+    bonus = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    deductions = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    month = models.CharField(max_length=50)  
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def total_salary(self):
+        return self.basic_salary + self.bonus - self.deductions
 
     def __str__(self):
-        return f"{self.employee} - Salary: {self.salary}"
+        return f"{self.employee} - {self.month}"
 
+    class Meta:  
+        unique_together = ('employee', 'month')
+class Performance(models.Model):
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
+    department = models.ForeignKey(Department, on_delete=models.CASCADE)  
+    role = models.CharField(max_length=100)
+    rating = models.DecimalField(max_digits=2, decimal_places=1)
+    remarks = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.employee} - {self.rating}"
 
 
 

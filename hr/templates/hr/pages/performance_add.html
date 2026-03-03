@@ -1,0 +1,42 @@
+{% extends 'hr/base/base.html' %}
+
+{% block content %}
+
+<section class="content">
+
+    <div class="form-container">
+        <div class="form-header">
+            <h2>Add Performance Review</h2>
+        </div>
+
+        <form method="POST" class="custom-form">
+            {% csrf_token %}
+
+            {% for field in form %}
+                <div class="form-group">
+                    <label>{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.errors %}
+                        <small class="error-text">
+                            {{ field.errors|striptags }}
+                        </small>
+                    {% endif %}
+                </div>
+            {% endfor %}
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-success">
+                    <i class="fas fa-save"></i> Save
+                </button>
+
+                <a href="{% url 'performance' %}" class="btn btn-secondary">
+                    Cancel
+                </a>
+            </div>
+
+        </form>
+    </div>
+
+</section>
+
+{% endblock %}

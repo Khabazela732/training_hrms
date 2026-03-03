@@ -1,4 +1,63 @@
 
+/* ===================== DEPARTMENTS TABLE LAYOUT ===================== */
+.department-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: linear-gradient(145deg, #f8fafc, #f1f5f9);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    margin-top: 20px;
+}
+
+.department-table thead {
+    background: linear-gradient(135deg, #1e3a4f, #1e3a4f);
+    color: white;
+}
+
+.department-table th {
+    padding: 18px 20px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.department-table td {
+    padding: 18px 20px;
+    border-bottom: 1px solid rgba(27, 46, 54, 0.1);
+    color: #334155;
+}
+
+.department-table tbody tr {
+    background: #ffffff;
+    transition: all 0.3s ease;
+}
+
+/* Icon column styling */
+.department-table .dept-icon {
+    font-size: 24px;
+    color: #0b4c5f;
+    width: 60px;
+    text-align: center;
+}
+
+/* Hover effect */
+.department-table tbody tr:hover {
+    background: linear-gradient(145deg, #e0e7ff, #f0f4ff);
+    transform: scale(1.01);
+    box-shadow: 0 8px 25px rgba(27, 46, 54, 0.15);
+}
+
+/* Header styling */
+.department-table tbody tr h3 {
+    margin: 0;
+    font-size: 18px;
+    color: #1e293b;
+    font-weight: 600;
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -9,6 +68,55 @@
 body {
     background: white;
     transition: background 0.3s, color 0.3s;
+}
+
+/* PERFORMANCE PAGE */
+.content {
+    padding: 20px;
+}
+
+.performance-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #ffffff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+
+}
+
+.performance-table thead {
+    background-color: #2c3e50;
+    color: white;
+}
+
+.performance-table th {
+    padding: 15px;
+    text-align: left;
+    font-weight: 600;
+}
+
+.performance-table td {
+    padding: 12px;
+    border-bottom: 1px solid #eee;
+}
+
+.performance-table tbody tr:hover {
+    background-color: #f5f7fa;
+    cursor: pointer;
+}
+
+/* Rating color */
+.performance-table td:nth-child(4) {
+    font-weight: bold;
+    color: #27ae60;
+}
+
+/* Responsive */
+@media screen and (max-width: 768px) {
+.performance-table {
+    font-size: 14px;
+    }
 }
 
 /* ===================== LAYOUT ===================== */
@@ -1015,4 +1123,77 @@ body {
     .login-left {
         width: 100%;
     }
+}
+/* Common button styles */
+.btn-sm {
+    padding: 5px 12px;
+    font-size: 14px;
+    border-radius: 5px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    display: inline-block;
+}
+
+.btn-add-attendance {
+    background-color: #001a40; /* Navy color */
+    color: #fff;               /* White text */
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-block;
+    transition: background 0.3s;
+}
+
+.btn-add-attendance:hover {
+    background-color: #001a40; /* Slightly darker on hover */
+    color: #fff;
+}
+
+/* Edit button style */
+.btn-edit {
+    background-color: #001a40;
+    color: #fff;
+    border: none;
+    padding: 6px 14px;
+    font-size: 14px;
+    border-radius: 5px;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    transition: background 0.3s;
+}
+
+.btn-edit i {
+    margin-right: 6px; /* Space between icon and text */
+}
+
+.btn-edit:hover {
+    background-color: #0b5ed7;
+}
+
+/* Delete button style */
+.btn-delete {
+    background-color: #5a060fd0;
+    color: #fff;
+    border: none;
+    padding: 6px 14px;
+    font-size: 14px;
+    border-radius: 5px;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    margin-left: 5px;
+    transition: background 0.3s;
+}
+
+.btn-delete i {
+    margin-right: 6px;
+}
+
+.btn-delete:hover {
+    background-color: #b02a37;
 }

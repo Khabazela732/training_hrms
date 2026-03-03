@@ -1,0 +1,89 @@
+{% extends 'hr/base/base.html' %}
+
+{% block content %}
+
+<section class="content">
+
+    <div class="page-header">
+        <h2>Performance Management</h2>
+        
+        <!-- Search bar under the heading -->
+        <form method="GET" class="search-form" style="margin: 10px 0;">
+            <input type="text" name="search" placeholder="Search employees..." value="{{ search_query }}" />
+            <button type="submit" class="btn btn-secondary">Search</button>
+        </form>
+
+        <!-- Add Performance button -->
+        <a href="{% url 'add_performance' %}" class="btn btn-primary" style="float:right;">
+            <i class="fas fa-plus"></i> Add Performance
+        </a>
+    </div>
+
+    <table class="performance-table">
+        <thead>
+            <tr>
+                <th>Employee</th>
+                <th>Department</th>
+                <th>Role</th>
+                <th>Rating</th>
+                <th>Remarks</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for performance in performances %}
+            <tr>
+                <td>{{ performance.employee.first_name }} {{ performance.employee.last_name }}</td>
+                <td>{{ performance.department.name }}</td>
+                <td>{{ performance.role }}</td>
+                <td style="font-weight:600; color:#16a34a;">
+                    {{ performance.rating }}/5
+                </td>
+                <td style="white-space: pre-line;">
+                    {{ performance.remarks }}
+                </td>
+                <td>
+                    <a href="{% url 'edit_performance' performance.id %}" class="btn btn-warning">Edit</a>
+
+                    <form action="{% url 'delete_performance' performance.id %}" method="POST" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure?');">
+                            Delete
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6">No performance records found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% if performances.paginator.num_pages > 1 %}
+    <div class="pagination">
+
+        {% if performances.has_previous %}
+        <a href="?page={{ performances.previous_page_number }}" class="page-link">Previous</a>
+        {% else %}
+        <span class="page-link disabled">Previous</span>
+        {% endif %}
+
+        <span class="current-page">
+            Page {{ performances.number }} of {{ performances.paginator.num_pages }}
+        </span>
+
+        {% if performances.has_next %}
+        <a href="?page={{ performances.next_page_number }}" class="page-link">Next</a>
+        {% else %}
+        <span class="page-link disabled">Next</span>
+        {% endif %}
+
+    </div>
+    {% endif %}
+
+</section>
+
+{% endblock %}

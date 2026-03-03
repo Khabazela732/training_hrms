@@ -1,0 +1,111 @@
+{% extends 'hr/base/base.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="table-container">
+
+    <div class="table-header">
+        <h3>{{ title }}</h3>
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+        {% if form.non_field_errors %}
+            <div style="color: #dc3545; margin-bottom: 15px; font-weight: 600;">
+                {{ form.non_field_errors }}
+            </div>
+        {% endif %}
+
+        <table class="attendance-table form-table" style="width:100%; border-collapse: collapse;">
+            <tbody>
+                {% for field in form %}
+                <tr>
+                    <td style="padding: 10px; border-bottom: 1px solid #707275; font-weight: 600;">
+                        {{ field.label_tag }}
+                    </td>
+                    <td style="padding: 10px; border-bottom: 1px solid #8f9296;">
+                        {{ field }}
+                        {% if field.errors %}
+                            <div style="color: #dc3545; font-size: 0.9em; margin-top: 4px;">
+                                {{ field.errors|striptags }}
+                            </div>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="form-actions" style="margin-top: 20px;">
+            <button type="submit" class="btn btn-primary" style="padding: 10px 25px; border-radius: 6px;">
+                Save
+            </button>
+            <a href="{% url 'attendance' %}" class="btn btn-secondary" style="padding: 10px 25px; border-radius: 6px; margin-left: 10px;">
+                Cancel
+            </a>
+        </div>
+    </form>
+
+</div>
+
+<style>
+/* Table styling */
+.attendance-table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 10px solid #001f4d; /* Navy border */
+    border-radius: 6px; /* Rounded corners */
+    overflow: hidden; /* Ensures corners stay rounded */
+}
+
+/* Table cells */
+.attendance-table td, 
+.attendance-table th {
+    border-bottom: 1px solid #47494d; /* Light divider for rows */
+    padding: 10px;
+}
+
+/* Input, select, textarea styling */
+.attendance-table input, 
+.attendance-table select, 
+.attendance-table textarea {
+    width: 100%;
+    padding: 6px 10px;
+    border: 1px solid #10375e;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.attendance-table input:focus,
+.attendance-table select:focus,
+.attendance-table textarea:focus {
+    outline: none;
+    border-color: #06213b;
+    box-shadow: 0 0 0 2px rgba(0,123,255,.25);
+}
+
+/* Form action buttons */
+.form-actions .btn-primary {
+    background-color: #001a40; /* Navy button */
+    color: #fff;
+    border: none;
+    transition: background 0.3s;
+}
+
+.form-actions .btn-primary:hover {
+    background-color: #0b5ed7;
+}
+
+.form-actions .btn-secondary {
+    background-color: #3d3f41;
+    color: #fff;
+    border: none;
+    transition: background 0.3s;
+}
+
+.form-actions .btn-secondary:hover {
+    background-color: #5a6268;
+}
+</style>
+{% endblock %}

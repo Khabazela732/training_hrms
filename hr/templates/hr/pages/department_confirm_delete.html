@@ -1,0 +1,40 @@
+{% extends "hr/base/base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" type="text/css" href="{% static 'hr/css/style.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="content">
+    <div class="delete-container">
+        <div class="delete-header">
+            <i class="fas fa-exclamation-triangle"></i>
+            <h2>Delete Department</h2>
+        </div>
+        
+        <div class="delete-details">
+            <p><strong>Department:</strong> {{ object.name }}</p>
+            <p><strong>Description:</strong> {{ object.description|default:"No description" }}</p>
+            <p><strong>Employees:</strong> {{ object.employee_set.count }}</p>
+            
+            {% if object.employee_set.exists %}
+                <div class="warning">
+                    <i class="fas fa-warning"></i>
+                    Deleting this department will also delete all {{ object.employee_set.count }} employees in this department.
+                </div>
+            {% endif %}
+        </div>
+        
+        <div class="delete-actions">
+            <form method="post" class="delete-form" style="display: inline;">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger" onclick="return confirm('This action cannot be undone. Are you sure?')">
+                    <i class="fas fa-trash"></i> Yes, Delete Department
+                </button>
+            </form>
+            <a href="{% url 'department_list' %}" class="btn btn-secondary">Cancel</a>
+        </div>
+    </div>
+</section>
+{% endblock %}

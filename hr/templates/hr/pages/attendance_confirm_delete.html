@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirm Delete</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+</head>
+<body>
+    <div class="delete-container">
+        <div class="icon-warning">&#9888;</div>
+        <h2>Are you sure?</h2>
+        <p>This action cannot be undone. Do you really want to delete this attendance record?</p>
+
+        <!-- Delete form -->
+        <form method="POST" action="{% url 'attendance_delete' attendance.id %}">
+            {% csrf_token %}
+            <button type="submit" class="btn-delete">Delete</button>
+            <a href="{% url 'attendance' %}" class="btn-cancel">Cancel</a>
+        </form>
+    </div>
+
+        <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f9fa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .delete-container {
+            background: #e2dede;
+            padding: 40px 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+        }
+        .delete-container h2 {
+            color: #dc3545;
+            margin-bottom: 15px;
+        }
+        .delete-container p {
+            color: #6c757d;
+            margin-bottom: 30px;
+        }
+        .btn-delete, .btn-cancel {
+            border: none;
+            border-radius: 8px;
+            padding: 12px 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 16px;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn-delete {
+            background-color: #dc3545;
+            color: #fff;
+        }
+        .btn-delete:hover {
+            background-color: #b02a37;
+        }
+        .btn-cancel {
+            background-color: #6c757d;
+            color: #fff;
+            margin-left: 15px;
+        }
+        .btn-cancel:hover {
+            background-color: #5a6268;
+        }
+        .icon-warning {
+            font-size: 50px;
+            color: #dc3545;
+            margin-bottom: 20px;
+        }
+    </style>
+</body>
+</html>

@@ -1,0 +1,78 @@
+{% extends 'hr/base/base.html' %}
+{% load static %}
+
+{% block title %}Attendance Management{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512-somehash" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<div class="table-header">
+    <h3>Attendance Records</h3>
+    <a href="{% url 'attendance_create' %}" class="btn-add-attendance">
+    + Add Attendance
+</a>
+</div>
+        
+        {% if recent_attendances %}
+        <table class="attendance-table">
+            <thead>
+                <tr>
+                    <th>Employee</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>Check In</th>
+                    <th>Check Out</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for attendance in recent_attendances %}
+                <tr>
+                    <td>
+                        <!-- Replace in attendance.html -->
+                        <div class="employee-info">
+                            <div class="employee-avatar">{{ attendance.employee.first_name|slice:":1" }}{{ attendance.employee.last_name|slice:":1" }}</div>
+                            <span class="employee-name">{{ attendance.employee.first_name }} {{ attendance.employee.last_name }}</span>
+
+                    </td>
+                    
+                    <td>{{ attendance.date }}</td>
+                    <td>
+                        <span class="status {{ attendance.status }}">{{ attendance.status|title }}</span>
+                    </td>
+                    <td>
+                        {% if attendance.check_in_time %}
+                            {{ attendance.check_in_time|time:"H:i" }}
+                        {% else %}
+                            <span class="time-empty">-</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if attendance.check_out_time %}
+                            {{ attendance.check_out_time|time:"H:i" }}
+                        {% else %}
+                            <span class="time-empty">-</span>
+                        {% endif %}
+                    </td>
+                    <td class="actions">
+                        
+<a href="{% url 'attendance_edit' attendance.id %}" class="btn-edit">
+    <i class="fas fa-pencil-alt"></i> Edit
+</a>
+<a href="{% url 'attendance_delete' attendance.id %}" class="btn-delete">
+    <i class="fas fa-trash"></i> Delete
+</a>
+
+</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="no-data">
+            <i class="fas fa-calendar-times"></i>
+            <p>No attendance records found</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

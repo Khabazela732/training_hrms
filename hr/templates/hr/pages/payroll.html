@@ -1,0 +1,238 @@
+{% extends "hr/base/base.html" %}
+{% load static %}
+{% block content %}
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+.payroll-container {
+    padding: 40px;
+    background: linear-gradient(to bottom right, #f4f6f8, #dbe9f4);
+    min-height: 100vh;
+    font-family: 'Poppins', sans-serif;
+}
+
+.payroll-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.payroll-header h1 {
+    font-size: 42px;
+    letter-spacing: 6px;
+    color: #2c3e50;
+}
+
+.stats-cards {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    margin-bottom: 30px;
+}
+
+.card {
+    flex: 1;
+    max-width: 250px;
+    padding: 25px 20px;
+    border-radius: 15px;
+    color: white;
+    text-align: center;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+.employees-card { background: linear-gradient(135deg, #1abc9c, #16a085); }
+.records-card { background: linear-gradient(135deg, #3498db, #2980b9); }
+
+/* View Report Button */
+.view-report-btn {
+    padding: 12px 25px;
+    background: linear-gradient(135deg, #8e44ad, #9b59b6);
+    color: white;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: bold;
+    display: inline-block;
+    transition: 0.3s;
+}
+
+.view-report-btn:hover {
+    transform: scale(1.05);
+    background: linear-gradient(135deg, #9b59b6, #8e44ad);
+}
+
+/* Form */
+form {
+    background: white;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    margin-bottom: 40px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    justify-content: center;
+}
+
+form select, form input {
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    min-width: 180px;
+}
+
+form button {
+    padding: 10px 25px;
+    border-radius: 10px;
+    border: none;
+    background: #27ae60;
+    color: white;
+    font-weight: bold;
+}
+
+/* Table */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+th {
+    background: #34495e;
+    color: white;
+    padding: 15px;
+}
+
+td {
+    padding: 15px;
+    text-align: center;
+    border-bottom: 1px solid #ecf0f1;
+}
+
+.total-salary {
+    font-weight: bold;
+    color: #e67e22;
+}
+
+td a, td button {
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+}
+
+td a {
+    background: #2980b9;
+    color: white;
+}
+
+td button {
+    background: #c0392b;
+    color: white;
+}
+</style>
+
+<div class="payroll-container">
+
+    <!-- Header -->
+    <div class="payroll-header">
+        <h1>P A Y R O L L</h1>
+        <p>HR Management System - Salary Overview</p>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-cards">
+        <div class="card employees-card">
+            <p>Total Employees</p>
+            <h2>{{ total_employees }}</h2>
+        </div>
+        <div class="card records-card">
+            <p>Total Payroll Records</p>
+            <h2>{{ total_payroll }}</h2>
+        </div>
+    </div>
+
+    <!-- View Report Button -->
+    <div style="text-align:center; margin-bottom:30px;">
+        <a href="{% url 'view_payroll_report' %}" class="view-report-btn">
+            <i class="fa fa-chart-line"></i> View & Export Payroll Report
+        </a>
+    </div>
+
+    <!-- Add Payroll Form -->
+    <form method="POST" action="{% url 'add_payroll' %}">
+        {% csrf_token %}
+        <select name="employee" required>
+            {% for employee in employees %}
+                <option value="{{ employee.id }}">
+                    {{ employee.first_name }} {{ employee.last_name }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <input type="number" name="basic_salary" placeholder="Basic Salary" required>
+        <input type="number" name="bonus" placeholder="Bonus">
+        <input type="number" name="deductions" placeholder="Deductions">
+        <input type="text" name="month" placeholder="Month (e.g., February 2026)" required>
+
+        <button type="submit">
+            <i class="fa fa-plus"></i> Add Payroll
+        </button>
+    </form>
+
+    <!-- Payroll Table -->
+    <table>
+        <thead>
+            <tr>
+                <th>Employee</th>
+                <th>Basic Salary</th>
+                <th>Bonus</th>
+                <th>Deductions</th>
+                <th>Total Salary</th>
+                <th>Month</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for payroll in payrolls %}
+            <tr>
+                <td>{{ payroll.employee.first_name }} {{ payroll.employee.last_name }}</td>
+                <td>{{ payroll.basic_salary }}</td>
+                <td>{{ payroll.bonus }}</td>
+                <td>{{ payroll.deductions }}</td>
+                <td class="total-salary">{{ payroll.total_salary }}</td>
+                <td>{{ payroll.month }}</td>
+                <td>
+                    <a href="{% url 'edit_payroll' payroll.id %}">
+                        <i class="fa fa-edit"></i> Edit
+                    </a>
+
+                    <form method="POST"
+                          action="{% url 'delete_payroll' payroll.id %}"
+                          style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit"
+                                onclick="return confirm('Are you sure?');">
+                            <i class="fa fa-trash"></i> Delete
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="7" style="padding:20px; color:gray;">
+                    No payroll records yet.
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</div>
+
+{% endblock %}
