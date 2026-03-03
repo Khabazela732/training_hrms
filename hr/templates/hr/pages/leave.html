@@ -10,6 +10,7 @@
                         <th>End Date</th>
                         <th>Reason</th>
                         <th>Status</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
                 
@@ -20,6 +21,53 @@
                         <td>{{leave.start_date}}</td>
                         <td>{{leave.end_date}}</td>
                         <td>{{leave.reason}}</td>
+                        <td>
+                            {% if leave.status == "Pending" %}
+                            <a href="{% url 'leave_create' %}">
+                                <button type="button">
+                                    Pending
+                                </button>
+                            </a>
+
+                            {% elif leave.status == "Approved" %}
+                            <a href="{% url 'leave_create' %}">
+                                <button type="button">
+                                    Approved
+                                </button>
+                            </a>
+
+                            {% elif leave.status == "Declined" %}
+                            <a href="{% url 'leave_create' %}">
+                                <button type="button">
+                                    Declined
+                                </button>
+                            </a>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <!-- Create Button -->
+                            <a href="{% url 'leave_create' %}">
+                                <button type="button">Create Leave</button>
+                            </a>
+
+                            <!-- View Button -->
+                            <a href="{% url 'leave_detail' leave.id %}">
+                                <button type="button">View</button>
+                            </a>
+
+                            <!-- Update Button -->
+                            <a href="{% url 'leave_update' leave.id %}" class="btn btn-warning">
+                                Update
+                            </a>
+
+                            <!-- Delete Button -->
+                            <form action="{% url 'leave_delete' leave.id %}" method="POST" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" onclick="return confirm('Are you sure?')">
+                                    Delete
+                                </button>
+                            </form>
+                        </td>
                     </tr>
                  {% endfor %}  
                 </tbody>

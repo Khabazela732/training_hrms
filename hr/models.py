@@ -45,6 +45,23 @@ class Leave(models.Model):
     def __str__(self):
         return f"{self.employee} - {self.start_date} to {self.end_date}"
 
+#Status change with 
+    STATUS_CHOICES = [
+        ('Pending', 'Pending'),
+        ('Approved', 'Approved'),
+        ('Declined', 'Declined'),
+    ]
+
+    status = models.CharField(
+        max_length=20,
+        choices=[
+            ('Pending', 'Pending'),
+            ('Approved', 'Approved'),
+            ('Declined', 'Declined'),
+        ],
+            default='Pending'
+    )
+
 class Payroll(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
     salary = models.DecimalField(max_digits=10, decimal_places=2)
@@ -53,5 +70,7 @@ class Payroll(models.Model):
 
     def __str__(self):
         return f"{self.employee} - Salary: {self.salary}"
+
+
 
 

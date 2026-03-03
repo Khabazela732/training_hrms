@@ -1,0 +1,16 @@
+{% extends "hr/base/base.html" %}
+{% block content %}
+
+<h2>Update Leave</h2>
+
+<form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Save Changes</button>
+</form>
+
+<a href="{% url 'leave-list' %}">
+    <button type="button">Cancel</button>
+</a>
+
+{% endblock %}
