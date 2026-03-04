@@ -3,21 +3,48 @@
 {% block content %}
 <section class="content">
 
-            
+            <div class="page-header">
+                <h2>Employees</h2>
+                <a href="{% url 'employee_create' %}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Add Employee
+                </a>
+            </div>
+
+            {% if messages %}
+            <div class="alerts">
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
             <div class="employee-table">
 
-               {% for employee in employees%}
+               {% for employee in employees %}
                 <div class="employee-card">
                     <div class="emp-photo">
                         <i class="fas fa-user-circle"></i>
                     </div>
 
                     <div class="emp-info">
-                        <h3>{{employee.first_name}} {{employee.last_name}}</h3>
-                        <p><strong>Department:</strong> {{employee.department}}</p>
-                        <p><strong>Role:</strong> {{employee.role}}</p>
+                        <h3>{{ employee.first_name }} {{ employee.last_name }}</h3>
+                        <p><strong>Department:</strong> {{ employee.department }}</p>
+                    </div>
+
+                    <div class="employee-actions">
+                        <a href="{% url 'employee_detail' employee.pk %}" class="btn btn-view">
+                            <i class="fas fa-eye"></i> View
+                        </a>
+                        <a href="{% url 'employee_update' employee.pk %}" class="btn btn-edit">
+                            <i class="fas fa-edit"></i> Edit
+                        </a>
+                        <a href="{% url 'employee_delete' employee.pk %}" class="btn btn-delete">
+                            <i class="fas fa-trash"></i> Delete
+                        </a>
                     </div>
                 </div>
+                {% empty %}
+                <p>No employees found.</p>
                 {% endfor %}
 
             </div>

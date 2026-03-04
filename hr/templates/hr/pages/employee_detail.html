@@ -1,0 +1,36 @@
+{% extends "hr/base/base.html" %}
+{% load static %}
+
+{% block content %}
+<section class="content">
+    <div class="page-header">
+        <h2>Employee Details</h2>
+        <div class="employee-actions">
+            <a href="{% url 'employees' %}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Back
+            </a>
+            <a href="{% url 'employee_update' employee.pk %}" class="btn btn-edit">
+                <i class="fas fa-edit"></i> Edit
+            </a>
+            <a href="{% url 'employee_delete' employee.pk %}" class="btn btn-delete">
+                <i class="fas fa-trash"></i> Delete
+            </a>
+        </div>
+    </div>
+
+    <div class="employee-card employee-detail-card">
+        <div class="emp-photo">
+            <i class="fas fa-user-circle"></i>
+        </div>
+
+        <div class="emp-info">
+            <h3>{{ employee.first_name }} {{ employee.last_name }}</h3>
+            <p><strong>Email:</strong> {{ employee.email }}</p>
+            <p><strong>Department:</strong> {{ employee.department }}</p>
+            <p><strong>Role:</strong> {{ employee.role }}</p>
+            <p><strong>User:</strong> {{ employee.user }}</p>
+            <p><strong>Date Joined:</strong> {{ employee.date_joined }}</p>
+        </div>
+    </div>
+</section>
+{% endblock %}

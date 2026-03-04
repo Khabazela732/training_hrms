@@ -4,7 +4,7 @@ from django.http import HttpResponse
 from django.views import View
 from psycopg2 import IntegrityError
 from .models import Employee, Department, Leave, Attendance, Performance, Payroll
-from .forms import LeaveForm
+from .forms import LeaveForm, EmployeeForm
 from django.utils import timezone
 from .forms import AttendanceForm, PerformanceForm
 from django.contrib import messages
@@ -13,6 +13,8 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.urls import reverse_lazy
 from django.core.paginator import Paginator
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.views.generic.detail import DetailView
+from authenication.models import CustomUser
 
 
 class DashboardView(View):
@@ -35,6 +37,141 @@ class EmployeesView(View):
             'department_count': Department.objects.count(),
         }
         return HttpResponse(template.render(context, request))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+class EmployeeCreateView(SuccessMessageMixin, CreateView):
+    model = Employee
+    form_class = EmployeeForm
+    template_name = 'hr/pages/employee_form.html'
+    success_url = reverse_lazy('employees')
+    success_message = 'Employee created successfully!'
+
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        form.fields['user'].queryset = CustomUser.objects.filter(employee__isnull=True)
+        return form
+
+
+class EmployeeUpdateView(SuccessMessageMixin, UpdateView):
+    model = Employee
+    form_class = EmployeeForm
+    template_name = 'hr/pages/employee_form.html'
+    success_url = reverse_lazy('employees')
+    success_message = 'Employee updated successfully!'
+
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        form.fields['user'].queryset = CustomUser.objects.filter(
+            Q(employee__isnull=True) | Q(employee=self.object)
+        )
+        return form
+
+
+class EmployeeDeleteView(SuccessMessageMixin, DeleteView):
+    model = Employee
+    template_name = 'hr/pages/employee_confirm_delete.html'
+    success_url = reverse_lazy('employees')
+    success_message = 'Employee deleted successfully!'
+
+    def delete(self, request, *args, **kwargs):
+        response = super().delete(request, *args, **kwargs)
+        messages.success(request, self.success_message)
+        return response
+
+
+class EmployeeDetailView(DetailView):
+    model = Employee
+    template_name = 'hr/pages/employee_detail.html'
+    context_object_name = 'employee'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 class LeaveListView(View):

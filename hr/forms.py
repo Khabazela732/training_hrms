@@ -1,5 +1,5 @@
 from django import forms
-from .models import Leave, Attendance, Performance
+from .models import Leave, Attendance, Performance, Employee
 
 
 class LeaveForm(forms.ModelForm):
@@ -27,3 +27,30 @@ class PerformanceForm(forms.ModelForm):
     class Meta:
         model = Performance
         fields = '__all__'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+class EmployeeForm(forms.ModelForm):
+    class Meta:
+        model = Employee
+        fields = [
+            'user',
+            'first_name',
+            'last_name',
+            'email',
+            'department',
+            'role',
+        ]
