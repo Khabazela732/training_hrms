@@ -1,0 +1,28 @@
+{% extends "hr/base/base.html" %}
+{% load static %}
+
+{% block content %}
+<section class="content">
+    <div class="confirm-card">
+        <div class="confirm-title">
+            <i class="fas fa-exclamation-triangle"></i>
+            <h2>Delete Employee</h2>
+        </div>
+
+        <p class="confirm-text">
+            Are you sure you want to delete <strong>{{ object.first_name }} {{ object.last_name }}</strong>?
+        </p>
+        <p class="confirm-subtext">This action cannot be undone.</p>
+
+        <div class="confirm-actions">
+            <form method="post" style="display: inline;">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-delete">
+                    <i class="fas fa-trash"></i> Delete
+                </button>
+            </form>
+            <a href="{% url 'employees' %}" class="btn btn-secondary">Cancel</a>
+        </div>
+    </div>
+</section>
+{% endblock %}

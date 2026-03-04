@@ -394,7 +394,102 @@ body.dark-mode .sidebar {
 .login-box button {
  width: 100%; padding: 10px; background: #0b4c5f; color: white; border: none; cursor: pointer; }
 
- /* ===================== EMPLOYEE GRID ===================== */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* ===================== EMPLOYEE GRID ===================== */
 .employee-table {
     display: grid;
     grid-template-columns: repeat(3, 1fr); 
@@ -442,6 +537,47 @@ body.dark-mode .sidebar {
     margin-bottom: 4px;
 }
 
+.page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 18px;
+    flex-wrap: wrap;
+}
+
+.employee-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.employee-detail-card {
+    max-width: 520px;
+}
+
+.btn-view {
+    background-color: #1f9d5a;
+    color: #fff;
+    border: none;
+    padding: 6px 14px;
+    font-size: 14px;
+    border-radius: 5px;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    transition: background 0.3s;
+}
+
+.btn-view i {
+    margin-right: 6px;
+}
+
+.btn-view:hover {
+    background-color: #16854a;
+}
+
 /* ===================== RESPONSIVE ===================== */
 @media (max-width: 1024px) {
     .employee-table {
@@ -454,6 +590,54 @@ body.dark-mode .sidebar {
         grid-template-columns: 1fr; 
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /* ===================== ATTENDANCE TABLE ===================== */
 .attendance-table {
     width: 100%;
