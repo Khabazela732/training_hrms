@@ -1,0 +1,58 @@
+/* ===================== ATTENDANCE TABLE ===================== */
+/* Table styling */
+.attendance-table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 10px solid #001f4d; /* Navy border */
+    border-radius: 6px; /* Rounded corners */
+    overflow: hidden; /* Ensures corners stay rounded */
+}
+
+/* Table cells */
+.attendance-table td, 
+.attendance-table th {
+    border-bottom: 1px solid #47494d; /* Light divider for rows */
+    padding: 10px;
+}
+
+/* Input, select, textarea styling */
+.attendance-table input, 
+.attendance-table select, 
+.attendance-table textarea {
+    width: 100%;
+    padding: 6px 10px;
+    border: 1px solid #10375e;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.attendance-table input:focus,
+.attendance-table select:focus,
+.attendance-table textarea:focus {
+    outline: none;
+    border-color: #06213b;
+    box-shadow: 0 0 0 2px rgba(0,123,255,.25);
+}
+
+/* Form action buttons */
+.form-actions .btn-primary {
+    background-color: #001a40; /* Navy button */
+    color: #fff;
+    border: none;
+    transition: background 0.3s;
+}
+
+.form-actions .btn-primary:hover {
+    background-color: #0b5ed7;
+}
+
+.form-actions .btn-secondary {
+    background-color: #3d3f41;
+    color: #fff;
+    border: none;
+    transition: background 0.3s;
+}
+
+.form-actions .btn-secondary:hover {
+    background-color: #5a6268;
+}

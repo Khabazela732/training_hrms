@@ -1,0 +1,35 @@
+{% extends "employee/base/base.html" %}
+{% load static %}
+{% block content %}
+<div class="dashboard">
+    <h2>Welcome to Your Dashboard</h2>
+    <div class="stats">
+        <div class="stat-card">
+            <h3>Attendance</h3>
+            <p>95%</p>
+        </div>
+        <div class="stat-card">
+            <h3>Leave Balance</h3>
+            <p>10 Days</p>
+        </div>
+        <div class="stat-card">
+            <h3>Payroll Status</h3>
+            <p>Up to Date</p>
+        </div>
+        <div class="stat-card">
+            <h3>Performance Rating</h3>
+            <p>4.5/5</p>
+        </div>
+    </div>
+    <div class="charts">
+        <div class="chart-card">
+            <h3>Attendance Over Time</h3>
+            <canvas id="attendanceChart"></canvas>
+        </div>
+        <div class="chart-card">
+            <h3>Leave Usage</h3>
+            <canvas id="leaveChart"></canvas>
+        </div>
+    </div>
+</div>
+{% endblock %}

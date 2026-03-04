@@ -1,0 +1,78 @@
+/* ===================== EMPLOYEE GRID ===================== */
+.employee-table {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); 
+    gap: 20px;
+}
+
+/* Employee Card */
+.employee-card {
+    display: grid;
+    grid-template-columns: 1fr;
+    background:  #e0e0e0;
+    padding: 20px;
+    border-radius: 12px;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.employee-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 25px rgba(0,0,0,0.15);
+}
+
+/* ===================== CENTER EMPLOYEE ICON ===================== */
+.emp-photo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.emp-photo i {
+    font-size: 64px;
+    color: #0b4c5f;
+    line-height: 1;
+}
+
+.emp-info h3 {
+    margin-bottom: 8px;
+}
+
+.emp-info p,
+.emp-details p,
+.emp-actions p {
+    font-size: 14px;
+    color: black;
+    margin-bottom: 4px;
+}
+
+.page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 18px;
+    flex-wrap: wrap;
+}
+
+.employee-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.employee-actions .btn,
+.employee-actions .btn-view,
+.employee-actions .btn-edit,
+.employee-actions .btn-delete {
+    padding: 4px 10px;
+    font-size: 12px;
+    border-radius: 4px;
+}
+
+.employee-actions .btn i,
+.employee-actions .btn-view i,
+.employee-actions .btn-edit i,
+.employee-actions .btn-delete i {
+    font-size: 12px;
+}

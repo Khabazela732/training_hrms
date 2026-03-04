@@ -38,52 +38,6 @@ class EmployeesView(View):
         }
         return HttpResponse(template.render(context, request))
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 class EmployeeCreateView(SuccessMessageMixin, CreateView):
     model = Employee
     form_class = EmployeeForm
@@ -128,51 +82,6 @@ class EmployeeDetailView(DetailView):
     model = Employee
     template_name = 'hr/pages/employee_detail.html'
     context_object_name = 'employee'
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 class LeaveListView(View):
     def get(self, request):

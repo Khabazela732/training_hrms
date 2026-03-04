@@ -1,0 +1,58 @@
+/* ===================== DEPARTMENTS TABLE LAYOUT ===================== */
+.department-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: linear-gradient(145deg, #f8fafc, #f1f5f9);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    margin-top: 20px;
+}
+
+.department-table thead {
+    background: linear-gradient(135deg, #1e3a4f, #1e3a4f);
+    color: white;
+}
+
+.department-table th {
+    padding: 18px 20px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.department-table td {
+    padding: 18px 20px;
+    border-bottom: 1px solid rgba(27, 46, 54, 0.1);
+    color: #334155;
+}
+
+.department-table tbody tr {
+    background: #ffffff;
+    transition: all 0.3s ease;
+}
+
+/* Icon column styling */
+.department-table .dept-icon {
+    font-size: 24px;
+    color: #0b4c5f;
+    width: 60px;
+    text-align: center;
+}
+
+/* Hover effect */
+.department-table tbody tr:hover {
+    background: linear-gradient(145deg, #e0e7ff, #f0f4ff);
+    transform: scale(1.01);
+    box-shadow: 0 8px 25px rgba(27, 46, 54, 0.15);
+}
+
+/* Header styling */
+.department-table tbody tr h3 {
+    margin: 0;
+    font-size: 18px;
+    color: #1e293b;
+    font-weight: 600;
+}

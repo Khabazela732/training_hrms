@@ -1,0 +1,59 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HRMS | Login</title>
+    <link rel="stylesheet" href="{% static 'hr/css/global.css' %}">
+    <style>
+        .password-wrapper { position: relative; }
+        .toggle {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            user-select: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="login-container">
+    <div class="login-left">
+        <div class="login-box">
+            <img src="{% static 'hr/images/logo.png' %}" alt="HRMS">
+
+            <form method="post" action="{% url 'login' %}">
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                    <div style="color: red; margin-bottom: 15px;">
+                        {{ form.non_field_errors }}
+                    </div>
+                {% endif %}
+
+                <input type="text" name="username" placeholder="Enter Your Username" required>
+                
+                <div class="password-wrapper">
+                    <input type="password" name="password" id="loginPassword" placeholder="Enter Your Password" required>
+                    <span class="toggle" onclick="togglePassword('loginPassword')">👁</span>
+                </div>
+
+                <button type="submit">Log in</button>
+            </form>
+        </div>
+
+    <div class="login-right"></div>
+</div>
+
+<script>
+function togglePassword(id) {
+    const field = document.getElementById(id);
+    field.type = field.type === 'password' ? 'text' : 'password';
+}
+</script>
+
+</body>
+</html>

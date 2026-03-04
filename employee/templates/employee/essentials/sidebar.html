@@ -1,0 +1,14 @@
+<aside class="sidebar">
+    <div class="logo">HRM System</div>
+    <ul class="menu">
+        <li class="active"><i class="fas fa-home"></i> <span class="menu-text"><a href="{% url 'employee-dashboard' %}">My Dashboard</a></span></li>
+        <li><i class="fas fa-users"></i> <span class="menu-text"><a href="#">My Profile</a></span></li>
+        <li><i class="fas fa-calendar-check"></i> <span class="menu-text"><a href="attendance.html"> My Attendance</a></span></li>
+        <li><i class="fas fa-calendar-alt"></i> <span class="menu-text"><a href="leave.html">My Leave</a></span></li>
+        <li><i class="fas fa-money-check-alt"></i> <span class="menu-text"><a href="payroll.html">My Payroll</a></span></li>
+        <li><i class="fas fa-trophy"></i> <span class="menu-text"><a href="performance.html">My Performance</a></span></li>
+
+        <!-- logout -->
+        <li><i class="fas fa-sign-out-alt"></i> <span class="menu-text"><a href="{% url 'logout' %}">Logout</a></span></li>
+    </ul>
+</aside>
