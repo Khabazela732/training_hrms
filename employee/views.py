@@ -17,6 +17,9 @@ from reportlab.lib.units import inch
 import io
 from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404
+import datetime
+import random
+import json
 
 class EmployeeDashboardView(LoginRequiredMixin, View):
     def get(self, request):
@@ -215,3 +218,35 @@ def download_payroll_pdf(request, payroll_id):
     doc.build(elements)
     buffer.seek(0)
     return HttpResponse(buffer, content_type='application/pdf')
+
+class PerformanceDashboardView(LoginRequiredMixin, View):
+    def get(self, request):
+        employee = Employee.objects.get(user=request.user)
+        performances = Performance.objects.filter(employee=employee).order_by('created_at')
+
+        average_rating = performances.aggregate(avg_rating=Avg('rating'))['avg_rating']
+        total_reviews = performances.count()
+        last_review = performances.first()
+
+        trend_labels = []
+        trend_data = []
+        today = datetime.date.today()
+        for i in range(6, 0, -1):
+            month = (today - datetime.timedelta(days=i*30)).strftime('%b %Y')
+            trend_labels.append(month)
+            trend_data.append(round(random.uniform(3.0, 5.0), 1))
+
+        trend_labels_json = json.dumps(trend_labels)
+        trend_data_json = json.dumps(trend_data)
+
+        context = {
+            'employee': employee,
+            'performances': performances,
+            'average_rating': round(average_rating, 1) if average_rating else 0,
+            'total_reviews': total_reviews,
+            'last_review': last_review,
+            'trend_labels': trend_labels_json,
+            'trend_data': trend_data_json,
+        }
+        return render(request, 'employee/pages/performance.html', context)
+

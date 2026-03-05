@@ -1,0 +1,210 @@
+{% extends "employee/base/base.html" %}
+{% block content %}
+
+<section class="content">
+    <div class="profile-section">
+
+        <div class="profile-left">
+            <div class="profile-avatar"></div>
+            <div class="profile-name-role">
+                <h2>{{ employee.first_name }} {{ employee.last_name }}</h2>
+                <p><strong>Role:</strong> {{ employee.role.name }}</p>
+            </div>
+        </div>
+
+        <div class="profile-center">
+            <p><strong>Department:</strong> {{ employee.department.name }}</p>
+            <p><strong>Date Joined:</strong> {{ employee.date_joined }}</p>
+        </div>
+
+        <div class="profile-right">
+            <p class="average-rating-badge">
+                Avg rating {{ average_rating }}
+                {% if average_rating >= 4 %} Excellent
+                {% elif average_rating >= 3 %} Good
+                {% else %} Needs Improvement
+                {% endif %}
+            </p>
+        </div>
+
+    </div>
+
+    <div class="kpi-section">
+
+        <div class="kpi-card">
+            <i class="fa-solid fa-star kpi-icon star"></i>
+            <div>
+                <h3>{{ average_rating }}</h3>
+                <p>Average Rating</p>
+            </div>
+        </div>
+
+        <div class="kpi-card">
+            <i class="fa-solid fa-users kpi-icon people"></i>
+            <div>
+                <h3>{{ total_reviews }}</h3>
+                <p>Total Reviews</p>
+            </div>
+        </div>
+
+        <div class="kpi-card">
+            <i class="fa-solid fa-calendar-days kpi-icon calendar"></i>
+            <div>
+                <h3>{% if last_review %}{{ last_review.created_at|date:"M d, Y" }}{% else %}N/A{% endif %}</h3>
+                <p>Last Review</p>
+            </div>
+        </div>
+
+        <div class="kpi-card status-card">
+            <i class="fa-solid fa-chart-simple kpi-icon status"></i>
+            <div>
+                <h3>
+                    {% if average_rating >= 4 %} Excellent
+                    {% elif average_rating >= 3 %} Good
+                    {% else %} Needs Improvement
+                    {% endif %}
+                </h3>
+                <p>Status</p>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="summary-section">
+        <h3>Performance Summary</h3>
+
+        <p class="summary-description">
+            Your performance evaluations are conducted by your department manager and HR.
+            The ratings displayed on this page reflect your official performance reviews.
+        </p>
+
+        <div class="summary-box">
+
+            <p>
+                <strong>Current Performance Status:</strong>
+                {% if average_rating >= 4 %}
+                Excellent Performance
+                {% elif average_rating >= 3 %}
+                Good Performance
+                {% else %}
+                Needs Improvement
+                {% endif %}
+            </p>
+
+            <p>
+                <strong>Total Reviews Conducted:</strong> {{ total_reviews }}
+            </p>
+
+            <p>
+                <strong>Last Evaluation Date:</strong>
+                {% if last_review %}
+                {{ last_review.created_at|date:"M d, Y" }}
+                {% else %}
+                No performance reviews available yet
+                {% endif %}
+            </p>
+
+        </div>
+    </div>
+
+    <div class="insights-section
+            {% if average_rating >= 4 %}
+                excellent
+            {% elif average_rating >= 3 %}
+                good
+            {% else %}
+                warning
+            {% endif %}
+            ">
+        <h3>Performance Insights</h3>
+
+        {% if average_rating >= 4 %}
+        <p>You are performing exceptionally well. Keep maintaining this level of productivity.</p>
+        {% elif average_rating >= 3 %}
+        <p>Your performance is good, but there may be opportunities to improve certain areas.</p>
+        {% else %}
+        <p>Your recent evaluations indicate improvement is needed. Consider discussing development goals with your
+            manager.</p>
+        {% endif %}
+    </div>
+
+    <div class="trend-section">
+        <h3>Performance Trend</h3>
+        <canvas id="performanceChart"></canvas>
+    </div>
+
+    <div class="history-section">
+        <h3>Performance History</h3>
+        <table class="custom-table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Department</th>
+                    <th>Role</th>
+                    <th>Rating</th>
+                    <th>Remarks</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for performance in performances %}
+                <tr>
+                    <td>{{ performance.created_at|date:"M d, Y" }}</td>
+                    <td>{{ performance.department.name }}</td>
+                    <td>{{ performance.role }}</td>
+                    <td class="rating-cell">{{ performance.rating }}</td>
+                    <td>{{ performance.remarks|truncatewords:10 }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5">No performance records available.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const ctx = document.getElementById('performanceChart').getContext('2d');
+
+    const labels = JSON.parse('{{ trend_labels|safe|escapejs }}');
+    const data = JSON.parse('{{ trend_data|safe|escapejs }}');
+
+    const performanceChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Monthly Rating',
+                data: data,
+                borderColor: '#2563eb',
+                backgroundColor: 'rgba(37,99,235,0.2)',
+                tension: 0.4,
+                fill: true,
+                pointBackgroundColor: '#2563eb',
+                pointBorderColor: '#fff',
+                pointRadius: 6,
+                pointHoverRadius: 8
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { display: true },
+                tooltip: { enabled: true }
+            },
+            scales: {
+                y: {
+                    min: 0,
+                    max: 5,
+                    ticks: { stepSize: 1 }
+                }
+            }
+        }
+    });
+});
+</script>
+
+{% endblock %}
