@@ -1,10 +1,14 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.views import View
 from django.contrib.auth.mixins import LoginRequiredMixin
 from hr.models import Employee, Attendance, Leave, Payroll, Performance
 from datetime import date, timedelta
 from django.utils import timezone
 from django.db.models import Count, Avg
+from hr.forms import AttendanceForm
+from django.views import View
+from django import forms
+from django.contrib.auth.decorators import login_required
 
 class EmployeeDashboardView(LoginRequiredMixin, View):
     def get(self, request):
@@ -78,3 +82,57 @@ class EmployeeDashboardView(LoginRequiredMixin, View):
         }
         
         return render(request, 'employee/pages/dashboard.html', context)
+
+@login_required
+def employee_attendance_list(request):
+    employee = request.user.employee
+
+    attendances = Attendance.objects.filter(
+        employee=employee
+    ).order_by('-date', '-created_at')
+
+    return render(
+        request,
+        'employee/pages/my_attendance.html',
+        {'attendances': attendances}
+    )
+
+@login_required
+def employee_attendance_create(request):
+    employee = request.user.employee
+
+    if request.method == 'POST':
+        form = AttendanceForm(
+            request.POST,
+            employee=employee,
+            hide_employee=True
+        )
+        if form.is_valid():
+            attendance = form.save(commit=False)
+            attendance.employee = employee
+            attendance.save()
+            return redirect('employee_attendance')
+    else:
+        form = AttendanceForm(
+            employee=employee,
+            hide_employee=True
+        )
+
+    return render(request, 'employee/pages/attendance_form.html', {
+        'form': form,
+        'title': 'Add Attendance'
+    })
+
+class AttendanceForm(forms.ModelForm):
+    class Meta:
+        model = Attendance
+        fields = ['employee', 'date', 'status', 'check_in_time', 'check_out_time']
+
+    def __init__(self, *args, **kwargs):
+        employee = kwargs.pop('employee', None)
+        hide_employee = kwargs.pop('hide_employee', False)
+        super().__init__(*args, **kwargs)
+
+        if hide_employee and employee:
+            self.fields['employee'].initial = employee
+            self.fields['employee'].widget = forms.HiddenInput()
