@@ -66,12 +66,6 @@ class Employee(models.Model):
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
-
-    def save(self, *args, **kwargs):
-        if self.user and self.user.role != "employee":
-            self.user.role = "employee"
-            self.user.save(update_fields=["role"])
-        super().save(*args, **kwargs)
     
 
 
