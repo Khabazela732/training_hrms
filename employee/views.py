@@ -10,6 +10,9 @@ class EmployeeDashboardView(LoginRequiredMixin, View):
     def get(self, request):
         user = request.user
         
+        if getattr(user, "role", None) != "employee":
+            return render(request, "employee/pages/dashboard.html", {"error": "Access restricted to employees."})
+
         try:
             employee = Employee.objects.select_related('department', 'role').get(user=user)
         except Employee.DoesNotExist:
@@ -42,7 +45,7 @@ class EmployeeDashboardView(LoginRequiredMixin, View):
         ).order_by('-created_at').first()
         
         if latest_payroll:
-            payroll_status = f"₹{latest_payroll.total_salary():,.2f} - {latest_payroll.month}"
+            payroll_status = f"EUR {latest_payroll.total_salary():,.2f} - {latest_payroll.month}"
         else:
             payroll_status = "No payroll records"
         
@@ -51,7 +54,23 @@ class EmployeeDashboardView(LoginRequiredMixin, View):
         ).aggregate(avg_rating=Avg('rating'))['avg_rating']
         
         performance_rating = f"{avg_performance:.1f}/5" if avg_performance else "No reviews"
-        
+
+        recent_attendance = Attendance.objects.filter(
+            employee=employee
+        ).order_by("-date", "-id")[:7]
+
+        recent_leaves = Leave.objects.filter(
+            employee=employee
+        ).order_by("-start_date", "-id")[:5]
+
+        recent_payrolls = Payroll.objects.filter(
+            employee=employee
+        ).order_by("-created_at", "-id")[:3]
+
+        recent_performance = Performance.objects.filter(
+            employee=employee
+        ).order_by("-created_at", "-id")[:3]
+
         context = {
             'employee': employee,
             
@@ -75,6 +94,11 @@ class EmployeeDashboardView(LoginRequiredMixin, View):
             'recent_leaves_count': Leave.objects.filter(employee=employee).count(),
             'payroll_count': Payroll.objects.filter(employee=employee).count(),
             'performance_count': Performance.objects.filter(employee=employee).count(),
+
+            'recent_attendance': recent_attendance,
+            'recent_leaves': recent_leaves,
+            'recent_payrolls': recent_payrolls,
+            'recent_performance': recent_performance,
         }
         
         return render(request, 'employee/pages/dashboard.html', context)

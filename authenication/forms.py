@@ -1,5 +1,6 @@
 from .models import CustomUser
 from django import forms
+from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 
 class LoginForm(forms.Form):
     username = forms.CharField(
@@ -15,3 +16,15 @@ class LoginForm(forms.Form):
             'class': 'form-control',
         })
     )
+
+
+class CustomUserCreationForm(UserCreationForm):
+    class Meta(UserCreationForm.Meta):
+        model = CustomUser
+        fields = ("username", "email", "role")
+
+
+class CustomUserChangeForm(UserChangeForm):
+    class Meta(UserChangeForm.Meta):
+        model = CustomUser
+        fields = ("username", "email", "role", "is_active", "is_staff", "is_superuser")

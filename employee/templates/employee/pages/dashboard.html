@@ -4,42 +4,196 @@
 {% block title %}Employee Dashboard{% endblock %}
 {% block content %}
 <link rel="stylesheet" href="{% static 'hr/css/dashboard.css' %}">
-<div class="dashboard">
-    <h2>Hi, {{ employee.first_name|default:"Employee" }}  Welcome to your Dashboard</h2>
-    <div class="stats">
-        <div class="stat-card">
-            <h3>Attendance</h3>
-            <p>{{ attendance_pct|default:"Calculating..." }}</p>
-        </div>
-        <div class="stat-card">
-            <h3>Leave Balance</h3>
-            <p>{{ leave_balance|default:"21 Days" }}</p>
-        </div>
-        <div class="stat-card">
-            <h3>Payroll Status</h3>
-            <p>{{ payroll_status|default:"Pending" }}</p>
-        </div>
-        <div class="stat-card">
-            <h3>Performance Rating</h3>
-            <p>{{ performance_rating|default:"No Data" }}</p>
-        </div>
-    </div>
-    <div class="charts">
-        <div class="chart-card">
-            <h3>Attendance Over Time</h3>
-            <div class="chart-placeholder">
-                <p>Recent attendance: {{ attendance_recent_summary|default:"No data" }}</p>
-                <p>Trend: {{ attendance_trend|default:"Stable" }}</p>
+<div class="dashboard employee-dashboard">
+    {% if error %}
+        <div class="employee-alert">{{ error }}</div>
+    {% else %}
+        <h2>Hi, {{ employee.first_name|default:"Employee" }} Welcome to your Dashboard</h2>
+
+        <div class="stats">
+            <div class="stat-card">
+                <h3>Attendance</h3>
+                <p>{{ attendance_pct|default:"Calculating..." }}</p>
+            </div>
+            <div class="stat-card">
+                <h3>Leave Balance</h3>
+                <p>{{ leave_balance|default:"21 Days" }}</p>
+            </div>
+            <div class="stat-card">
+                <h3>Payroll Status</h3>
+                <p>{{ payroll_status|default:"Pending" }}</p>
+            </div>
+            <div class="stat-card">
+                <h3>Performance Rating</h3>
+                <p>{{ performance_rating|default:"No Data" }}</p>
             </div>
         </div>
-        <div class="chart-card">
-            <h3>Leave Usage</h3>
-            <div class="chart-placeholder">
-                <p>Used: {{ leave_used|default:"0" }} days</p>
-                <p>Remaining: {{ leave_remaining|default:"21" }} days</p>
-                <p>Total allocated: {{ leave_total|default:"21" }} days</p>
+
+        <div class="charts">
+            <div class="chart-card">
+                <h3>Attendance Over Time</h3>
+                <div class="chart-placeholder">
+                    <p>Recent attendance: {{ attendance_recent_summary|default:"No data" }}</p>
+                    <p>Trend: {{ attendance_trend|default:"Stable" }}</p>
+                </div>
+            </div>
+            <div class="chart-card">
+                <h3>Leave Usage</h3>
+                <div class="chart-placeholder">
+                    <p>Used: {{ leave_used|default:"0" }} days</p>
+                    <p>Remaining: {{ leave_remaining|default:"21" }} days</p>
+                    <p>Total allocated: {{ leave_total|default:"21" }} days</p>
+                </div>
             </div>
         </div>
-    </div>
+
+        <div id="profile" class="employee-section">
+            <h3>My Profile</h3>
+            <div class="profile-grid">
+                <div>
+                    <span class="label">Department</span>
+                    <span class="value">{{ department_name|default:"-" }}</span>
+                </div>
+                <div>
+                    <span class="label">Role</span>
+                    <span class="value">{{ role_name|default:"-" }}</span>
+                </div>
+                <div>
+                    <span class="label">Joined</span>
+                    <span class="value">{{ date_joined_formatted|default:"-" }}</span>
+                </div>
+                <div>
+                    <span class="label">Days Employed</span>
+                    <span class="value">{{ days_employed|default:"0" }}</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="employee-section-grid">
+            <div id="attendance" class="data-card">
+                <div class="card-header">
+                    <h3>My Attendance</h3>
+                    <span class="meta">Last 7 records</span>
+                </div>
+                {% if recent_attendance %}
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th>Check In</th>
+                                <th>Check Out</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for attendance in recent_attendance %}
+                                <tr>
+                                    <td>{{ attendance.date }}</td>
+                                    <td><span class="status-pill status-{{ attendance.status }}">{{ attendance.status }}</span></td>
+                                    <td>{{ attendance.check_in_time|default:"-" }}</td>
+                                    <td>{{ attendance.check_out_time|default:"-" }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <div class="empty-state">No attendance records yet.</div>
+                {% endif %}
+            </div>
+
+            <div id="leave" class="data-card">
+                <div class="card-header">
+                    <h3>My Leave</h3>
+                    <span class="meta">Last 5 requests</span>
+                </div>
+                {% if recent_leaves %}
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Start</th>
+                                <th>End</th>
+                                <th>Status</th>
+                                <th>Reason</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for leave in recent_leaves %}
+                                <tr>
+                                    <td>{{ leave.start_date }}</td>
+                                    <td>{{ leave.end_date }}</td>
+                                    <td><span class="status-pill status-{{ leave.status|lower }}">{{ leave.status }}</span></td>
+                                    <td>{{ leave.reason|default:"-"|truncatechars:40 }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <div class="empty-state">No leave records yet.</div>
+                {% endif %}
+            </div>
+
+            <div id="payroll" class="data-card">
+                <div class="card-header">
+                    <h3>My Payroll</h3>
+                    <span class="meta">Last 3 payslips</span>
+                </div>
+                {% if recent_payrolls %}
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Month</th>
+                                <th>Basic</th>
+                                <th>Bonus</th>
+                                <th>Deductions</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for payroll in recent_payrolls %}
+                                <tr>
+                                    <td>{{ payroll.month }}</td>
+                                    <td>{{ payroll.basic_salary }}</td>
+                                    <td>{{ payroll.bonus }}</td>
+                                    <td>{{ payroll.deductions }}</td>
+                                    <td>{{ payroll.total_salary }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <div class="empty-state">No payroll records yet.</div>
+                {% endif %}
+            </div>
+
+            <div id="performance" class="data-card">
+                <div class="card-header">
+                    <h3>My Performance</h3>
+                    <span class="meta">Last 3 reviews</span>
+                </div>
+                {% if recent_performance %}
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Rating</th>
+                                <th>Remarks</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for review in recent_performance %}
+                                <tr>
+                                    <td>{{ review.created_at|date:"Y-m-d" }}</td>
+                                    <td>{{ review.rating }}</td>
+                                    <td>{{ review.remarks|default:"-"|truncatechars:50 }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <div class="empty-state">No performance reviews yet.</div>
+                {% endif %}
+            </div>
+        </div>
+    {% endif %}
 </div>
 {% endblock %}
