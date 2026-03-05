@@ -12,5 +12,6 @@ urlpatterns = [
     path('payroll/pdf/<int:payroll_id>/', download_payroll_pdf, name='download_payroll_pdf'),
     path('dashboard/', EmployeeDashboardView.as_view(), name='employee-dashboard'),
     path('performance/', PerformanceDashboardView.as_view(), name='employee-performance'),
-    
+    path("apply-leave/", views.apply_leave, name="apply_leave"),
+    path("my-leave/", views.employee_my_leave, name="employee_my_leave")
 ]
