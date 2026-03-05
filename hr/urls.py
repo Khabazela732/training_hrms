@@ -12,21 +12,11 @@ urlpatterns = [
     path('leaves/', LeaveListView.as_view(), name='leave-list'),
     
     # Sethu's code
-    path('leave/create/', views.leave_create, name='leave_create'),
-    path('leave/<int:pk>/', views.leave_detail, name='leave_detail'),
-    path('leave/<int:pk>/update/', views.leave_update, name='leave_update'),
-    path('leave/<int:pk>/delete/', views.leave_delete, name='leave_delete'),
-
-    path('leave/<int:id>/approve/', views.leave_approve, name='leave_approve'),
-    path('leave/<int:id>/decline/', views.leave_decline, name='leave_decline'),
-
-    path('leave/create/', views.leave_create, name='leave_create'),
-
-    path('leaves/', views.leave_list, name='leave-list'),
-    path('leave/create/', views.leave_create, name='leave_create'),
-    path('leave/<int:pk>/', views.leave_detail, name='leave_detail'),
-    path('leave/<int:pk>/update/', views.leave_update, name='leave_update'),
-    path('leave/<int:pk>/delete/', views.leave_delete, name='leave_delete'),
+    path('leave/', views.leave_list, name='leave'),
+    path('leave/create/', views.leave_create, name='create'),
+    path('leave/view/<int:id>/', views.leave_view, name='leave_view'),
+    path('leave/update/<int:id>/', views.leave_update, name='leave_update'),
+    path('leave/delete/<int:id>/', views.leave_delete, name='leave_delete'),
 
     #Mbali's code
     path('attendance/', Attendance_View.as_view(), name='attendance'),

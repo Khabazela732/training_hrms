@@ -4,7 +4,7 @@
         <li class="active"><i class="fas fa-home"></i> <span class="menu-text"><a href="{% url 'employee-dashboard' %}">My Dashboard</a></span></li>
         <li><i class="fas fa-users"></i> <span class="menu-text"><a href="{% url 'employee-profile' %}">My Profile</a></span></li>
         <li><i class="fas fa-calendar-check"></i> <span class="menu-text"><a href="{% url 'employee_attendance' %}"> My Attendance</a></span></li>
-        <li><i class="fas fa-calendar-alt"></i> <span class="menu-text"><a href="leave.html">My Leave</a></span></li>
+        <li><i class="fas fa-calendar-alt"></i> <span class="menu-text"><a href="{% url 'employee_my_leave' %}">My Leave</a></span></li>
         <li><i class="fas fa-money-check-alt"></i> <span class="menu-text"><a href="{% url 'employee-payroll'%}">My Payroll</a></span></li>
         <li><i class="fas fa-trophy"></i> <span class="menu-text"><a href="{% url 'employee-performance' %}">My Performance</a></span></li>
 

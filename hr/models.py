@@ -22,46 +22,6 @@ class Attendance(models.Model):
 
     def __str__(self):
         return f"{self.employee} - {self.date} - {self.status}"
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 class Employee(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -74,26 +34,27 @@ class Employee(models.Model):
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
-    
 
 
 
+class Leave(models.Model):
 
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
 
+    start_date = models.DateField()
+    end_date = models.DateField()
+    reason = models.TextField()
 
+    STATUS_CHOICES = [
+        ("Pending", "Pending"),
+        ("Approved", "Approved"),
+        ("Declined", "Declined"),
+    ]
 
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="Pending")
 
-
-
-
-
-
-
-
-
-
-
-
+    def __str__(self):
+        return f"{self.employee.name} - {self.status}"
 
 
     
@@ -118,32 +79,6 @@ class Attendance(models.Model):
     def _str_(self):
         return f"{self.employee} - {self.date} ({self.status})"
     
-
-class Leave(models.Model):
-    employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
-    start_date = models.DateField()
-    end_date = models.DateField()
-    reason = models.TextField()
-
-    def __str__(self):
-        return f"{self.employee} - {self.start_date} to {self.end_date}"
-
-#Status change with 
-    STATUS_CHOICES = [
-        ('Pending', 'Pending'),
-        ('Approved', 'Approved'),
-        ('Declined', 'Declined'),
-    ]
-
-    status = models.CharField(
-        max_length=20,
-        choices=[
-            ('Pending', 'Pending'),
-            ('Approved', 'Approved'),
-            ('Declined', 'Declined'),
-        ],
-            default='Pending'
-    )
 
 class Payroll(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE)

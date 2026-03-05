@@ -1,34 +1,45 @@
 {% extends "hr/base/base.html" %}
+
 {% block content %}
 
-<section class="content">
-    <h2>Apply for Leave</h2>
+<h2>Create Leave Request</h2>
 
-    <form method="POST">
-        {% csrf_token %}
+<form method="POST">
+    {% csrf_token %}
 
-        <div>
-            <label>Employee</label>
-            {{ form.employee }}
-        </div>
+<div>
+    <label>Employee</label>
+    {{ form.employee }}
+</div>
 
-        <div>
-            <label>Start Date</label>
-            {{ form.start_date }}
-        </div>
+<div>
+    <label>Start Date</label>
+    {{ form.start_date }}
+</div>
 
-        <div>
-            <label>End Date</label>
-            {{ form.end_date }}
-        </div>
+<div>
+    <label>End Date</label>
+    {{ form.end_date }}
+</div>
 
-        <div>
-            <label>Reason</label>
-            {{ form.reason }}
-        </div>
+<div>
+    <label>Reason</label>
+    {{ form.reason }}
+</div>
 
-        <button type="submit">Submit Leave</button>
-    </form>
-</section>
+<div>
+    <label>Status</label>
+    {{ form.status }}
+</div>
+
+<br>
+
+<button type="submit">Save Leave</button>
+
+<a href="{% url 'leave' %}">
+    <button type="button">Cancel</button>
+</a>
+
+</form>
 
 {% endblock %}

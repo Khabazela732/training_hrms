@@ -21,6 +21,7 @@ import datetime
 import random
 import json
 
+
 class EmployeeDashboardView(LoginRequiredMixin, View):
     def get(self, request):
         user = request.user
@@ -249,4 +250,41 @@ class PerformanceDashboardView(LoginRequiredMixin, View):
             'trend_data': trend_data_json,
         }
         return render(request, 'employee/pages/performance.html', context)
+
+
+
+@login_required
+def apply_leave(request):
+
+    if request.method == "POST":
+
+        employee = Employee.objects.get(user=request.user)
+
+        start_date = request.POST.get("start_date")
+        end_date = request.POST.get("end_date")
+        reason = request.POST.get("reason")
+
+        Leave.objects.create(
+            employee=employee,
+            start_date=start_date,
+            end_date=end_date,
+            reason=reason,
+            status="Pending"
+        )
+
+        return redirect("employee_my_leave")
+
+    return render(request, "employee/pages/apply_leave.html")
+    
+
+def employee_my_leave(request):
+
+    # get logged in employee
+    employee = Employee.objects.get(user=request.user)
+
+    # filter leave records for that employee
+    leaves = Leave.objects.filter(employee=employee)
+
+    return render(request, "employee/pages/my_leave.html", {"leaves": leaves})
+
 

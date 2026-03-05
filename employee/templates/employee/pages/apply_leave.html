@@ -1,0 +1,23 @@
+{% extends "employee/base/base.html" %}
+{% block content %}
+
+<h2>Apply for Leave</h2>
+
+
+<form method="POST">
+    {% csrf_token %}
+
+    <label>Start Date</label>
+    <input type="date" name="start_date" required>
+
+    <label>End Date</label>
+    <input type="date" name="end_date" required>
+
+    <label>Reason</label>
+    <textarea name="reason" required></textarea>
+
+    <button type="submit">Submit Leave</button>
+</form>
+
+
+{% endblock %}

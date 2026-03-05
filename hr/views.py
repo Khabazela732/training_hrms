@@ -92,59 +92,61 @@ class LeaveListView(View):
         }
         return HttpResponse(template.render(context, request))
 
-# List all leaves
+# LIST ALL LEAVES
 def leave_list(request):
-    leaves = Leave.objects.all()
-    return render(request, 'hr/leave/list.html', {'leaves': leaves})
 
-# View leave detail
-def leave_detail(request, pk):
-    leave = get_object_or_404(Leave, pk=pk)
-    return render(request, 'hr/leave/detail.html', {'leave': leave})
+    leaves = Leave.objects.all()   # Fetch all records from database
 
-# Update leave
-def leave_update(request, pk):
-    leave = get_object_or_404(Leave, pk=pk)
-    if request.method == 'POST':
-        form = LeaveForm(request.POST, instance=leave)
-        if form.is_valid():
-            form.save()
-            return redirect('leave-list')
-    else:
-        form = LeaveForm(instance=leave)
-    return render(request, 'hr/leave/update.html', {'form': form})
+    context = {
+        "leaves": leaves
+    }
 
-# Delete leave
-def leave_delete(request, pk):
-    leave = get_object_or_404(Leave, pk=pk)
-    if request.method == 'POST':
-        leave.delete()
-        return redirect('leave-list')
-    return render(request, 'hr/leave/delete.html', {'leave': leave})
+    return render(request, "hr/pages/leave.html", context)
 
-# Create leave
+
+# CREATE LEAVE
 def leave_create(request):
-    if request.method == 'POST':
+    if request.method == "POST":
         form = LeaveForm(request.POST)
         if form.is_valid():
             form.save()
+            return redirect('leave')
     else:
         form = LeaveForm()
-    return render(request, 'hr/leave/create.html', {'form': form})
 
-#staus functions
-def leave_approve(request, id):
+    return render(request, "hr/pages/create.html", {"form": form})
+
+
+# VIEW LEAVE DETAILS
+def leave_view(request, id):
     leave = get_object_or_404(Leave, id=id)
-    leave.status = "Approved"
-    leave.save()
-    return redirect('leave-list')
+    return render(request, "hr/pages/leave_view.html", {"leave": leave})
 
 
-def leave_decline(request, id):
+# UPDATE LEAVE
+def leave_update(request, id):
     leave = get_object_or_404(Leave, id=id)
-    leave.status = "Declined"
-    leave.save()
-    return redirect('leave-list')
+
+    if request.method == "POST":
+        form = LeaveForm(request.POST, instance=leave)
+        if form.is_valid():
+            form.save()
+            return redirect('leave')
+    else:
+        form = LeaveForm(instance=leave)
+
+    return render(request, "hr/pages/leave_update.html", {"form": form})
+
+
+# DELETE LEAVE
+def leave_delete(request, id):
+    leave = get_object_or_404(Leave, id=id)
+
+    if request.method == "POST":
+        leave.delete()
+        return redirect('leave')
+
+    return redirect('leave')
 
 #Mbali's code
 

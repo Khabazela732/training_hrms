@@ -1,0 +1,43 @@
+{% extends "employee/base/base.html" %}
+{% block content %}
+
+<h2>My Leave Requests</h2>
+
+<a href="{% url 'apply_leave' %}">
+    <button>Apply for Leave</button>
+</a>
+
+<table class="attendance-table">
+
+<thead>
+<tr>
+<th>Start Date</th>
+<th>End Date</th>
+<th>Reason</th>
+<th>Status</th>
+</tr>
+</thead>
+
+<tbody>
+
+{% for leave in leaves %}
+
+<tr>
+<td>{{ leave.start_date }}</td>
+<td>{{ leave.end_date }}</td>
+<td>{{ leave.reason }}</td>
+<td>{{ leave.status }}</td>
+</tr>
+
+{% empty %}
+
+<tr>
+<td colspan="4">No leave records found</td>
+</tr>
+
+{% endfor %}
+
+</tbody>
+</table>
+
+{% endblock %}
