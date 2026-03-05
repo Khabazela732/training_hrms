@@ -1,34 +1,44 @@
 {% extends "employee/base/base.html" %}
 {% load static %}
+{% static 'hr/css/dashboard.css' %}
+{% block title %}Employee Dashboard{% endblock %}
 {% block content %}
+<link rel="stylesheet" href="{% static 'hr/css/dashboard.css' %}">
 <div class="dashboard">
-    <h2>Welcome to Your Dashboard</h2>
+    <h2>Hi, {{ employee.first_name|default:"Employee" }}  Welcome to your Dashboard</h2>
     <div class="stats">
         <div class="stat-card">
             <h3>Attendance</h3>
-            <p>95%</p>
+            <p>{{ attendance_pct|default:"Calculating..." }}</p>
         </div>
         <div class="stat-card">
             <h3>Leave Balance</h3>
-            <p>10 Days</p>
+            <p>{{ leave_balance|default:"21 Days" }}</p>
         </div>
         <div class="stat-card">
             <h3>Payroll Status</h3>
-            <p>Up to Date</p>
+            <p>{{ payroll_status|default:"Pending" }}</p>
         </div>
         <div class="stat-card">
             <h3>Performance Rating</h3>
-            <p>4.5/5</p>
+            <p>{{ performance_rating|default:"No Data" }}</p>
         </div>
     </div>
     <div class="charts">
         <div class="chart-card">
             <h3>Attendance Over Time</h3>
-            <canvas id="attendanceChart"></canvas>
+            <div class="chart-placeholder">
+                <p>Recent attendance: {{ attendance_recent_summary|default:"No data" }}</p>
+                <p>Trend: {{ attendance_trend|default:"Stable" }}</p>
+            </div>
         </div>
         <div class="chart-card">
             <h3>Leave Usage</h3>
-            <canvas id="leaveChart"></canvas>
+            <div class="chart-placeholder">
+                <p>Used: {{ leave_used|default:"0" }} days</p>
+                <p>Remaining: {{ leave_remaining|default:"21" }} days</p>
+                <p>Total allocated: {{ leave_total|default:"21" }} days</p>
+            </div>
         </div>
     </div>
 </div>
