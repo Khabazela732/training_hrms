@@ -9,6 +9,14 @@ from hr.forms import AttendanceForm
 from django.views import View
 from django import forms
 from django.contrib.auth.decorators import login_required
+from hr.models import Payroll
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib import colors
+from reportlab.lib.units import inch
+import io
+from django.http import HttpResponse
+from django.shortcuts import render, get_object_or_404
 
 class EmployeeDashboardView(LoginRequiredMixin, View):
     def get(self, request):
@@ -160,3 +168,50 @@ class EmployeeProfileView(LoginRequiredMixin, View):
         }
 
         return render(request, 'employee/pages/profile.html', context)
+
+class EmployeePayrollView(View):
+    def get(self, request):
+     
+        payrolls = Payroll.objects.filter(employee__user=request.user).order_by('-month')
+        return render(request, 'employee/pages/payroll.html', {'payrolls': payrolls})
+
+
+
+def download_payroll_pdf(request, payroll_id):
+    payroll = get_object_or_404(Payroll, id=payroll_id, employee__user=request.user)
+
+    buffer = io.BytesIO()
+    doc = SimpleDocTemplate(buffer, pagesize=(8.5*inch, 11*inch))
+    elements = []
+
+    styles = getSampleStyleSheet()
+    title_style = ParagraphStyle(
+        'title',
+        parent=styles['Title'],
+        alignment=1, 
+        fontSize=20,
+        textColor=colors.HexColor("#2980b9")
+    )
+
+
+    elements.append(Paragraph("Payroll Statement", title_style))
+    elements.append(Spacer(1, 0.2*inch))
+
+    
+    data = [
+        ['Month', 'Salary (R)', 'Bonus (R)', 'Deductions (R)', 'Net Pay (R)'],
+        [payroll.month, f"{payroll.basic_salary:,.2f}", f"{payroll.bonus:,.2f}", f"{payroll.deductions:,.2f}", f"{payroll.net_pay:,.2f}"]
+    ]
+
+    table = Table(data, hAlign='CENTER')
+    table.setStyle(TableStyle([
+        ('BACKGROUND', (0,0), (-1,0), colors.HexColor('#2980b9')),
+        ('TEXTCOLOR', (0,0), (-1,0), colors.white),
+        ('ALIGN', (0,0), (-1,-1), 'CENTER'),
+        ('GRID', (0,0), (-1,-1), 1, colors.HexColor('#bdc3c7')),
+    ]))
+    elements.append(table)
+
+    doc.build(elements)
+    buffer.seek(0)
+    return HttpResponse(buffer, content_type='application/pdf')

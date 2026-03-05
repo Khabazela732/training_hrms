@@ -1,0 +1,161 @@
+{% extends "employee/base/base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="portal-container">
+
+    <h2>Welcome, {{ request.user.employee.first_name }}!</h2>
+
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>Month</th>
+                    <th>Salary (R)</th>
+                    <th>Bonus (R)</th>
+                    <th>Deductions (R)</th>
+                    <th>Net Pay (R)</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for payroll in payrolls %}
+                <tr>
+                    <td data-label="Month">{{ payroll.month }}</td>
+                    <td data-label="Salary (R)">R{{ payroll.basic_salary|floatformat:2 }}</td>
+                    <td data-label="Bonus (R)"><span class="bonus">R{{ payroll.bonus|floatformat:2 }}</span></td>
+                    <td data-label="Deductions (R)"><span class="deductions">R{{ payroll.deductions|floatformat:2 }}</span></td>
+                    <td data-label="Net Pay (R)"><span class="netpay">R{{ payroll.net_pay|floatformat:2 }}</span></td>
+                    <td data-label="Action">
+                        <a href="{% url 'download_payroll_pdf' payroll.id %}" class="download-btn">📄 Download PDF</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" style="text-align:center; color:#888;">No payroll records found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+<!-- ---------------- Inline Payroll CSS ---------------- -->
+<style>
+/* Container */
+.portal-container {
+    max-width: 950px;
+    margin: 30px auto;
+    font-family: 'Poppins', sans-serif;
+}
+
+.portal-container h2 {
+    text-align: center;
+    color: #2c3e50;
+    margin-bottom: 30px;
+}
+
+/* Table */
+.table-wrapper table {
+    width: 100%;
+    border-collapse: collapse;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+thead tr {
+    background-color: #2980b9;
+    color: white;
+    text-align: left;
+    font-weight: 600;
+}
+
+td, th {
+    padding: 12px;
+}
+
+/* Hover effect */
+tbody tr:hover {
+    background-color: #f9fafa;
+}
+
+/* Salary badges */
+span.bonus {
+    display: inline-block;
+    background-color: #f1c40f;
+    color: #2c3e50;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-weight: 500;
+}
+
+span.deductions {
+    display: inline-block;
+    background-color: #e74c3c;
+    color: white;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-weight: 500;
+}
+
+span.netpay {
+    display: inline-block;
+    background-color: #2ecc71;
+    color: white;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-weight: 500;
+}
+
+/* Download button */
+a.download-btn {
+    text-decoration: none;
+    color: white;
+    background-color: #16a085;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-weight: 500;
+    display: inline-block;
+    transition: all 0.2s ease-in-out;
+}
+
+a.download-btn:hover {
+    background-color: #138d75;
+    transform: translateY(-2px);
+}
+
+/* Responsive */
+@media screen and (max-width: 768px) {
+    table, thead, tbody, th, td, tr {
+        display: block;
+    }
+
+    thead tr {
+        display: none;
+    }
+
+    tbody tr {
+        margin-bottom: 15px;
+        border-bottom: 2px solid #ddd;
+    }
+
+    td {
+        padding: 8px;
+        text-align: right;
+        position: relative;
+    }
+
+    td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 0;
+        width: 50%;
+        padding-left: 15px;
+        font-weight: bold;
+        text-align: left;
+    }
+}
+</style>
+{% endblock %}
