@@ -1,0 +1,47 @@
+{% extends "employee/base/base.html" %}
+{% load static %}
+{% block title %}My Profile{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+    <h2>My Profile</h2>
+
+    {% if error %}
+        <p style="color:red;">{{ error }}</p>
+    {% else %}
+
+    <table class="profile-table">
+        <tr>
+            <th>Full Name</th>
+            <td>{{ employee.first_name }} {{ employee.last_name }}</td>
+        </tr>
+
+        <tr>
+            <th>Username</th>
+            <td>{{ username }}</td>
+        </tr>
+
+        <tr>
+            <th>Email</th>
+            <td>{{ employee.email }}</td>
+        </tr>
+
+        <tr>
+            <th>Department</th>
+            <td>{{ department_name }}</td>
+        </tr>
+
+        <tr>
+            <th>Role</th>
+            <td>{{ role_name }}</td>
+        </tr>
+
+        <tr>
+            <th>Date Joined</th>
+            <td>{{ date_joined_formatted }}</td>
+        </tr>
+    </table>
+
+    {% endif %}
+</div>
+{% endblock %}

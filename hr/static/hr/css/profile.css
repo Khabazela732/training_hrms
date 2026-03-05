@@ -1,0 +1,16 @@
+.profile-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.profile-table th,
+.profile-table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+}
+
+.profile-table th {
+    background: #f4f4f4;
+    text-align: left;
+}

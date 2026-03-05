@@ -136,3 +136,27 @@ class AttendanceForm(forms.ModelForm):
         if hide_employee and employee:
             self.fields['employee'].initial = employee
             self.fields['employee'].widget = forms.HiddenInput()
+
+
+
+#France
+
+class EmployeeProfileView(LoginRequiredMixin, View):
+    def get(self, request):
+        user = request.user
+
+        try:
+            employee = Employee.objects.select_related('department', 'role', 'user').get(user=user)
+        except Employee.DoesNotExist:
+            context = {'error': 'Employee record not found. Contact administrator.'}
+            return render(request, 'employee/pages/profile.html', context)
+
+        context = {
+            'employee': employee,
+            'department_name': employee.department.name,
+            'role_name': employee.role.name,
+            'date_joined_formatted': employee.date_joined.strftime('%B %d, %Y'),
+            'username': employee.user.username,
+        }
+
+        return render(request, 'employee/pages/profile.html', context)
