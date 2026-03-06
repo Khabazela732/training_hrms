@@ -28,21 +28,6 @@ class PerformanceForm(forms.ModelForm):
         model = Performance
         fields = '__all__'
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 class EmployeeForm(forms.ModelForm):
     class Meta:
         model = Employee
@@ -53,4 +38,5 @@ class EmployeeForm(forms.ModelForm):
             'email',
             'department',
             'role',
+            'contract_copy',
         ]

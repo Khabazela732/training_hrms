@@ -23,7 +23,11 @@
                {% for employee in employees %}
                 <div class="employee-card">
                     <div class="emp-photo">
-                        <i class="fas fa-user-circle"></i>
+                        {% if employee.profile_picture %}
+                        <img src="{{ employee.profile_picture.url }}" alt="Profile Picture" class="employee-avatar">
+                        {% else %}
+                        <i class="fas fa-user-circle employee-avatar"></i>
+                        {% endif %}
                     </div>
 
                     <div class="emp-info">

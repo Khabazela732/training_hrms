@@ -511,3 +511,17 @@ class ViewPayrollReport(View):
         response = HttpResponse(buffer, content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
         response['Content-Disposition'] = 'attachment; filename="monthly_payroll_report.xlsx"'
         return response
+    
+def upload_contract(request, employee_id):
+    employee = get_object_or_404(Employee, id=employee_id)
+
+    if request.method == 'POST':
+        contract_file = request.FILES.get('contract_copy')
+        if contract_file:
+            employee.contract_copy = contract_file
+            employee.save()
+            messages.success(request, "Contract uploaded successfully.")
+        else:
+            messages.error(request, "No file selected for upload.")
+        return redirect('employees')
+

@@ -288,3 +288,12 @@ def employee_my_leave(request):
     return render(request, "employee/pages/my_leave.html", {"leaves": leaves})
 
 
+def upload_profile_picture(request):
+    if request.method == 'POST':
+        employee = Employee.objects.get(user=request.user)
+        profile_picture = request.FILES.get('profile_picture')
+
+        if profile_picture:
+            employee.profile_picture = profile_picture
+            employee.save()
+            return redirect('employee-profile')

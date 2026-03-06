@@ -20,7 +20,11 @@
 
     <div class="employee-card employee-detail-card">
         <div class="emp-photo">
-            <i class="fas fa-user-circle"></i>
+            {% if employee.profile_picture %}
+            <img src="{{ employee.profile_picture.url }}" alt="Profile Picture" class="employee-avatar">
+            {% else %}
+            <i class="fas fa-user-circle employee-avatar"></i>
+            {% endif %}
         </div>
 
         <div class="emp-info">
@@ -30,6 +34,17 @@
             <p><strong>Role:</strong> {{ employee.role }}</p>
             <p><strong>User:</strong> {{ employee.user }}</p>
             <p><strong>Date Joined:</strong> {{ employee.date_joined }}</p>
+            <p><strong>Contract Copy:</strong>
+                {% if employee.contract_copy %}
+                    <a href="{{ employee.contract_copy.url }}" target="_blank">View Contract</a>
+                {% else %}
+                    <p> Upload a contract copy.</p>
+                    <form action="{% url 'upload_contract' employee.pk %}" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <input type="file" name="contract_copy" accept=".pdf,.doc,.docx" required>
+                        <button type="submit" class="btn btn-primary">Upload</button>
+                    </form>
+                {% endif %}
         </div>
     </div>
 </section>

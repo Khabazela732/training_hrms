@@ -50,6 +50,20 @@
             {% endif %}
             </td>
         </tr>
+        <tr>
+            <th>Profile Picture</th>
+            <td>
+            {% if employee.profile_picture %}
+                <img src="{{ employee.profile_picture.url }}" alt="Profile Picture" class="profile-avatar">
+            {% else %}
+                <p>Upload a profile picture.</p>
+                <form action="{% url 'upload_profile_picture' %}" method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <input type="file" name="profile_picture" accept="image/*" required>
+                    <button type="submit">Upload</button>
+                </form>
+            {% endif %}
+            </td>
     </table>
 
     {% endif %}

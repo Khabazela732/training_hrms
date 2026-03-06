@@ -30,7 +30,7 @@ urlpatterns = [
     path('performance/<int:pk>/edit/', views.edit_performance, name='edit_performance'),
     path('performance/<int:pk>/delete/', views.delete_performance, name='delete_performance'),
 
-    #Senze's code
+    #Senzo's code
     path('employees/', EmployeesView.as_view(), name='employees'),
     path('departments/', DepartmentsView.as_view(), name='department_list'),
     path('departments/create/', DepartmentCreateView.as_view(), name='department_create'),
@@ -43,4 +43,6 @@ urlpatterns = [
     path('edit-payroll/<int:pk>/', EditPayrollView.as_view(), name='edit_payroll'),
     path('delete-payroll/<int:pk>/', DeletePayrollView.as_view(), name='delete_payroll'),
     path('payroll/report/', ViewPayrollReport.as_view(), name='view_payroll_report'),
+
+    path('upload-contract/<int:employee_id>/', views.upload_contract, name='upload_contract'),
 ]
