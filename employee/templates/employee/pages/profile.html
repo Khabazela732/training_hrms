@@ -40,6 +40,16 @@
             <th>Date Joined</th>
             <td>{{ date_joined_formatted }}</td>
         </tr>
+        <tr>
+            <th>Contract Copy</th>
+            <td>
+            {% if employee.contract_copy %}
+                <a href="{{ employee.contract_copy.url }}" target="_blank">View Contract</a>
+            {% else %}
+                <p>No contract available.</p>
+            {% endif %}
+            </td>
+        </tr>
     </table>
 
     {% endif %}

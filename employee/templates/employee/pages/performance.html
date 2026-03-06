@@ -5,7 +5,11 @@
     <div class="profile-section">
 
         <div class="profile-left">
+            {% if employee.profile_picture %}
+            <img src="{{ employee.profile_picture.url }}" alt="Profile Picture" class="profile-avatar">
+            {% else %}
             <div class="profile-avatar"></div>
+            {% endif %}
             <div class="profile-name-role">
                 <h2>{{ employee.first_name }} {{ employee.last_name }}</h2>
                 <p><strong>Role:</strong> {{ employee.role.name }}</p>

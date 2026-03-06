@@ -31,6 +31,8 @@ class Employee(models.Model):
     email = models.EmailField(unique=True)
     role = models.ForeignKey(Role, on_delete=models.CASCADE)
     date_joined = models.DateField(auto_now_add=True)
+    profile_picture = models.ImageField(upload_to='employee_profiles/', blank=True, null=True) #media/employee_profiles/
+    contract_copy = models.FileField(upload_to='employee_contracts/', blank=True, null=True) #media/employee_contracts/
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
