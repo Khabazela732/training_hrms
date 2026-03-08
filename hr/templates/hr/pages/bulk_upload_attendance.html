@@ -1,0 +1,35 @@
+{% extends 'hr/base/base.html' %}
+
+{% block title %}Bulk Upload Attendance{% endblock %}
+
+{% block content %}
+
+<div class="table-container">
+
+<div class="table-header">
+    <h3>Bulk Upload Attendance</h3>
+</div>
+
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <div style="margin-top:20px;">
+        <label><strong>Select CSV File:</strong></label>
+        <input type="file" name="file" required>
+    </div>
+
+    <div style="margin-top:20px;">
+        <button type="submit" class="btn btn-primary">
+            Upload Attendance
+        </button>
+
+        <a href="{% url 'attendance' %}" class="btn btn-secondary">
+            Cancel
+        </a>
+    </div>
+
+</form>
+
+</div>
+
+{% endblock %}

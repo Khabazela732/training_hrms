@@ -130,6 +130,352 @@
 
 /* Add Attendance Button hover */
 .btn-add-attendance:hover {
-    background-color: #0b5ed7;
+    background-color: #172942;
     color: #fff;
+}
+/* ===================== BULK UPLOAD PAGE ===================== */
+.bulk-upload-container {
+    max-width: 600px;
+    margin: 50px auto;
+    padding: 30px 40px;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.bulk-upload-container h2 {
+    font-size: 1.8rem;
+    margin-bottom: 25px;
+    color: #333333;
+}
+
+.bulk-upload-container form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+
+/* ===================== DRAG & DROP ===================== */
+.file-drop-area {
+    position: relative;
+    border: 2px dashed #162d46;
+    border-radius: 10px;
+    padding: 40px;
+    background-color: #ced1d4;
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.3s, background 0.3s;
+    margin-bottom: 20px;
+}
+
+.file-drop-area.dragover {
+    border-color: #162d46;
+    background-color: #a7adb3;
+}
+
+.file-drop-area input[type="file"] {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.file-drop-area .file-msg {
+    font-size: 1rem;
+    color: #333;
+}
+
+.bulk-upload-container form .btn-upload {
+    padding: 12px 25px;
+    background-color: #162d46;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.bulk-upload-container form .btn-upload:hover {
+    background-color: #243d58;
+}
+
+/* ===================== MESSAGES ===================== */
+.messages {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 20px;
+}
+
+.messages li {
+    padding: 12px 20px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    font-weight: 500;
+}
+
+.messages li.success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.messages li.error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+/* Messages styling (reuse from bulk upload) */
+.messages {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 20px;
+}
+
+.messages li {
+    padding: 12px 20px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    font-weight: 500;
+}
+
+.messages li.success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.messages li.error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+.btn-edit {
+    padding: 6px 12px;
+    background-color: #28a745;
+    color: #fff;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: background 0.3s ease;
+}
+
+.btn-edit:hover {
+    background-color: #218838;
+}
+.attendance-table tbody tr.clickable-row {
+    cursor: pointer;
+    transition: background 0.3s, transform 0.1s;
+}
+
+.attendance-table tbody tr.clickable-row:hover {
+    background-color: #e6f7ff;
+    transform: scale(1.01);
+}
+/* Cancel button style */
+.btn-cancel {
+    display: inline-block;
+    padding: 10px 18px;
+    background-color: #dc3545;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: 500;
+    transition: background 0.3s ease;
+}
+
+.btn-cancel:hover {
+    background-color: #b02a37;
+}
+
+/* Upload button style */
+.btn-upload {
+    padding: 10px 20px;
+    background-color: #001a40;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.3s ease;
+}
+
+.btn-upload:hover {
+    background-color: #003366;
+}
+/* Bulk Delete Button Style */
+.btn-delete-selected {
+    padding: 10px 18px;
+    background-color: #96121f; /* red color for delete */
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.1s ease;
+    margin-left: 10px;
+}
+
+.btn-delete-selected:disabled {
+    background-color: #f5a5ab; /* lighter red when disabled */
+    cursor: not-allowed;
+}
+
+.btn-delete-selected:hover:not(:disabled) {
+    background-color: #b02a37; /* darker red on hover */
+    transform: scale(1.02);
+}
+/* Primary Button */
+.btn-primary{
+    background-color:#001a40;
+    color:white;
+    border:none;
+    cursor:pointer;
+    font-weight:600;
+}
+
+.btn-primary:hover{
+    background-color:#003366;
+}
+
+/* Cancel Button */
+.btn-secondary{
+    background-color:#6c757d;
+    color:white;
+    text-decoration:none;
+    display:inline-block;
+}
+
+.btn-secondary:hover{
+    background-color:#5a6268;
+}
+
+/* Hover effect for rows uploaded via CSV */
+.clickable-row {
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.clickable-row:hover {
+    background-color: #5385b1;  
+}
+.employee-avatar {
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: #001a40;
+    color: white;
+    text-align: center;
+    line-height: 30px;
+    font-weight: bold;
+    margin-right: 10px;
+}
+.employee-info {
+    display: flex;
+    align-items: center;
+}
+.status {
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: 600;
+}
+.status.Present { background-color: #d4edda; color: #155724; }
+.status.Absent { background-color: #f8d7da; color: #721c24; }
+.status.Late { background-color: #fff3cd; color: #856404; }
+.time-empty { color: #888; }
+
+/* Update Attendance Page Styling */
+.update-attendance-container {
+    max-width: 500px;
+    margin: 50px auto;
+    padding: 30px;
+    background-color: #f9f9f9;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.update-attendance-container h3 {
+    text-align: center;
+    margin-bottom: 25px;
+    color: #001a40;
+}
+
+.update-attendance-form .form-group {
+    margin-bottom: 20px;
+}
+
+.update-attendance-form label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #333;
+}
+
+.update-attendance-form input[type="time"] {
+    width: 100%;
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+}
+
+.update-attendance-form input[type="time"]:focus {
+    outline: none;
+    border-color: #001a40;
+    box-shadow: 0 0 5px rgba(0,26,64,0.3);
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.btn {
+    padding: 10px 25px;
+    border-radius: 6px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn-primary {
+    background-color: #001a40;
+    color: #fff;
+    border: none;
+}
+
+.btn-primary:hover {
+    background-color: #003366;
+}
+
+.btn-secondary {
+    background-color: #ccc;
+    color: #333;
+    border: none;
+}
+
+.btn-secondary:hover {
+    background-color: #999;
+}
+
+.alert.alert-info {
+    background-color: #e7f3ff;
+    color: #055160;
+    padding: 12px 20px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    text-align: center;
+    font-weight: 500;
 }

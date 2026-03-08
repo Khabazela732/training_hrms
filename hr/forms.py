@@ -40,3 +40,15 @@ class EmployeeForm(forms.ModelForm):
             'role',
             'contract_copy',
         ]
+
+class AttendanceUploadForm(forms.Form):
+    file = forms.FileField(label="Upload CSV File")
+
+class EmployeeAttendanceForm(forms.ModelForm):
+    class Meta:
+        model = Attendance
+        fields = ['check_in_time', 'check_out_time']
+        widgets = {
+            'check_in_time': forms.TimeInput(attrs={'type': 'time'}),
+            'check_out_time': forms.TimeInput(attrs={'type': 'time'}),
+        }

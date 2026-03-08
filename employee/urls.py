@@ -15,4 +15,6 @@ urlpatterns = [
     path("apply-leave/", views.apply_leave, name="apply_leave"),
     path("my-leave/", views.employee_my_leave, name="employee_my_leave"),
     path("upload-profile-picture/", views.upload_profile_picture, name="upload_profile_picture"),
+    path('my-attendance/update/<int:attendance_id>/', views.my_attendance_update, name='my_attendance_update'),
+
 ]

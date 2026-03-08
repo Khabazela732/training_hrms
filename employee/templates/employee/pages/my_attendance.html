@@ -17,6 +17,14 @@
     </a>
 </div>
 
+{% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+        <li class="{{ message.tags }}">{{ message }}</li>
+    {% endfor %}
+</ul>
+{% endif %}
+
 {% if attendances %}
 <table class="attendance-table">
     <thead>
@@ -28,38 +36,26 @@
             <th>Check Out</th>
         </tr>
     </thead>
-    <tbody>
-        {% for attendance in attendances %}
-        <tr>
-<td>
-                        <div class="employee-info">
-                            <div class="employee-avatar">{{ attendance.employee.first_name|slice:":1" }}{{ attendance.employee.last_name|slice:":1" }}</div>
-                            <span class="employee-name">{{ attendance.employee.first_name }} {{ attendance.employee.last_name }}</span>
-
-                    </td>
-
-       <td>{{ attendance.date }}</td>
-                    <td>
-                        <span class="status {{ attendance.status }}">{{ attendance.status|title }}</span>
-                    </td>
-
-                    <td>
-                        {% if attendance.check_in_time %}
-                            {{ attendance.check_in_time|time:"H:i" }}
-                        {% else %}
-                            <span class="time-empty">-</span>
-                        {% endif %}
-                    </td>
-                    <td>
-                        {% if attendance.check_out_time %}
-                            {{ attendance.check_out_time|time:"H:i" }}
-                        {% else %}
-                            <span class="time-empty">-</span>
-                        {% endif %}
-                    </td>
+<tbody>
+    {% for attendance in attendances %}
+        {% if csv_uploaded_today and attendance.date == today %}
+            <tr class="clickable-row" data-href="{% url 'my_attendance_update' attendance.id %}">
+        {% else %}
+            <tr>
+        {% endif %}
+            <td>
+                <div class="employee-info">
+                    <div class="employee-avatar">{{ attendance.employee.first_name|slice:":1" }}{{ attendance.employee.last_name|slice:":1" }}</div>
+                    <span class="employee-name">{{ attendance.employee.first_name }} {{ attendance.employee.last_name }}</span>
+                </div>
+            </td>
+            <td>{{ attendance.date }}</td>
+            <td><span class="status {{ attendance.status }}">{{ attendance.status|title }}</span></td>
+            <td>{{ attendance.check_in_time|default:"--:--" }}</td>
+            <td>{{ attendance.check_out_time|default:"--:--" }}</td>
         </tr>
-        {% endfor %}
-    </tbody>
+    {% endfor %}
+</tbody>
 </table>
 {% else %}
 <div class="no-data" style="text-align:center; margin-top:50px; color:#555;">
@@ -67,5 +63,17 @@
     <p style="font-size:16px;">No attendance records found</p>
 </div>
 {% endif %}
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const rows = document.querySelectorAll(".clickable-row");
+    rows.forEach(row => {
+        row.addEventListener("click", () => {
+            const href = row.getAttribute("data-href");
+            if(href) window.location.href = href;
+        });
+    });
+});
+</script>
 
 {% endblock %}

@@ -1,0 +1,65 @@
+{% extends 'hr/base/base.html' %}
+{% load static %}
+
+{% block title %}Bulk Upload Attendance{% endblock %}
+
+{% block content %}
+<div class="bulk-upload-container">
+    <h2>Bulk Upload Attendance</h2>
+
+    {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+        <li class="{{ message.tags }}">{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+    <form method="POST" enctype="multipart/form-data" id="upload-form">
+        {% csrf_token %}
+        <div class="file-drop-area" id="file-drop-area">
+            <span class="file-msg" id="file-msg">Drag & Drop your CSV here or click to select</span>
+            <input type="file" name="file" id="file-input" accept=".csv">
+        </div>
+
+        <div class="form-buttons" style="margin-top: 20px; display: flex; gap: 10px;">
+            <button type="submit" class="btn-upload">Upload CSV</button>
+            <a href="{% url 'attendance' %}" class="btn-cancel">Cancel</a>
+        </div>
+    </form>
+</div>
+
+<script>
+const fileDropArea = document.getElementById('file-drop-area');
+const fileInput = document.getElementById('file-input');
+const fileMsg = document.getElementById('file-msg');
+
+fileDropArea.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    fileDropArea.classList.add('dragover');
+});
+
+fileDropArea.addEventListener('dragleave', () => {
+    fileDropArea.classList.remove('dragover');
+});
+
+fileDropArea.addEventListener('drop', (e) => {
+    e.preventDefault();
+    fileDropArea.classList.remove('dragover');
+    const files = e.dataTransfer.files;
+    if (files.length > 0) {
+        fileInput.files = files;
+        fileMsg.textContent = files[0].name; 
+    }
+});
+
+fileInput.addEventListener('change', () => {
+    if (fileInput.files.length > 0) {
+        fileMsg.textContent = fileInput.files[0].name; 
+    } else {
+        fileMsg.textContent = "Drag & Drop your CSV here or click to select";
+    }
+});
+</script>
+
+{% endblock %}
