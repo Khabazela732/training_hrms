@@ -6,7 +6,7 @@ from psycopg2 import IntegrityError
 from .models import Employee, Department, Leave, Attendance, Performance, Payroll
 from .forms import LeaveForm, EmployeeForm
 from django.utils import timezone
-from .forms import AttendanceForm, PerformanceForm
+from .forms import AttendanceForm, PerformanceForm, AttendanceUploadForm
 from django.contrib import messages
 from django.db.models import Q
 from django.contrib.messages.views import SuccessMessageMixin
@@ -15,6 +15,8 @@ from django.core.paginator import Paginator
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.detail import DetailView
 from authenication.models import CustomUser
+import csv
+import io
 
 
 class DashboardView(View):
@@ -231,6 +233,88 @@ def attendance_list(request):
     return render(request, 'hr/pages/attendance.html', {
         'recent_attendances': recent_attendances
     })
+
+
+def bulk_upload_attendance(request):
+    if request.method == 'POST':
+        form = AttendanceUploadForm(request.POST, request.FILES)
+
+        if form.is_valid():
+            csv_file = request.FILES['file']
+
+            # Ensure CSV file
+            if not csv_file.name.endswith('.csv'):
+                messages.error(request, "Please upload a CSV file.")
+                return redirect('attendance')
+
+            try:
+                data = csv_file.read().decode('utf-8')
+            except UnicodeDecodeError:
+                csv_file.seek(0)
+                data = csv_file.read().decode('ISO-8859-1')
+
+            io_string = io.StringIO(data)
+            reader = csv.DictReader(io_string)
+
+            today = timezone.localdate()   # safer than timezone.now().date()
+
+            uploaded_employees = []
+
+            for row in reader:
+                first_name = row.get('first_name')
+                last_name = row.get('last_name')
+
+                if not first_name or not last_name:
+                    continue
+
+                try:
+                    employee = Employee.objects.get(
+                        first_name=first_name.strip(),
+                        last_name=last_name.strip()
+                    )
+
+                    Attendance.objects.update_or_create(
+                        employee=employee,
+                        date=today,
+                        defaults={'status': 'Present'}
+                    )
+
+                    uploaded_employees.append(employee.id)
+
+                except Employee.DoesNotExist:
+                    continue
+
+            # Mark others as absent
+            all_employees = Employee.objects.exclude(id__in=uploaded_employees)
+
+            for employee in all_employees:
+                Attendance.objects.get_or_create(
+                    employee=employee,
+                    date=today,
+                    defaults={'status': 'Absent'}
+                )
+
+            messages.success(
+                request,
+                f"Attendance uploaded successfully! ({len(uploaded_employees)} Present, {all_employees.count()} Absent)"
+            )
+
+            return redirect('attendance')
+
+    else:
+        form = AttendanceUploadForm()
+
+    return render(request, 'hr/pages/bulk_upload.html', {'form': form})
+
+def attendance_bulk_delete(request):
+    if request.method == "POST":
+        ids = request.POST.getlist('selected_attendances')
+        if ids:
+            Attendance.objects.filter(id__in=ids).delete()
+            messages.success(request, f"{len(ids)} attendance records deleted successfully!")
+        else:
+            messages.error(request, "No records selected.")
+    return redirect('attendance')
 
 #Lusanda code will go here
 

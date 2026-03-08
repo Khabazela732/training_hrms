@@ -23,6 +23,8 @@ urlpatterns = [
     path('attendance/create/', views.attendance_create, name='attendance_create'),
     path('attendance/<int:pk>/edit/', views.attendance_edit, name='attendance_edit'),
     path('attendance/<int:pk>/delete/', views.attendance_delete, name='attendance_delete'),
+    path('attendance/bulk-upload/', views.bulk_upload_attendance, name='bulk_upload_attendance'),
+    path('attendance/bulk-delete/', views.attendance_bulk_delete, name='attendance_bulk_delete'),
 
     #lusanda's code
     path('performance/', views.performance_list, name='performance'),

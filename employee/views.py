@@ -15,6 +15,7 @@ from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib import colors
 from reportlab.lib.units import inch
 import io
+from django.contrib import messages
 from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404
 import datetime
@@ -98,41 +99,43 @@ class EmployeeDashboardView(LoginRequiredMixin, View):
 @login_required
 def employee_attendance_list(request):
     employee = request.user.employee
+    today = timezone.localdate()  
+    attendances = Attendance.objects.filter(employee=employee).order_by('-date')
+    csv_uploaded_today = Attendance.objects.filter(date=today).exists()  
 
-    attendances = Attendance.objects.filter(
-        employee=employee
-    ).order_by('-date', '-created_at')
-
-    return render(
-        request,
-        'employee/pages/my_attendance.html',
-        {'attendances': attendances}
-    )
+    return render(request, 'employee/pages/my_attendance.html', {
+        'attendances': attendances,
+        'csv_uploaded_today': csv_uploaded_today,
+        'today': today
+    })
 
 @login_required
 def employee_attendance_create(request):
     employee = request.user.employee
 
-    if request.method == 'POST':
-        form = AttendanceForm(
-            request.POST,
+    if request.method == "POST":
+        status = request.POST.get("status")
+        check_in_time = request.POST.get("check_in_time")
+        check_out_time = request.POST.get("check_out_time")
+
+        today = timezone.now().date()
+        if Attendance.objects.filter(employee=employee, date=today).exists():
+            messages.error(request, "You have already submitted attendance for today.")
+            return redirect("employee_attendance")
+
+        Attendance.objects.create(
             employee=employee,
-            hide_employee=True
-        )
-        if form.is_valid():
-            attendance = form.save(commit=False)
-            attendance.employee = employee
-            attendance.save()
-            return redirect('employee_attendance')
-    else:
-        form = AttendanceForm(
-            employee=employee,
-            hide_employee=True
+            date=today,
+            status=status,
+            check_in_time=check_in_time if check_in_time else None,
+            check_out_time=check_out_time if check_out_time else None,
         )
 
-    return render(request, 'employee/pages/attendance_form.html', {
-        'form': form,
-        'title': 'Add Attendance'
+        messages.success(request, "Attendance added successfully!")
+        return redirect("employee_attendance")
+
+    return render(request, "employee/pages/attendance_form.html", {
+        "title": "Add Attendance"
     })
 
 class AttendanceForm(forms.ModelForm):
@@ -149,8 +152,24 @@ class AttendanceForm(forms.ModelForm):
             self.fields['employee'].initial = employee
             self.fields['employee'].widget = forms.HiddenInput()
 
+@login_required
+def my_attendance_update(request, attendance_id):
+    attendance = get_object_or_404(Attendance, id=attendance_id, employee=request.user.employee)
 
+    if request.method == 'POST':
+        check_in = request.POST.get('check_in_time')
+        check_out = request.POST.get('check_out_time')
 
+        attendance.check_in_time = check_in if check_in else attendance.check_in_time
+        attendance.check_out_time = check_out if check_out else attendance.check_out_time
+        attendance.save()
+
+        messages.success(request, "Attendance times updated successfully!")
+        return redirect('employee_attendance')
+
+    return render(request, 'employee/pages/my_attendance_update.html', {
+        'attendance': attendance
+    })
 #France
 
 class EmployeeProfileView(LoginRequiredMixin, View):

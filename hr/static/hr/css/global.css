@@ -21,7 +21,7 @@ body {
 .sidebar {
     width: 240px;
     background: rgb(95, 94, 99);
-    padding: 20px;
+    padding: 10px;
     color: white;
     transition: width 0.3s ease, left 0.3s ease;
 }
