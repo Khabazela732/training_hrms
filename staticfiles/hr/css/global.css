@@ -21,7 +21,7 @@ body {
 .sidebar {
     width: 240px;
     background: rgb(95, 94, 99);
-    padding: 20px;
+    padding: 10px;
     color: white;
     transition: width 0.3s ease, left 0.3s ease;
 }
@@ -287,6 +287,180 @@ body.dark-mode .sidebar {
  width: 100%; padding: 10px; background: #0b4c5f; color: white; border: none; cursor: pointer; }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* ===================== EMPLOYEE GRID ===================== */
+.employee-table {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); 
+    gap: 20px;
+}
+
+/* Employee Card */
+.employee-card {
+    display: grid;
+    grid-template-columns: 1fr;
+    background:  #e0e0e0;
+    padding: 20px;
+    border-radius: 12px;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.employee-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 25px rgba(0,0,0,0.15);
+}
+
+/* ===================== CENTER EMPLOYEE ICON ===================== */
+.emp-photo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.emp-photo i {
+    font-size: 64px;
+    color: #0b4c5f;
+    line-height: 1;
+}
+
+.emp-info h3 {
+    margin-bottom: 8px;
+}
+
+.emp-info p,
+.emp-details p,
+.emp-actions p {
+    font-size: 14px;
+    color: black;
+    margin-bottom: 4px;
+}
+
+.page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 18px;
+    flex-wrap: wrap;
+}
+
+.employee-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.employee-actions .btn,
+.employee-actions .btn-view,
+.employee-actions .btn-edit,
+.employee-actions .btn-delete {
+    padding: 4px 10px;
+    font-size: 12px;
+    border-radius: 4px;
+}
+
+.employee-actions .btn i,
+.employee-actions .btn-view i,
+.employee-actions .btn-edit i,
+.employee-actions .btn-delete i {
+    font-size: 12px;
+}
+
+
 /* =====JUST FOR ALERTS AND CONFIRMATION CSS=== */
 .alerts {
     margin-bottom: 16px;
@@ -478,6 +652,112 @@ body.dark-mode .sidebar {
         grid-template-columns: 1fr; 
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* ===================== ATTENDANCE TABLE ===================== */
+/* Table styling */
+.attendance-table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 10px solid #001f4d; /* Navy border */
+    border-radius: 6px; /* Rounded corners */
+    overflow: hidden; /* Ensures corners stay rounded */
+}
+
+/* Table cells */
+.attendance-table td, 
+.attendance-table th {
+    border-bottom: 1px solid #47494d; /* Light divider for rows */
+    padding: 10px;
+}
+
+/* Input, select, textarea styling */
+.attendance-table input, 
+.attendance-table select, 
+.attendance-table textarea {
+    width: 100%;
+    padding: 6px 10px;
+    border: 1px solid #10375e;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.attendance-table input:focus,
+.attendance-table select:focus,
+.attendance-table textarea:focus {
+    outline: none;
+    border-color: #06213b;
+    box-shadow: 0 0 0 2px rgba(0,123,255,.25);
+}
+
+/* Form action buttons */
+.form-actions .btn-primary {
+    background-color: #001a40; /* Navy button */
+    color: #fff;
+    border: none;
+    transition: background 0.3s;
+}
+
+.form-actions .btn-primary:hover {
+    background-color: #0b5ed7;
+}
+
+.form-actions .btn-secondary {
+    background-color: #3d3f41;
+    color: #fff;
+    border: none;
+    transition: background 0.3s;
+}
+
+.form-actions .btn-secondary:hover {
+    background-color: #5a6268;
+}
 /* ===================== STATUS BADGES ===================== */
 .status {
     padding: 3px 8px;          
@@ -565,7 +845,64 @@ body.dark-mode .sidebar {
     background: #e74c3c; 
 }
 
+/* ===================== DEPARTMENTS TABLE LAYOUT ===================== */
+.department-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: linear-gradient(145deg, #f8fafc, #f1f5f9);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    margin-top: 20px;
+}
 
+.department-table thead {
+    background: linear-gradient(135deg, #1e3a4f, #1e3a4f);
+    color: white;
+}
+
+.department-table th {
+    padding: 18px 20px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.department-table td {
+    padding: 18px 20px;
+    border-bottom: 1px solid rgba(27, 46, 54, 0.1);
+    color: #334155;
+}
+
+.department-table tbody tr {
+    background: #ffffff;
+    transition: all 0.3s ease;
+}
+
+/* Icon column styling */
+.department-table .dept-icon {
+    font-size: 24px;
+    color: #0b4c5f;
+    width: 60px;
+    text-align: center;
+}
+
+/* Hover effect */
+.department-table tbody tr:hover {
+    background: linear-gradient(145deg, #e0e7ff, #f0f4ff);
+    transform: scale(1.01);
+    box-shadow: 0 8px 25px rgba(27, 46, 54, 0.15);
+}
+
+/* Header styling */
+.department-table tbody tr h3 {
+    margin: 0;
+    font-size: 18px;
+    color: #1e293b;
+    font-weight: 600;
+}
 
 /* ===================== ACTION BUTTONS ===================== */
 .table-header {

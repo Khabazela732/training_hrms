@@ -12,6 +12,11 @@
         <h1>ALL DEPARTMENTS</h1>
         <a href="{% url 'department_create' %}" class="btn btn-success btn-lg">
             <i class="fas fa-plus"></i> Add New Department</a></div>
+              <div class="btn-group">
+        <a href="{% url 'department_bulk_create' %}" class="btn btn-success btn-lg">
+            <i class="fas fa-plus-square"></i> Bulk Add Departments
+        </a>
+    </div>
     <div class="department-table">
         <table>
             <thead>

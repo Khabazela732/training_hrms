@@ -242,7 +242,6 @@ def bulk_upload_attendance(request):
         if form.is_valid():
             csv_file = request.FILES['file']
 
-            # Ensure CSV file
             if not csv_file.name.endswith('.csv'):
                 messages.error(request, "Please upload a CSV file.")
                 return redirect('attendance')
@@ -256,7 +255,7 @@ def bulk_upload_attendance(request):
             io_string = io.StringIO(data)
             reader = csv.DictReader(io_string)
 
-            today = timezone.localdate()   # safer than timezone.now().date()
+            today = timezone.localdate()
 
             uploaded_employees = []
 
@@ -284,7 +283,6 @@ def bulk_upload_attendance(request):
                 except Employee.DoesNotExist:
                     continue
 
-            # Mark others as absent
             all_employees = Employee.objects.exclude(id__in=uploaded_employees)
 
             for employee in all_employees:
@@ -427,6 +425,53 @@ class DepartmentDeleteView(SuccessMessageMixin, DeleteView):
     template_name = 'hr/pages/department_confirm_delete.html'
     success_url = reverse_lazy('department_list')
     success_message = 'Department deleted successfully!'
+
+class DepartmentBulkCreateView(SuccessMessageMixin, View):
+    template_name = 'hr/pages/department_bulk_form.html'
+    
+    def get(self, request):
+        return render(request, self.template_name)
+    
+    def post(self, request):
+        departments_data = []
+        
+        i = 1
+        while True:
+            name_field = f'dept_name_{i}'
+            desc_field = f'dept_desc_{i}'
+            
+            name = request.POST.get(name_field, '').strip()
+            description = request.POST.get(desc_field, '').strip()
+            
+            if not name:
+                break
+                
+            departments_data.append({
+                'name': name,
+                'description': description
+            })
+            i += 1
+        
+        if not departments_data:
+            messages.error(request, 'Please add at least one department.')
+            return render(request, self.template_name)
+        
+        existing_names = set(Department.objects.values_list('name', flat=True))
+        new_depts_data = [d for d in departments_data if d['name'] not in existing_names]
+        
+        if not new_depts_data:
+            messages.warning(request, 'All department names already exist.')
+            return redirect('department_list')
+        
+        try:
+            departments = [Department(name=d['name'], description=d['description']) 
+                          for d in new_depts_data]
+            Department.objects.bulk_create(departments)
+            messages.success(request, f'Created {len(new_depts_data)} department(s)!')
+        except Exception as e:
+            messages.error(request, f'Error: {str(e)}')
+        
+        return redirect('department_list')
 
 #Zee's code will go here
 class PayrollView(View):

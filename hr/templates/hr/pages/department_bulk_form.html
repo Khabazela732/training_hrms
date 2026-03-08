@@ -1,0 +1,85 @@
+{% extends "hr/base/base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'hr/css/departments.css' %}">
+
+{% endblock %}
+
+{% block content %}
+<section class="content">
+    <div class="form-container">
+        <div class="form-header">
+            <h2>Bulk Add Departments</h2><br>
+            <a href="{% url 'department_list' %}" class="btn btn-secondary">← Back to Departments</a>
+        </div><br>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible">
+                    {{ message }}
+                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <form method="post" class="department-form" id="bulkForm">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label>Bulk Departments Table <span class="required">*</span></label>
+                
+                <div class="bulk-table-container">
+                    <table class="bulk-table" id="departmentTable">
+                        <thead>
+                            <tr>
+                                <th style="width: 60px">Bulk</th>
+                                <th style="width: 40%">Department Name <span class="required">*</span></th>
+                                <th style="width: 50%">Description</th>
+                            </tr>
+                        </thead><br>
+                        <tbody id="departmentRows">
+                            <tr class="table-row" data-row="1">
+                                <td class="row-number">1</td>
+                                <td><input type="text" name="dept_name_1" class="form-control" placeholder="e.g. IT Department" required></td>
+                                <td><input type="text" name="dept_desc_1" class="form-control" placeholder="e.g. Handles IT support..."></td>
+                                <td><button type="button" class="remove-row-btn" style="display:none;" onclick="removeRow(1)">x</button></td>
+                            </tr>
+                        </tbody>
+                    </table><br>
+                    
+                    <div class="action-buttons">
+                        <button type="button" class="add-row-btn" onclick="addRow()">
+                            <i class="fas fa-plus"></i> Add Row
+                        </button>
+                        <span id="rowCount" style="margin-left: 20px; font-weight: 500;">1 row</span>
+                    </div>
+                </div>
+                <br><br>
+                <div class="form-text">
+                    <strong>Instructions:</strong> Fill department names (required). Add more rows with the button above. 
+                    Duplicate names are automatically skipped.
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary btn-lg">
+                    <i class="fas fa-save"></i> Create All Departments
+                </button>
+                <a href="{% url 'department_list' %}" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</section>
+
+{% block extra_js %}
+    <script src="{% static 'hr/js/bulk-departments.js' %}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            updateRemoveButtons();
+            updateRowNumbers();
+        });
+    </script>
+{% endblock %}
+
+{% endblock %}

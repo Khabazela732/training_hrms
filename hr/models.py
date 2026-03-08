@@ -8,6 +8,18 @@ class Department(models.Model):
     def __str__(self):
         return self.name
     
+    @classmethod
+    def bulk_create_departments(cls, department_data):
+        """Bulk create departments from list of dicts"""
+        departments = []
+        for data in department_data:
+            dept = cls(
+                name=data['name'],
+                description=data.get('description', '')
+            )
+            departments.append(dept)
+        return cls.objects.bulk_create(departments)
+    
 class Role(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True)
