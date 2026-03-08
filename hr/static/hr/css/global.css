@@ -1082,8 +1082,6 @@ body.dark-mode .sidebar {
 
 
 /*FORMS FOR EDITING AND FOR CREATION DEPARTMENT CREATION*/
-/* FORM BUTTONS - Match table exactly */
-/* ===================== FORM FIELDS - TABLE THEME ===================== */
 .form-group {
     margin-bottom: 2.5rem;
 }
@@ -1197,7 +1195,7 @@ body.dark-mode .sidebar {
 }
 
 .btn-secondary {
-    background: linear-gradient(135deg, #64748b, #475569);
+    background: linear-gradient(135deg, #64748b, #656d77);
     color: white;
 }
 
