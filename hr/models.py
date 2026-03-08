@@ -108,6 +108,10 @@ class Payroll(models.Model):
     def __str__(self):
         return f"{self.employee} - {self.month}"
 
+    @property
+    def net_pay(self):
+        return (self.basic_salary or 0) + (self.bonus or 0) - (self.deductions or 0)
+
     class Meta:  
         unique_together = ('employee', 'month')
 class Performance(models.Model):

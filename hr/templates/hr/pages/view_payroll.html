@@ -13,9 +13,42 @@
     min-height: 100vh;
     font-family: 'Poppins', sans-serif;
 }
-.payroll-header { text-align: center; margin-bottom: 30px; }
-.payroll-header h1 { font-size: 36px; letter-spacing: 4px; color: #2c3e50; }
-.payroll-header p { font-size: 16px; color: #7f8c8d; }
+
+.payroll-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.payroll-header h1 {
+    font-size: 36px;
+    letter-spacing: 4px;
+    color: #2c3e50;
+}
+
+.payroll-header p {
+    font-size: 16px;
+    color: #7f8c8d;
+}
+
+/* Flash Messages */
+.flash-message {
+    text-align: center;
+    margin-bottom: 20px;
+    font-weight: 600;
+    padding: 10px 20px;
+    border-radius: 10px;
+    display: inline-block;
+}
+
+.flash-message.success {
+    background-color: #dff0d8;
+    color: #27ae60;
+}
+
+.flash-message.error {
+    background-color: #f2dede;
+    color: #c0392b;
+}
 
 /* Export Buttons */
 .export-btn {
@@ -43,6 +76,7 @@ table {
     overflow: hidden;
     box-shadow: 0 5px 15px rgba(0,0,0,0.1);
 }
+
 th {
     background: #34495e;
     color: white;
@@ -50,38 +84,38 @@ th {
     font-weight: bold;
     text-align: center;
 }
+
 td {
     padding: 12px;
     text-align: center;
     border-bottom: 1px solid #ecf0f1;
 }
-.total-salary { font-weight: bold; color: #e67e22; }
 
-
-.flash-message { text-align: center; margin-bottom: 20px; font-weight: 600; }
-.flash-message.success { color: #27ae60; }
-.flash-message.error { color: #c0392b; }
+.total-salary {
+    font-weight: bold;
+    color: #e67e22;
+}
 </style>
 
 <div class="payroll-container">
 
-    
+    <!-- Header -->
     <div class="payroll-header">
         <h1>Monthly Payroll Report</h1>
         <p>HR Management System - Download or Export</p>
     </div>
 
-    
+    <!-- Flash Messages -->
     {% if messages %}
-        <div>
+        <div style="text-align:center; margin-bottom: 20px;">
             {% for message in messages %}
                 <p class="flash-message {{ message.tags }}">{{ message }}</p>
             {% endfor %}
         </div>
     {% endif %}
 
-   
-    <div style="text-align:center; margin-bottom: 20px;">
+    <!-- Export Buttons -->
+    <div style="text-align:center; margin-bottom: 30px;">
         <form method="post" style="display:inline;">
             {% csrf_token %}
             <button type="submit" name="export_pdf" value="1" class="export-btn pdf">
@@ -96,7 +130,7 @@ td {
         </form>
     </div>
 
-    
+    <!-- Payroll Table -->
     <table>
         <thead>
             <tr>
@@ -113,18 +147,21 @@ td {
             <tr>
                 <td>{{ payroll.employee.first_name }} {{ payroll.employee.last_name }}</td>
                 <td>{{ payroll.month }}</td>
-                <td>{{ payroll.basic_salary|floatformat:2 }}</td>
-                <td>{{ payroll.bonus|floatformat:2 }}</td>
-                <td>{{ payroll.deductions|floatformat:2 }}</td>
-                <td class="total-salary">{{ payroll.total_salary|floatformat:2 }}</td>
+                <td>R{{ payroll.basic_salary|floatformat:2 }}</td>
+                <td>R{{ payroll.bonus|floatformat:2 }}</td>
+                <td>R{{ payroll.deductions|floatformat:2 }}</td>
+               <td class="total-salary">R {{ payroll.total_salary|floatformat:2 }}</td>
             </tr>
             {% empty %}
             <tr>
-                <td colspan="6" style="padding:20px; color:gray;">No payroll records yet.</td>
+                <td colspan="6" style="padding:20px; color:gray;">
+                    No payroll records yet.
+                </td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
+
 </div>
 
 {% endblock %}

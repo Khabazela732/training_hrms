@@ -17,6 +17,10 @@ from django.views.generic.detail import DetailView
 from authenication.models import CustomUser
 import csv
 import io
+from authenication.models import CustomUser
+from openpyxl import load_workbook
+import openpyxl
+import pandas as pd
 
 
 class DashboardView(View):
@@ -491,20 +495,37 @@ class AddPayrollView(View):
     def post(self, request):
         employee_id = request.POST.get('employee')
         month = request.POST.get('month')
+
+        # Validate employee
         try:
-            Payroll.objects.create(
-                employee_id=employee_id,
-                basic_salary=float(request.POST.get('basic_salary')),
-                bonus=float(request.POST.get('bonus') or 0),
-                deductions=float(request.POST.get('deductions') or 0),
-                month=month
-            )
-            messages.success(request, "Payroll added successfully.")
-        except IntegrityError:
-            messages.error(
-                request,
-                f"Payroll for this employee in {month} already exists!"
-            )
+            employee = Employee.objects.get(id=employee_id)
+        except (Employee.DoesNotExist, ValueError, TypeError):
+            messages.error(request, "Invalid employee selected.")
+            return redirect('payroll')
+
+        # Convert salaries safely
+        try:
+            basic_salary = float(request.POST.get('basic_salary') or 0)
+            bonus = float(request.POST.get('bonus') or 0)
+            deductions = float(request.POST.get('deductions') or 0)
+        except ValueError:
+            messages.error(request, "Invalid salary, bonus, or deductions value.")
+            return redirect('payroll')
+
+        # Prevent duplicate payroll
+        if Payroll.objects.filter(employee=employee, month=month).exists():
+            messages.error(request, f"Payroll for {employee.first_name} {employee.last_name} in {month} already exists!")
+            return redirect('payroll')
+
+        # Create payroll
+        Payroll.objects.create(
+            employee=employee,
+            basic_salary=basic_salary,
+            bonus=bonus,
+            deductions=deductions,
+            month=month
+        )
+        messages.success(request, "Payroll added successfully.")
         return redirect('payroll')
 
 class EditPayrollView(View):
@@ -546,10 +567,15 @@ class ViewPayrollReport(View):
 
     def get(self, request):
         payrolls = Payroll.objects.select_related('employee').all()
+        # Calculate total_salary
+        for p in payrolls:
+            p.total_salary = (p.basic_salary or 0) + (p.bonus or 0) - (p.deductions or 0)
         return render(request, self.template_name, {'payrolls': payrolls})
 
     def post(self, request):
         payrolls = Payroll.objects.select_related('employee').all()
+        for p in payrolls:
+            p.total_salary = (p.basic_salary or 0) + (p.bonus or 0) - (p.deductions or 0)
 
         if 'export_pdf' in request.POST:
             return self.export_pdf(payrolls)
@@ -559,6 +585,7 @@ class ViewPayrollReport(View):
 
         return render(request, self.template_name, {'payrolls': payrolls})
 
+    # PDF export remains the same, just use p.total_salary instead of recalculating
     def export_pdf(self, payrolls):
         from io import BytesIO
         from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
@@ -574,17 +601,15 @@ class ViewPayrollReport(View):
         elements.append(Paragraph("Monthly Payroll Report", styles['Title']))
         elements.append(Spacer(1, 20))
 
-        
         data = [["Employee", "Month", "Basic Salary", "Bonus", "Deductions", "Total Salary"]]
         for p in payrolls:
-            total_salary = float(p.basic_salary or 0) + float(p.bonus or 0) - float(p.deductions or 0)
             data.append([
                 f"{p.employee.first_name} {p.employee.last_name}",
                 p.month,
                 f"{p.basic_salary:.2f}",
                 f"{p.bonus:.2f}",
                 f"{p.deductions:.2f}",
-                f"{total_salary:.2f}"
+                f"{p.total_salary:.2f}"  # Use total_salary
             ])
 
         table = Table(data, hAlign='LEFT', colWidths=[120, 80, 80, 60, 80, 80])
@@ -600,17 +625,15 @@ class ViewPayrollReport(View):
         ]))
         elements.append(table)
 
-        
+        # Watermark
         def add_watermark(canvas_obj, doc_obj):
             canvas_obj.saveState()
             canvas_obj.setFont('Helvetica-Bold', 40)
-            canvas_obj.setFillColorRGB(0.6, 0.3, 0.8, alpha=0.3)  
-            canvas_obj.drawString(450, 800, "HRMS")  
+            canvas_obj.setFillColorRGB(0.6, 0.3, 0.8, alpha=0.3)
+            canvas_obj.drawString(450, 800, "HRMS")
             canvas_obj.restoreState()
 
-        
         doc.build(elements, onFirstPage=add_watermark, onLaterPages=add_watermark)
-
         buffer.seek(0)
         response = HttpResponse(buffer, content_type='application/pdf')
         response['Content-Disposition'] = 'attachment; filename="monthly_payroll_report.pdf"'
@@ -622,14 +645,13 @@ class ViewPayrollReport(View):
 
         data = []
         for p in payrolls:
-            total_salary = float(p.basic_salary or 0) + float(p.bonus or 0) - float(p.deductions or 0)
             data.append({
                 'Employee': f"{p.employee.first_name} {p.employee.last_name}",
                 'Month': p.month,
                 'Basic Salary': p.basic_salary,
                 'Bonus': p.bonus,
                 'Deductions': p.deductions,
-                'Total Salary': total_salary
+                'Total Salary': p.total_salary
             })
 
         df = pd.DataFrame(data)
@@ -640,17 +662,98 @@ class ViewPayrollReport(View):
         response = HttpResponse(buffer, content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
         response['Content-Disposition'] = 'attachment; filename="monthly_payroll_report.xlsx"'
         return response
-    
-def upload_contract(request, employee_id):
-    employee = get_object_or_404(Employee, id=employee_id)
 
-    if request.method == 'POST':
-        contract_file = request.FILES.get('contract_copy')
-        if contract_file:
-            employee.contract_copy = contract_file
-            employee.save()
-            messages.success(request, "Contract uploaded successfully.")
-        else:
-            messages.error(request, "No file selected for upload.")
-        return redirect('employees')
+ # ================= BULK PAYROLL UPLOAD =================
+def bulk_upload_payroll(request):
+    if request.method != "POST":
+        return redirect('payroll')
 
+    file = request.FILES.get("file")
+    if not file:
+        messages.error(request, "Please upload an Excel file.")
+        return redirect('payroll')
+
+    try:
+        df = pd.read_excel(file)
+    except Exception as e:
+        messages.error(request, f"Failed to read Excel file: {str(e)}")
+        return redirect('payroll')
+
+    # Normalize column names
+    df.columns = df.columns.str.strip().str.lower()
+    required_columns = ["employee_name", "basic_salary", "bonus", "deductions", "month"]
+
+    for col in required_columns:
+        if col not in df.columns:
+            messages.error(request, f"Missing column: {col}")
+            return redirect('payroll')
+
+    success_count = 0
+    for index, row in df.iterrows():
+        employee_name = str(row.get("employee_name", "")).strip()
+        if not employee_name:
+            continue
+
+        try:
+            # Split full name into first + last
+            first, *last = employee_name.split()
+            last = " ".join(last)
+
+            employee = Employee.objects.filter(
+                first_name__iexact=first,
+                last_name__iexact=last
+            ).first()
+
+            if not employee:
+                messages.error(request, f"Row {index+2}: Employee '{employee_name}' not found.")
+                continue
+
+            basic_salary = float(row.get("basic_salary") or 0)
+            bonus = float(row.get("bonus") or 0)
+            deductions = float(row.get("deductions") or 0)
+            month = str(row.get("month") or "").strip()
+
+            # Prevent duplicates
+            if Payroll.objects.filter(employee=employee, month=month).exists():
+                messages.error(request, f"Row {index+2}: Payroll already exists for {employee_name} ({month}).")
+                continue
+
+            Payroll.objects.create(
+                employee=employee,
+                basic_salary=basic_salary,
+                bonus=bonus,
+                deductions=deductions,
+                month=month
+            )
+            success_count += 1
+
+        except Exception as e:
+            messages.error(request, f"Row {index+2}: Invalid data ({str(e)})")
+
+    if success_count:
+        messages.success(request, f"{success_count} payroll record(s) uploaded successfully.")
+    return redirect('payroll')
+# ================= DOWNLOAD PAYROLL TEMPLATE =================
+import openpyxl
+from django.http import HttpResponse
+
+def download_payroll_template(request):
+    workbook = openpyxl.Workbook()
+    sheet = workbook.active
+    sheet.title = "Payroll"
+
+    # ✅ Updated headers to use employee_name
+    headers = ["employee_name", "basic_salary", "bonus", "deductions", "month"]
+    sheet.append(headers)
+
+    # Optional: Pre-fill employee names for convenience
+    for employee in Employee.objects.all():
+        sheet.append([f"{employee.first_name} {employee.last_name}", "", "", "", ""])
+
+    response = HttpResponse(
+        content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
+    response["Content-Disposition"] = "attachment; filename=payroll_template.xlsx"
+
+    workbook.save(response)
+    return response

@@ -25,7 +25,9 @@
                     <td data-label="Salary (R)">R{{ payroll.basic_salary|floatformat:2 }}</td>
                     <td data-label="Bonus (R)"><span class="bonus">R{{ payroll.bonus|floatformat:2 }}</span></td>
                     <td data-label="Deductions (R)"><span class="deductions">R{{ payroll.deductions|floatformat:2 }}</span></td>
-                    <td data-label="Net Pay (R)"><span class="netpay">R{{ payroll.net_pay|floatformat:2 }}</span></td>
+                    <td class="total-salary" style="color:#e67022; font-weight:bold;">
+                            R{{ payroll.total_salary|floatformat:2 }}
+                          </td>
                     <td data-label="Action">
                         <a href="{% url 'download_payroll_pdf' payroll.id %}" class="download-btn">📄 Download PDF</a>
                     </td>
