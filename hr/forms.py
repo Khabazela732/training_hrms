@@ -28,6 +28,9 @@ class PerformanceForm(forms.ModelForm):
         model = Performance
         fields = '__all__'
 
+class PerformanceBulkUploadForm(forms.Form):
+    file = forms.FileField(label="Upload CSV or Excel file")
+
 class EmployeeForm(forms.ModelForm):
     class Meta:
         model = Employee

@@ -1,4 +1,9 @@
 {% extends 'hr/base/base.html' %}
+{% load static %}
+
+{% block head %}
+<link rel="stylesheet" href="{% static 'hr/css/performance.css' %}">
+{% endblock %}
 
 {% block content %}
 
@@ -6,17 +11,27 @@
 
     <div class="page-header">
         <h2>Performance Management</h2>
-        
-        <!-- Search bar under the heading -->
+
+        <!-- Search bar -->
         <form method="GET" class="search-form" style="margin: 10px 0;">
             <input type="text" name="search" placeholder="Search employees..." value="{{ search_query }}" />
             <button type="submit" class="btn btn-secondary">Search</button>
         </form>
 
-        <!-- Add Performance button -->
-        <a href="{% url 'add_performance' %}" class="btn btn-primary" style="float:right;">
-            <i class="fas fa-plus"></i> Add Performance
-        </a>
+        <!-- Action Buttons -->
+        <div style="float:right; margin-bottom:10px;">
+            <a href="{% static 'hr/performance_template.csv' %}" class="btn btn-info">
+                <i class="fas fa-download"></i> Download Template
+            </a>
+
+            <a href="{% url 'bulk_upload_performance' %}" class="btn btn-success">
+                <i class="fas fa-upload"></i> Bulk Upload
+            </a>
+
+            <a href="{% url 'add_performance' %}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Add Performance
+            </a>
+        </div>
     </div>
 
     <table class="performance-table">
@@ -37,15 +52,12 @@
                 <td>{{ performance.employee.first_name }} {{ performance.employee.last_name }}</td>
                 <td>{{ performance.department.name }}</td>
                 <td>{{ performance.role }}</td>
-                <td style="font-weight:600; color:#16a34a;">
+                <td class="rating {% if performance.rating < 3 %}low{% elif performance.rating < 4 %}medium{% endif %}">
                     {{ performance.rating }}/5
                 </td>
-                <td style="white-space: pre-line;">
-                    {{ performance.remarks }}
-                </td>
+                <td class="remarks">{{ performance.remarks }}</td>
                 <td>
                     <a href="{% url 'edit_performance' performance.id %}" class="btn btn-warning">Edit</a>
-
                     <form action="{% url 'delete_performance' performance.id %}" method="POST" style="display:inline;">
                         {% csrf_token %}
                         <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure?');">
@@ -64,7 +76,6 @@
 
     {% if performances.paginator.num_pages > 1 %}
     <div class="pagination">
-
         {% if performances.has_previous %}
         <a href="?page={{ performances.previous_page_number }}" class="page-link">Previous</a>
         {% else %}
@@ -80,7 +91,6 @@
         {% else %}
         <span class="page-link disabled">Next</span>
         {% endif %}
-
     </div>
     {% endif %}
 
