@@ -18,6 +18,8 @@ urlpatterns = [
     path('leave/view/<int:id>/', views.leave_view, name='leave_view'),
     path('leave/update/<int:id>/', views.leave_update, name='leave_update'),
     path('leave/delete/<int:id>/', views.leave_delete, name='leave_delete'),
+    path("leave-list/", views.bulk_leave_list, name="leave-list"),
+    path("bulk-update-leave-status/",views.bulk_update_leave_status, name="bulk_update_leave_status"),
 
     #Mbali's code
     path('attendance/', Attendance_View.as_view(), name='attendance'),

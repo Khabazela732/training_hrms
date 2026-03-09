@@ -1,0 +1,30 @@
+{% extends "hr/base/base.html" %}
+
+{% block content %}
+
+<h2>Bulk Leave Upload</h2>
+
+<a href="{% url 'download_leave_template' %}">
+<button>Download CSV Template</button>
+</a>
+
+<br><br>
+
+<form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <input type="file" name="file" required>
+
+    <button type="submit">Upload Leave File</button>
+
+</form>
+
+<br>
+
+{% if messages %}
+    {% for message in messages %}
+        <p>{{ message }}</p>
+    {% endfor %}
+{% endif %}
+
+{% endblock %}

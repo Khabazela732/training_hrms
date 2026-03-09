@@ -1,70 +1,69 @@
 {% extends "hr/base/base.html" %}
 {% block content %}
-
 <section class="content">
-    <table class="attendance-table">
-        <thead>
-            <tr>
-                <th>Employee</th>
-                <th>Start Date</th>
-                <th>End Date</th>
-                <th>Reason</th>
-                <th>Status</th>
-                <th>Action</th>
-            </tr>
-        </thead>
+    <a href="#"></a>
 
-    <tbody>
-    {% for leave in leaves %}
+<div style="margin-bottom:20px;">
+<a href="{% url 'leave-list' %}"><button>Bulk Leave Approval</button></a>
+</div>
+<table class="attendance-table">
+    <thead>
         <tr>
-            <td>{{ leave.employee.first_name }}</td>
-            <td>{{ leave.start_date }}</td>
-            <td>{{ leave.end_date }}</td>
-            <td>{{ leave.reason }}</td>
-
-            <td>
-                {% if leave.status == "Pending" %}
-                    <button type="button">Pending</button>
-
-                {% elif leave.status == "Approved" %}
-                    <button type="button">Approved</button>
-
-                {% elif leave.status == "Declined" %}
-                    <button type="button">Declined</button>
-                {% endif %}
-            </td>
-
-            <td>
-                <a href="{% url 'create' %}">
-                    <button type="button">Create Leave</button>
-                </a>
-
-                <a href="{% url 'leave_view' leave.id %}">
-                    <button type="button">View</button>
-                </a>
-
-                <a href="{% url 'leave_update' leave.id %}">
-                    <button type="button">Update</button>
-                </a>
-
-                <form action="{% url 'leave_delete' leave.id %}" method="POST" style="display:inline;">
-                    {% csrf_token %}
-                    <button type="submit" onclick="return confirm('Are you sure you want to delete this leave?')">
-                        Delete
-                    </button>
-                </form>
-            </td>
-
+            <th>Employee</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th>Reason</th>
+            <th>Status</th>
+            <th>Action</th>
         </tr>
-    {% empty %}
-        <tr>
-            <td colspan="6">No leave records found.</td>
-        </tr>
-    {% endfor %}
-    </tbody>
+    </thead>
+
+<tbody>
+{% for leave in leaves %}
+    <tr>
+        <td>{{ leave.employee.first_name }}</td>
+        <td>{{ leave.start_date }}</td>
+        <td>{{ leave.end_date }}</td>
+        <td>{{ leave.reason }}</td>
+
+        <td>
+            {% if leave.status == "Pending" %}
+                <button type="button">Pending</button>
+
+            {% elif leave.status == "Approved" %}
+                <button type="button">Approved</button>
+
+            {% elif leave.status == "Declined" %}
+                <button type="button">Declined</button>
+            {% endif %}
+        </td>
+
+        <td>
+            <a href="{% url 'leave_view' leave.id %}">
+                <button type="button">View</button>
+            </a>
+
+            <a href="{% url 'leave_update' leave.id %}">
+                <button type="button">Update</button>
+            </a>
+
+            <form action="{% url 'leave_delete' leave.id %}" method="POST" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" onclick="return confirm('Are you sure you want to delete this leave?')">
+                    Delete
+                </button>
+            </form>
+        </td>
+
+    </tr>
+{% empty %}
+    <tr>
+        <td colspan="6">No leave records found.</td>
+    </tr>
+{% endfor %}
+</tbody>
 
 </table>
 
 </section>
-
 {% endblock %}

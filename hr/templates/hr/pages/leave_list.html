@@ -1,0 +1,67 @@
+{% extends "hr/base/base.html" %}
+{% block content %}
+
+<section class="content">
+
+<form method="POST" action="{% url 'bulk_update_leave_status' %}">
+{% csrf_token %}
+
+<table class="attendance-table">
+<thead>
+<tr>
+<th>Select</th>
+<th>Employee</th>
+<th>Start Date</th>
+<th>End Date</th>
+<th>Reason</th>
+<th>Status</th>
+</tr>
+</thead>
+
+<tbody>
+
+{% for leave in leaves %}
+
+<tr>
+
+<td>
+<input type="checkbox" name="leave_ids" value="{{ leave.id }}">
+</td>
+
+<td>{{ leave.employee.first_name }}</td>
+<td>{{ leave.start_date }}</td>
+<td>{{ leave.end_date }}</td>
+<td>{{ leave.reason }}</td>
+<td>{{ leave.status }}</td>
+
+</tr>
+
+{% empty %}
+
+<tr>
+<td colspan="6">No Pending Leave Requests</td>
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+<br>
+
+<button type="submit" name="action" value="Approved">
+Approve Selected
+</button>
+
+<button type="submit" name="action" value="Declined">
+Decline Selected
+</button>
+
+<a href="{% url 'leave' %}"><button type="button">Cancel</button></a>
+
+</form>
+
+</section>
+
+{% endblock %}

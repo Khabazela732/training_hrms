@@ -23,7 +23,7 @@ import openpyxl
 import pandas as pd
 from django.contrib.auth.models import User
 from django.contrib.auth import get_user_model
-
+from django.contrib.auth.decorators import login_required
 
 class DashboardView(View):
     def get(self, request):
@@ -150,6 +150,41 @@ def leave_delete(request, id):
         return redirect('leave')
 
     return redirect('leave')
+
+@login_required
+def bulk_update_leave_status(request):
+
+    if request.method == "POST":
+
+        leave_ids = request.POST.getlist("leave_ids")
+        action = request.POST.get("action")
+
+        if not leave_ids:
+            messages.error(request, "No leave requests selected")
+            return redirect("leave-list")
+
+        Leave.objects.filter(id__in=leave_ids).update(status=action)
+
+        messages.success(
+            request,
+            f"{len(leave_ids)} leave requests updated to {action}"
+        )
+
+        return redirect("leave-list")
+
+
+@login_required
+def bulk_leave_list(request):
+
+    leaves = Leave.objects.filter(status="Pending")
+
+    return render(
+        request,
+        "hr/pages/leave_list.html",
+        {
+            "leaves": leaves
+        }
+    )
 
 #Mbali's code
 
