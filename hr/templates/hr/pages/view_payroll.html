@@ -2,110 +2,20 @@
 {% load static %}
 {% block content %}
 
-<!-- Google Fonts & Font Awesome -->
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 <style>
-.payroll-container {
-    padding: 40px;
-    background: linear-gradient(to bottom right, #f4f6f8, #dbe9f4);
-    min-height: 100vh;
-    font-family: 'Poppins', sans-serif;
-}
 
-.payroll-header {
-    text-align: center;
-    margin-bottom: 30px;
-}
-
-.payroll-header h1 {
-    font-size: 36px;
-    letter-spacing: 4px;
-    color: #2c3e50;
-}
-
-.payroll-header p {
-    font-size: 16px;
-    color: #7f8c8d;
-}
-
-/* Flash Messages */
-.flash-message {
-    text-align: center;
-    margin-bottom: 20px;
-    font-weight: 600;
-    padding: 10px 20px;
-    border-radius: 10px;
-    display: inline-block;
-}
-
-.flash-message.success {
-    background-color: #dff0d8;
-    color: #27ae60;
-}
-
-.flash-message.error {
-    background-color: #f2dede;
-    color: #c0392b;
-}
-
-/* Export Buttons */
-.export-btn {
-    padding: 12px 25px;
-    border-radius: 10px;
-    color: white;
-    text-decoration: none;
-    font-weight: bold;
-    margin-right: 10px;
-    border: none;
-    cursor: pointer;
-    transition: 0.3s;
-}
-.export-btn.pdf { background: #8e44ad; }
-.export-btn.pdf:hover { background: #9b59b6; transform: scale(1.05); }
-.export-btn.excel { background: #27ae60; }
-.export-btn.excel:hover { background: #2ecc71; transform: scale(1.05); }
-
-/* Table */
-table {
-    width: 100%;
-    border-collapse: collapse;
-    background: white;
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-}
-
-th {
-    background: #34495e;
-    color: white;
-    padding: 12px;
-    font-weight: bold;
-    text-align: center;
-}
-
-td {
-    padding: 12px;
-    text-align: center;
-    border-bottom: 1px solid #ecf0f1;
-}
-
-.total-salary {
-    font-weight: bold;
-    color: #e67e22;
-}
 </style>
 
 <div class="payroll-container">
 
-    <!-- Header -->
     <div class="payroll-header">
         <h1>Monthly Payroll Report</h1>
         <p>HR Management System - Download or Export</p>
     </div>
 
-    <!-- Flash Messages -->
     {% if messages %}
         <div style="text-align:center; margin-bottom: 20px;">
             {% for message in messages %}
@@ -114,7 +24,6 @@ td {
         </div>
     {% endif %}
 
-    <!-- Export Buttons -->
     <div style="text-align:center; margin-bottom: 30px;">
         <form method="post" style="display:inline;">
             {% csrf_token %}
@@ -130,7 +39,6 @@ td {
         </form>
     </div>
 
-    <!-- Payroll Table -->
     <table>
         <thead>
             <tr>

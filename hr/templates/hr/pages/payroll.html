@@ -5,195 +5,10 @@
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-<style>
-/* ====== Payroll Container ====== */
-.payroll-container {
-    padding: 40px;
-    background: linear-gradient(to bottom right, #f4f6f8, #dbe9f4);
-    min-height: 100vh;
-    font-family: 'Poppins', sans-serif;
-}
 
-/* ====== Header ====== */
-.payroll-header {
-    text-align: center;
-    margin-bottom: 40px;
-}
-
-.payroll-header h1 {
-    font-size: 42px;
-    letter-spacing: 6px;
-    color: #2c3e50;
-}
-
-/* ====== Stats Cards ====== */
-.stats-cards {
-    display: flex;
-    gap: 20px;
-    justify-content: center;
-    margin-bottom: 30px;
-}
-
-.card {
-    flex: 1;
-    max-width: 250px;
-    padding: 25px 20px;
-    border-radius: 15px;
-    color: white;
-    text-align: center;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-}
-
-.employees-card { background: linear-gradient(135deg, #1abc9c, #16a085); }
-.records-card { background: linear-gradient(135deg, #3498db, #2980b9); }
-
-/* ====== Messages ====== */
-.message-box {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 15px;
-    border-radius: 8px;
-    max-width: 400px;
-    margin: 0 auto 20px auto;
-    font-size: 14px;
-}
-
-.message-success {
-    background-color: #d4edda;
-    color: #155724;
-    border: 1px solid #c3e6cb;
-}
-
-.message-error {
-    background-color: #f8d7da;
-    color: #721c24;
-    border: 1px solid #f5c6cb;
-}
-
-/* ====== View Report Button ====== */
-.view-report-btn {
-    padding: 12px 25px;
-    background: linear-gradient(135deg, #8e44ad, #9b59b6);
-    color: white;
-    border-radius: 10px;
-    text-decoration: none;
-    font-weight: bold;
-    display: inline-block;
-    transition: 0.3s;
-}
-
-.view-report-btn:hover {
-    transform: scale(1.05);
-    background: linear-gradient(135deg, #9b59b6, #8e44ad);
-}
-
-/* ====== Bulk Upload / Download ====== */
-.bulk-upload-btns {
-    margin-bottom: 30px;
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: center;
-}
-
-.bulk-btn {
-    padding: 8px 18px;
-    border-radius: 8px;
-    border: none;
-    font-weight: bold;
-    cursor: pointer;
-    font-size: 14px;
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    transition: 0.3s;
-}
-
-.bulk-btn:hover { transform: scale(1.05); }
-
-.bulk-upload-btns a.bulk-btn { background-color: #27ae60; color: white; }
-.bulk-upload-btns button.bulk-btn { background-color: #2980b9; color: white; }
-
-.bulk-upload-btns input[type="file"] {
-    padding: 6px 8px;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-    font-size: 14px;
-}
-
-/* ====== Form ====== */
-form.payroll-form {
-    background: white;
-    padding: 25px;
-    border-radius: 15px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-    margin-bottom: 40px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 15px;
-    justify-content: center;
-}
-
-form.payroll-form select, form.payroll-form input {
-    padding: 10px;
-    border-radius: 10px;
-    border: 1px solid #ccc;
-    min-width: 180px;
-}
-
-form.payroll-form button {
-    padding: 10px 25px;
-    border-radius: 10px;
-    border: none;
-    background: #27ae60;
-    color: white;
-    font-weight: bold;
-}
-
-/* ====== Table ====== */
-table {
-    width: 100%;
-    border-collapse: collapse;
-    background: white;
-    border-radius: 15px;
-    overflow: hidden;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-}
-
-th {
-    background: #34495e;
-    color: white;
-    padding: 15px;
-}
-
-td {
-    padding: 15px;
-    text-align: center;
-    border-bottom: 1px solid #ecf0f1;
-}
-
-.total-salary { font-weight: bold; color: #e67e22; }
-
-td a, td button {
-    padding: 6px 12px;
-    border-radius: 8px;
-    font-size: 12px;
-    text-decoration: none;
-    border: none;
-    cursor: pointer;
-}
-
-td a { background: #2980b9; color: white; }
-td button { background: #c0392b; color: white; }
-
-</style>
 
 <div class="payroll-container">
 
-    <!-- ====== Messages ====== -->
     {% if messages %}
         {% for message in messages %}
             <div class="message-box {% if message.tags == 'success' %}message-success{% else %}message-error{% endif %}">
@@ -207,32 +22,33 @@ td button { background: #c0392b; color: white; }
         {% endfor %}
     {% endif %}
 
-    <!-- ====== Header ====== -->
     <div class="payroll-header">
         <h1>P A Y R O L L</h1>
         <p>HR Management System - Salary Overview</p>
     </div>
 
-    <!-- ====== Stats ====== -->
-    <div class="stats-cards">
-        <div class="card employees-card">
-            <p>Total Employees</p>
-            <h2>{{ total_employees }}</h2>
-        </div>
-        <div class="card records-card">
-            <p>Total Payroll Records</p>
-            <h2>{{ total_payroll }}</h2>
-        </div>
+ <div class="stats-cards">
+
+    <div class="card employees-card">
+        <i class="fa fa-users card-icon"></i>
+        <p>Total Employees</p>
+        <h2>{{ total_employees }}</h2>
     </div>
 
-    <!-- ====== View Report Button ====== -->
+    <div class="card records-card">
+        <i class="fa fa-money-bill-wave card-icon"></i>
+        <p>Total Payroll Records</p>
+        <h2>{{ total_payroll }}</h2>
+    </div>
+
+</div>
+
     <div style="text-align:center; margin-bottom:30px;">
         <a href="{% url 'view_payroll_report' %}" class="view-report-btn">
             <i class="fa fa-chart-line"></i> View & Export Payroll Report
         </a>
     </div>
 
-    <!-- ====== Bulk Upload / Download Section ====== -->
     <div class="bulk-upload-btns">
         <a href="{% url 'download-payroll-template' %}" class="bulk-btn">
             <i class="fa fa-download"></i> Download Template
@@ -247,7 +63,6 @@ td button { background: #c0392b; color: white; }
         </form>
     </div>
 
-    <!-- ====== Add Payroll Form ====== -->
     <form method="POST" action="{% url 'add_payroll' %}" class="payroll-form">
         {% csrf_token %}
         <select name="employee" required>
@@ -268,7 +83,6 @@ td button { background: #c0392b; color: white; }
         </button>
     </form>
 
-    <!-- ====== Payroll Table ====== -->
     <table>
         <thead>
             <tr>

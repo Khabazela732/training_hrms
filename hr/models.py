@@ -49,8 +49,6 @@ class Employee(models.Model):
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
 
-
-
 class Leave(models.Model):
 
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
@@ -114,6 +112,7 @@ class Payroll(models.Model):
 
     class Meta:  
         unique_together = ('employee', 'month')
+
 class Performance(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
     department = models.ForeignKey(Department, on_delete=models.CASCADE)  

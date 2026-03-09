@@ -3,7 +3,7 @@ from django.template import loader
 from django.http import HttpResponse
 from django.views import View
 from psycopg2 import IntegrityError
-from .models import Employee, Department, Leave, Attendance, Performance, Payroll
+from .models import Employee, Department, Leave, Attendance, Performance, Payroll, Role
 from .forms import LeaveForm, EmployeeForm
 from django.utils import timezone
 from .forms import AttendanceForm, PerformanceForm, AttendanceUploadForm
@@ -21,6 +21,8 @@ from authenication.models import CustomUser
 from openpyxl import load_workbook
 import openpyxl
 import pandas as pd
+from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 
 
 class DashboardView(View):
@@ -98,10 +100,9 @@ class LeaveListView(View):
         }
         return HttpResponse(template.render(context, request))
 
-# LIST ALL LEAVES
 def leave_list(request):
 
-    leaves = Leave.objects.all()   # Fetch all records from database
+    leaves = Leave.objects.all()
 
     context = {
         "leaves": leaves
@@ -110,7 +111,6 @@ def leave_list(request):
     return render(request, "hr/pages/leave.html", context)
 
 
-# CREATE LEAVE
 def leave_create(request):
     if request.method == "POST":
         form = LeaveForm(request.POST)
@@ -123,13 +123,11 @@ def leave_create(request):
     return render(request, "hr/pages/create.html", {"form": form})
 
 
-# VIEW LEAVE DETAILS
 def leave_view(request, id):
     leave = get_object_or_404(Leave, id=id)
     return render(request, "hr/pages/leave_view.html", {"leave": leave})
 
 
-# UPDATE LEAVE
 def leave_update(request, id):
     leave = get_object_or_404(Leave, id=id)
 
@@ -144,7 +142,6 @@ def leave_update(request, id):
     return render(request, "hr/pages/leave_update.html", {"form": form})
 
 
-# DELETE LEAVE
 def leave_delete(request, id):
     leave = get_object_or_404(Leave, id=id)
 
@@ -336,7 +333,6 @@ def performance_list(request):
         'department'
     ).order_by('-rating', '-id')
 
-    # Filter by employee first or last name if search query is provided
     if search_query:
         performance_qs = performance_qs.filter(
             Q(employee__first_name__icontains=search_query) |
@@ -349,11 +345,10 @@ def performance_list(request):
 
     return render(request, 'hr/pages/performance.html', {
         'performances': performances,
-        'search_query': search_query  # Pass the current search term back to template
+        'search_query': search_query
     })
 
 
-# ADD PERFORMANCE
 def add_performance(request):
     if request.method == 'POST':
         form = PerformanceForm(request.POST)
@@ -370,7 +365,6 @@ def add_performance(request):
     })
 
 
-# EDIT PERFORMANCE
 def edit_performance(request, pk):
     performance = get_object_or_404(Performance, pk=pk)
 
@@ -390,7 +384,6 @@ def edit_performance(request, pk):
         'title': 'Edit Performance'
     })
 
-# DELETE PERFORMANCE
 def delete_performance(request, pk):
     performance = get_object_or_404(Performance, pk=pk)
 
@@ -496,14 +489,12 @@ class AddPayrollView(View):
         employee_id = request.POST.get('employee')
         month = request.POST.get('month')
 
-        # Validate employee
         try:
             employee = Employee.objects.get(id=employee_id)
         except (Employee.DoesNotExist, ValueError, TypeError):
             messages.error(request, "Invalid employee selected.")
             return redirect('payroll')
 
-        # Convert salaries safely
         try:
             basic_salary = float(request.POST.get('basic_salary') or 0)
             bonus = float(request.POST.get('bonus') or 0)
@@ -512,12 +503,10 @@ class AddPayrollView(View):
             messages.error(request, "Invalid salary, bonus, or deductions value.")
             return redirect('payroll')
 
-        # Prevent duplicate payroll
         if Payroll.objects.filter(employee=employee, month=month).exists():
             messages.error(request, f"Payroll for {employee.first_name} {employee.last_name} in {month} already exists!")
             return redirect('payroll')
 
-        # Create payroll
         Payroll.objects.create(
             employee=employee,
             basic_salary=basic_salary,
@@ -567,7 +556,6 @@ class ViewPayrollReport(View):
 
     def get(self, request):
         payrolls = Payroll.objects.select_related('employee').all()
-        # Calculate total_salary
         for p in payrolls:
             p.total_salary = (p.basic_salary or 0) + (p.bonus or 0) - (p.deductions or 0)
         return render(request, self.template_name, {'payrolls': payrolls})
@@ -585,7 +573,6 @@ class ViewPayrollReport(View):
 
         return render(request, self.template_name, {'payrolls': payrolls})
 
-    # PDF export remains the same, just use p.total_salary instead of recalculating
     def export_pdf(self, payrolls):
         from io import BytesIO
         from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
@@ -609,7 +596,7 @@ class ViewPayrollReport(View):
                 f"{p.basic_salary:.2f}",
                 f"{p.bonus:.2f}",
                 f"{p.deductions:.2f}",
-                f"{p.total_salary:.2f}"  # Use total_salary
+                f"{p.total_salary:.2f}"
             ])
 
         table = Table(data, hAlign='LEFT', colWidths=[120, 80, 80, 60, 80, 80])
@@ -625,7 +612,6 @@ class ViewPayrollReport(View):
         ]))
         elements.append(table)
 
-        # Watermark
         def add_watermark(canvas_obj, doc_obj):
             canvas_obj.saveState()
             canvas_obj.setFont('Helvetica-Bold', 40)
@@ -663,7 +649,6 @@ class ViewPayrollReport(View):
         response['Content-Disposition'] = 'attachment; filename="monthly_payroll_report.xlsx"'
         return response
 
- # ================= BULK PAYROLL UPLOAD =================
 def bulk_upload_payroll(request):
     if request.method != "POST":
         return redirect('payroll')
@@ -679,7 +664,6 @@ def bulk_upload_payroll(request):
         messages.error(request, f"Failed to read Excel file: {str(e)}")
         return redirect('payroll')
 
-    # Normalize column names
     df.columns = df.columns.str.strip().str.lower()
     required_columns = ["employee_name", "basic_salary", "bonus", "deductions", "month"]
 
@@ -695,7 +679,6 @@ def bulk_upload_payroll(request):
             continue
 
         try:
-            # Split full name into first + last
             first, *last = employee_name.split()
             last = " ".join(last)
 
@@ -713,7 +696,6 @@ def bulk_upload_payroll(request):
             deductions = float(row.get("deductions") or 0)
             month = str(row.get("month") or "").strip()
 
-            # Prevent duplicates
             if Payroll.objects.filter(employee=employee, month=month).exists():
                 messages.error(request, f"Row {index+2}: Payroll already exists for {employee_name} ({month}).")
                 continue
@@ -733,7 +715,7 @@ def bulk_upload_payroll(request):
     if success_count:
         messages.success(request, f"{success_count} payroll record(s) uploaded successfully.")
     return redirect('payroll')
-# ================= DOWNLOAD PAYROLL TEMPLATE =================
+
 import openpyxl
 from django.http import HttpResponse
 
@@ -742,11 +724,9 @@ def download_payroll_template(request):
     sheet = workbook.active
     sheet.title = "Payroll"
 
-    # ✅ Updated headers to use employee_name
     headers = ["employee_name", "basic_salary", "bonus", "deductions", "month"]
     sheet.append(headers)
 
-    # Optional: Pre-fill employee names for convenience
     for employee in Employee.objects.all():
         sheet.append([f"{employee.first_name} {employee.last_name}", "", "", "", ""])
 
@@ -757,3 +737,68 @@ def download_payroll_template(request):
 
     workbook.save(response)
     return response
+
+User = get_user_model()
+
+def bulk_upload_performance(request):
+    if request.method == "POST":
+        csv_file = request.FILES['file']
+        if not csv_file.name.endswith('.csv'):
+            messages.error(request, "File must be CSV")
+            return redirect('bulk_upload_performance')
+
+        try:
+            decoded_file = csv_file.read().decode('utf-8-sig').splitlines()
+            delimiter = ';' if ';' in decoded_file[0] else ','
+            reader = csv.DictReader(decoded_file, delimiter=delimiter)
+
+            print("CSV headers found:", reader.fieldnames)
+            for row in reader:
+                try:
+                    department, _ = Department.objects.get_or_create(
+                        name=row['department'].strip()
+                    )
+
+                    role_obj, _ = Role.objects.get_or_create(
+                        name=row['role'].strip()
+                    )
+
+                    username = f"{row['employee_name'].strip().lower()}_{row['employee_surname'].strip().lower()}"
+                    user_email = f"{username}@example.com"
+                    user, _ = User.objects.get_or_create(
+                        username=username,
+                        defaults={'email': user_email}
+                    )
+
+                    employee_email = f"{username}@example.com"
+                    employee, _ = Employee.objects.get_or_create(
+                        user=user,
+                        first_name=row['employee_name'].strip(),
+                        last_name=row['employee_surname'].strip(),
+                        defaults={
+                            'department': department,
+                            'role': role_obj,
+                            'email': employee_email
+                        }
+                    )
+
+                    Performance.objects.create(
+                        employee=employee,
+                        department=department,
+                        role=role_obj,
+                        rating=int(row['rating']),
+                        remarks=row['remarks'].strip()
+                    )
+
+                except KeyError as ke:
+                    print(f"Missing column in CSV: {ke}")
+                except Exception as e:
+                    print("Error:", e)
+
+            messages.success(request, "Performance records uploaded successfully")
+        except Exception as e:
+            messages.error(request, f"Error reading CSV: {e}")
+        return redirect('performance')
+    return render(request, 'hr/pages/performance_bulk_upload.html')
+
+    
