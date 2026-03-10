@@ -37,6 +37,10 @@ from docx import Document
 from docx.shared import RGBColor, Pt
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
+from openpyxl import Workbook
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
+from decimal import Decimal
 
 class DashboardView(View):
     def get(self, request):
@@ -874,7 +878,7 @@ def bulk_upload_payroll(request):
     return redirect('payroll')
 
 
-
+User = get_user_model()
 
 def bulk_upload_performance(request):
     if request.method == "POST":
@@ -937,7 +941,100 @@ def bulk_upload_performance(request):
         return redirect('performance')
     return render(request, 'hr/pages/performance_bulk_upload.html')
 
+def export_performance(request, export_format):
+    performances = Performance.objects.select_related('employee', 'department').all()
 
+    if export_format == 'excel':
+        # Excel export
+        response = HttpResponse(
+            content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        )
+        response['Content-Disposition'] = 'attachment; filename=performance.xlsx'
+
+        wb = Workbook()
+        ws = wb.active
+        ws.title = "Performance"
+
+        ws.append(['Employee', 'Department', 'Role', 'Rating', 'Remarks'])
+
+        for perf in performances:
+            ws.append([
+                f"{perf.employee.first_name} {perf.employee.last_name}",
+                perf.department.name,
+                perf.role,
+                str(perf.rating),
+                perf.remarks
+            ])
+
+        wb.save(response)
+        return response
+
+    elif export_format == 'pdf':
+        response = HttpResponse(content_type='application/pdf')
+        response['Content-Disposition'] = 'attachment; filename="performance.pdf"'
+
+        p = canvas.Canvas(response, pagesize=letter)
+        width, height = letter
+        y = height - 50
+
+        p.setFont("Helvetica-Bold", 14)
+        p.drawString(50, y, "Performance Records")
+        y -= 30
+        p.setFont("Helvetica", 12)
+
+        headers = ['Employee', 'Department', 'Role', 'Rating', 'Remarks']
+        p.drawString(50, y, ' | '.join(headers))
+        y -= 20
+
+        for perf in performances:
+            row = [
+                f"{perf.employee.first_name} {perf.employee.last_name}",
+                perf.department.name,
+                perf.role,
+                str(perf.rating),
+                perf.remarks
+            ]
+            p.drawString(50, y, ' | '.join(row))
+            y -= 20
+            if y < 50:
+                p.showPage()
+                y = height - 50
+
+        p.showPage()
+        p.save()
+        return response
+
+    elif export_format == 'word':
+        response = HttpResponse(
+            content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+        )
+        response['Content-Disposition'] = 'attachment; filename="performance.docx"'
+
+        doc = Document()
+        doc.add_heading('Performance Records', 0)
+
+        table = doc.add_table(rows=1, cols=5)
+        hdr_cells = table.rows[0].cells
+        hdr_cells[0].text = 'Employee'
+        hdr_cells[1].text = 'Department'
+        hdr_cells[2].text = 'Role'
+        hdr_cells[3].text = 'Rating'
+        hdr_cells[4].text = 'Remarks'
+
+        for perf in performances:
+            row_cells = table.add_row().cells
+            row_cells[0].text = f"{perf.employee.first_name} {perf.employee.last_name}"
+            row_cells[1].text = perf.department.name
+            row_cells[2].text = perf.role
+            row_cells[3].text = str(perf.rating)
+            row_cells[4].text = perf.remarks
+
+        doc.save(response)
+        return response
+
+    else:
+        messages.error(request, "Invalid export format")
+        return redirect('performance')
 
 
 

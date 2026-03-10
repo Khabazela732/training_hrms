@@ -39,6 +39,7 @@ urlpatterns = [
     path('performance/<int:pk>/edit/', views.edit_performance, name='edit_performance'),
     path('performance/<int:pk>/delete/', views.delete_performance, name='delete_performance'),
     path('performance/bulk-upload/', views.bulk_upload_performance, name='bulk_upload_performance'),
+    path('performance/export/<str:export_format>/', views.export_performance, name='export_performance'),
 
     #Senzo's code
     path('employees/', EmployeesView.as_view(), name='employees'),
