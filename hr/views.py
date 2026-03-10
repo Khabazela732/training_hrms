@@ -908,14 +908,14 @@ def bulk_upload_performance(request):
 
 
 
-    class EmployeeProfilePicureView(View):
+
+class EmployeeProfilePicureView(View):
+    def get(self, request, pk):
         employee = get_object_or_404(Employee, pk=pk)
-                 
         context = {
-            
             'form': EmployeeProfileForm(instance=employee),
         }
-        
+        return render(request, 'hr/pages/profile.html', context)
 
     def post(self, request, pk):
         employee = get_object_or_404(Employee, pk=pk)
@@ -935,7 +935,6 @@ def bulk_upload_performance(request):
             return redirect('employee_profile', pk=employee.pk)
 
         context = {
-            
             'form': form,
             'error': form.errors,
         }
@@ -1032,3 +1031,46 @@ class EmployeeBulkUploadView(View):
             'results': results
         })
 
+class export_employee_profileView(View):
+    def get(self, request):
+        employees = Employee.objects.select_related('user', 'department', 'role').all()
+        if request.GET.get('format') == 'pdf':
+            response = HttpResponse(content_type='application/pdf')
+            response['Content-Disposition'] = 'attachment; filename="employee_profiles.pdf"'
+
+            p = canvas.Canvas(response)
+            y = 800
+            p.setFont('Helvetica-Bold', 16)
+            p.drawString(200, y, 'Employee Profiles')
+            y -= 30
+            p.setFont('Helvetica', 11)
+
+            for employee in employees:
+                full_name = f"{employee.first_name} {employee.last_name}".strip()
+                email = employee.email or (employee.user.email if employee.user else "")
+                department = employee.department.name if employee.department else ""
+                role = employee.role.name if employee.role else ""
+
+                lines = [
+                    f"Name: {full_name}",
+                    f"Email: {email}",
+                    f"Department: {department}",
+                    f"Role: {role}",
+                    ""
+                ]
+
+                for line in lines:
+                    if y <= 60:
+                        p.showPage()
+                        y = 800
+                        p.setFont('Helvetica', 11)
+                    p.drawString(50, y, line)
+                    y -= 18
+
+            p.save()
+            return response
+
+        context = {
+            'employees': employees
+        }
+        return render(request, 'hr/pages/export_employee_profile.html', context)
