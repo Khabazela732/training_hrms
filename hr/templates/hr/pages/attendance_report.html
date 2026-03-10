@@ -1,0 +1,38 @@
+{% extends 'hr/base/base.html' %}
+
+{% block title %}Attendance Report{% endblock %}
+
+{% block content %}
+
+<h3>Attendance Report</h3>
+
+<div style="margin-bottom:20px;">
+    <a href="{% url 'export_attendance_excel' %}" class="btn-add-attendance">Export to Excel</a>
+    <a href="{% url 'export_attendance_pdf' %}" class="btn-add-attendance">Export to PDF</a>
+</div>
+
+<table class="attendance-table">
+    <thead>
+        <tr>
+            <th>Employee</th>
+            <th>Date</th>
+            <th>Status</th>
+            <th>Check In</th>
+            <th>Check Out</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for attendance in attendances %}
+        <tr>
+            <td>{{ attendance.employee.first_name }} {{ attendance.employee.last_name }}</td>
+            <td>{{ attendance.date }}</td>
+            <td>{{ attendance.status }}</td>
+            <td>{{ attendance.check_in_time|default:"--:--" }}</td>
+            <td>{{ attendance.check_out_time|default:"--:--" }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

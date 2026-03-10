@@ -22,6 +22,7 @@ import csv
 import io
 from authenication.models import CustomUser
 from openpyxl import load_workbook
+from reportlab.pdfgen import canvas
 import openpyxl
 import pandas as pd
 from django.contrib.auth.models import User
@@ -353,6 +354,65 @@ def attendance_bulk_delete(request):
         else:
             messages.error(request, "No records selected.")
     return redirect('attendance')
+
+def attendance_report(request):
+    attendances = Attendance.objects.select_related('employee').all().order_by('-date')
+
+    return render(request, 'hr/pages/attendance_report.html', {
+        'attendances': attendances
+    })
+
+def export_attendance_excel(request):
+    attendances = Attendance.objects.select_related('employee').all()
+
+    workbook = openpyxl.Workbook()
+    sheet = workbook.active
+    sheet.title = "Attendance Report"
+
+    sheet.append(["Employee", "Date", "Status", "Check In", "Check Out"])
+
+    for attendance in attendances:
+        sheet.append([
+            f"{attendance.employee.first_name} {attendance.employee.last_name}",
+            str(attendance.date),
+            attendance.status,
+            str(attendance.check_in_time),
+            str(attendance.check_out_time)
+        ])
+
+    response = HttpResponse(
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    )
+
+    response['Content-Disposition'] = 'attachment; filename=attendance_report.xlsx'
+
+    workbook.save(response)
+
+    return response
+
+def export_attendance_pdf(request):
+
+    attendances = Attendance.objects.select_related('employee').all()
+
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="attendance_report.pdf"'
+
+    p = canvas.Canvas(response)
+
+    y = 800
+    p.drawString(200, y, "Attendance Report")
+
+    y -= 40
+
+    for attendance in attendances:
+        text = f"{attendance.employee.first_name} {attendance.employee.last_name} | {attendance.date} | {attendance.status}"
+        p.drawString(50, y, text)
+        y -= 20
+
+    p.showPage()
+    p.save()
+
+    return response
 
 #Lusanda code will go here
 
