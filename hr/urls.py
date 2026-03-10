@@ -11,6 +11,7 @@ urlpatterns = [
     path('employees/<int:pk>/edit/', EmployeeUpdateView.as_view(), name='employee_update'),
     path('employees/<int:pk>/delete/', EmployeeDeleteView.as_view(), name='employee_delete'),
     path('leaves/', LeaveListView.as_view(), name='leave-list'),
+    path('employees/bulk-upload/', views.EmployeeBulkUploadView.as_view(), name='employee_bulk_upload'),
     
     # Sethu's code
     path('leave/', views.leave_list, name='leave'),

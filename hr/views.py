@@ -2,8 +2,11 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.template import loader
 from django.http import HttpResponse
 from django.views import View
-from psycopg2 import IntegrityError
-from .models import Employee, Department, Leave, Attendance, Performance, Payroll, Role
+import csv
+from io import TextIOWrapper
+from django.db import IntegrityError, transaction
+from .models import Employee, Department, Role, Leave, Attendance, Performance, Payroll
+from .forms import LeaveForm, EmployeeForm, BulkEmployeeUploadForm
 from .forms import LeaveForm, EmployeeForm
 from django.utils import timezone
 from .forms import AttendanceForm, PerformanceForm, AttendanceUploadForm
@@ -24,6 +27,7 @@ import pandas as pd
 from django.contrib.auth.models import User
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
+from .forms import EmployeeProfileForm
 
 class DashboardView(View):
     def get(self, request):
@@ -836,4 +840,135 @@ def bulk_upload_performance(request):
         return redirect('performance')
     return render(request, 'hr/pages/performance_bulk_upload.html')
 
-    
+
+
+
+
+
+
+
+
+    class EmployeeProfilePicureView(View):
+        employee = get_object_or_404(Employee, pk=pk)
+                 
+        context = {
+            
+            'form': EmployeeProfileForm(instance=employee),
+        }
+        
+
+    def post(self, request, pk):
+        employee = get_object_or_404(Employee, pk=pk)
+
+        form = EmployeeProfileForm(
+            request.POST,
+            request.FILES,
+            instance=employee
+        )
+
+        if form.is_valid():
+            # save only if a new image was uploaded
+            if request.FILES.get('profile_picture'):
+                employee.profile_picture = request.FILES['profile_picture']
+                employee.save()
+
+            return redirect('employee_profile', pk=employee.pk)
+
+        context = {
+            
+            'form': form,
+            'error': form.errors,
+        }
+        return render(request, 'hr/pages/profile.html', context)
+
+
+class EmployeeBulkUploadView(View):
+    template_name = 'hr/pages/employee_bulk_upload.html'
+
+    def get(self, request):
+        form = BulkEmployeeUploadForm()
+        return render(request, self.template_name, {'form': form})
+
+    def post(self, request):
+        form = BulkEmployeeUploadForm(request.POST, request.FILES)
+        if not form.is_valid():
+            return render(request, self.template_name, {'form': form})
+
+        csv_file = form.cleaned_data['file']
+        reader = csv.DictReader(TextIOWrapper(csv_file.file, encoding='utf-8-sig'))
+
+        required_columns = {'username', 'email', 'first_name', 'last_name', 'department', 'role'}
+        header_cols = set([c.strip() for c in (reader.fieldnames or [])])
+        missing_cols = required_columns - header_cols
+
+        if missing_cols:
+            form.add_error('file', f"Missing columns: {', '.join(sorted(missing_cols))}")
+            return render(request, self.template_name, {'form': form})
+
+        results = {'created': 0, 'failed': 0, 'errors': []}
+
+        for row_num, row in enumerate(reader, start=2):
+            username = (row.get('username') or '').strip()
+            email = (row.get('email') or '').strip()
+            first_name = (row.get('first_name') or '').strip()
+            last_name = (row.get('last_name') or '').strip()
+            dept_name = (row.get('department') or '').strip()
+            role_name = (row.get('role') or '').strip()
+            password = (row.get('password') or '').strip()
+
+            if not all([username, email, first_name, last_name, dept_name, role_name]):
+                results['failed'] += 1
+                results['errors'].append(f"Line {row_num}: Missing required fields.")
+                continue
+
+            department = Department.objects.filter(name__iexact=dept_name).first()
+            if not department:
+                department = Department.objects.create(name=dept_name, description="")
+
+            role = Role.objects.filter(name__iexact=role_name).first()
+            if not role:
+                role = Role.objects.create(name=role_name, description="")
+
+            try:
+                with transaction.atomic():
+                    user = CustomUser(
+                        username=username,
+                        email=email,
+                        role='employee',
+                        first_name=first_name,
+                        last_name=last_name,
+                    )
+                    if password:
+                        user.set_password(password)
+                    else:
+                        user.set_unusable_password()
+                    user.save()
+
+                    Employee.objects.create(
+                        user=user,
+                        first_name=first_name,
+                        last_name=last_name,
+                        email=email,
+                        department=department,
+                        role=role,
+                    )
+
+                results['created'] += 1
+
+            except IntegrityError:
+                results['failed'] += 1
+                results['errors'].append(f"Line {row_num}: Duplicate username or email.")
+            except Exception as e:
+                results['failed'] += 1
+                results['errors'].append(f"Line {row_num}: {e}")
+
+        if results['created']:
+            messages.success(request, f"Created {results['created']} employees.")
+        if results['failed']:
+            messages.error(request, f"Failed {results['failed']} rows.")
+
+        return render(request, self.template_name, {
+            'form': BulkEmployeeUploadForm(),
+            'results': results
+        })
+
