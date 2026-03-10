@@ -41,6 +41,7 @@ from openpyxl import Workbook
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 from decimal import Decimal
+from datetime import datetime
 
 class DashboardView(View):
     def get(self, request):
@@ -506,6 +507,7 @@ def delete_performance(request, pk):
         'performance': performance
     })
 
+#Senzo's Code 
 class DepartmentsView(View):
     def get(self, request):
         departments = Department.objects.prefetch_related('employee_set').all()
@@ -580,6 +582,59 @@ class DepartmentBulkCreateView(SuccessMessageMixin, View):
             messages.error(request, f'Error: {str(e)}')
         
         return redirect('department_list')
+
+class DepartmentPDFExportView(View):
+    def get(self, request):
+        buffer = io.BytesIO()
+        doc = SimpleDocTemplate(buffer, pagesize=A4)
+        elements = []
+        
+        styles = getSampleStyleSheet()
+        elements.append(Paragraph("All Departments Report", styles['Title']))
+        elements.append(Spacer(1, 0.5 * inch))
+        
+        departments = Department.objects.all().prefetch_related('employee_set')
+        data = [['Department Name', 'Description', 'Total Employees']]
+        
+        for dept in departments:
+            data.append([
+                dept.name,
+                dept.description or "No description", 
+                str(dept.employee_set.count())
+            ])
+        
+        table = Table(data, colWidths=[2.8*inch, 3.5*inch, 1.5*inch])
+        table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+            ('ALIGN', (0, 0), (-1, -1), 'LEFT'), 
+            ('ALIGN', (2, 0), (2, -1), 'CENTER'),
+            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('FONTSIZE', (0, 0), (-1, 0), 12),
+            ('FONTSIZE', (0, 1), (-1, -1), 10),
+            ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+            ('GRID', (0, 0), (-1, -1), 1, colors.black),
+            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+            ('LEFTPADDING', (0, 0), (-1, -1), 12),
+            ('RIGHTPADDING', (0, 0), (-1, -1), 12),
+        ]))
+        elements.append(table)
+        
+        elements.append(Spacer(1, 0.3 * inch))
+        elements.append(Paragraph(
+            f"Generated on: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}", 
+            styles['Normal']
+        ))
+        
+        doc.build(elements)
+        buffer.seek(0)
+        
+        return FileResponse(
+            buffer, 
+            as_attachment=True, 
+            filename=f"departments_{datetime.now().strftime('%Y%m%d_%H%M')}.pdf",
+            content_type='application/pdf'
+        )
 
 #Zee's code will go here
 class PayrollView(View):

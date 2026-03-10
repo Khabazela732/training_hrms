@@ -1,4 +1,4 @@
-from .views import DashboardView, EmployeesView, EmployeeCreateView, EmployeeUpdateView, EmployeeDeleteView, EmployeeDetailView, Attendance_View, LeaveListView, DepartmentsView, DepartmentCreateView, DepartmentUpdateView, DepartmentDeleteView, PayrollView,DepartmentBulkCreateView, AddPayrollView, EditPayrollView, DeletePayrollView, ViewPayrollReport
+from .views import DashboardView, EmployeesView, EmployeeCreateView, EmployeeUpdateView, EmployeeDeleteView, EmployeeDetailView, Attendance_View, LeaveListView, DepartmentsView, DepartmentCreateView, DepartmentUpdateView, DepartmentDeleteView,DepartmentPDFExportView, PayrollView,DepartmentBulkCreateView, AddPayrollView, EditPayrollView, DeletePayrollView, ViewPayrollReport
 from django.urls import path
 from . import views 
 
@@ -48,6 +48,7 @@ urlpatterns = [
     path('departments/<int:pk>/update/', DepartmentUpdateView.as_view(), name='department_update'),
     path('departments/<int:pk>/delete/', DepartmentDeleteView.as_view(), name='department_delete'),
     path('departments/bulk-create/', DepartmentBulkCreateView.as_view(), name='department_bulk_create'),
+    path('departments/export-pdf/', DepartmentPDFExportView.as_view(), name='department_export_pdf'),
 
     #Zee's code
     path('payroll/', PayrollView.as_view(), name='payroll'),
