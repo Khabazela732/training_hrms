@@ -29,6 +29,9 @@ urlpatterns = [
     path('attendance/<int:pk>/delete/', views.attendance_delete, name='attendance_delete'),
     path('attendance/bulk-upload/', views.bulk_upload_attendance, name='bulk_upload_attendance'),
     path('attendance/bulk-delete/', views.attendance_bulk_delete, name='attendance_bulk_delete'),
+    path('attendance/report/', views.attendance_report, name='attendance_report'),
+    path('attendance/export/excel/', views.export_attendance_excel, name='export_attendance_excel'),
+    path('attendance/export/pdf/', views.export_attendance_pdf, name='export_attendance_pdf'),
 
     #lusanda's code
     path('performance/', views.performance_list, name='performance'),

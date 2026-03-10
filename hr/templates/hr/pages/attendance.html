@@ -62,7 +62,11 @@
         </tbody>
     </table>
 </form>
-
+<div style="margin-top:20px;">
+    <a href="{% url 'attendance_report' %}" class="btn-add-attendance">
+        View & Export Attendance
+    </a>
+</div>
 <script>
 const selectAll = document.getElementById("select-all");
 const checkboxes = document.querySelectorAll(".select-record");
