@@ -3,8 +3,14 @@
 <section class="content">
     <a href="#"></a>
 
-<div style="margin-bottom:20px;">
-<a href="{% url 'leave-list' %}"><button>Bulk Leave Approval</button></a>
+<div style="margin-bottom: 20px;">
+    <a href="{% url 'bulk_leave_upload' %}">
+        <button>Bulk Upload Leave</button>
+    </a>
+
+    <a href="{% url 'view_export_leave' %}">
+        <button>View & Export Leave Table</button>
+    </a>
 </div>
 <table class="attendance-table">
     <thead>

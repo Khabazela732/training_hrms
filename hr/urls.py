@@ -21,6 +21,11 @@ urlpatterns = [
     path('leave/delete/<int:id>/', views.leave_delete, name='leave_delete'),
     path("leave-list/", views.bulk_leave_list, name="leave-list"),
     path("bulk-update-leave-status/",views.bulk_update_leave_status, name="bulk_update_leave_status"),
+    path("bulk-leave-upload/", views.bulk_leave_upload, name="bulk_leave_upload"),
+    path("download-leave-template/", views.download_leave_csv_template, name="download_leave_template"),
+    path("view-export-leave/", views.view_export_leave, name="view_export_leave"),
+    path("export-leave-excel/", views.export_leave_excel, name="export_leave_excel"),
+    path("export-leave-pdf/", views.export_leave_pdf, name="export_leave_pdf"),
 
     #Mbali's code
     path('attendance/', Attendance_View.as_view(), name='attendance'),

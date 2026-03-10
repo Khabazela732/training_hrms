@@ -42,6 +42,7 @@ from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 from decimal import Decimal
 from datetime import datetime
+from io import BytesIO
 
 class DashboardView(View):
     def get(self, request):
@@ -109,6 +110,7 @@ class EmployeeDetailView(DetailView):
     template_name = 'hr/pages/employee_detail.html'
     context_object_name = 'employee'
 
+#sethu
 class LeaveListView(View):
     def get(self, request):
         template = loader.get_template('hr/pages/leave.html')
@@ -168,7 +170,7 @@ def leave_delete(request, id):
         return redirect('leave')
 
     return redirect('leave')
-
+#bulk_leave_approval
 @login_required
 def bulk_update_leave_status(request):
 
@@ -203,6 +205,140 @@ def bulk_leave_list(request):
             "leaves": leaves
         }
     )
+
+#bulk_leave_upload
+@login_required
+def bulk_leave_upload(request):
+    if request.method == "POST":
+        file = request.FILES["file"]
+        decoded_file = file.read().decode("utf-8")
+        io_string = io.StringIO(decoded_file)
+        reader = csv.DictReader(io_string)
+
+        errors = []
+
+        for idx, row in enumerate(reader, start=2):
+            employee_name = row.get("employee_name", "").strip()
+            if not employee_name:
+                errors.append(f"Line {idx}: Employee name is missing.")
+                continue
+
+            # Split first and last name
+            try:
+                first_name, last_name = employee_name.split(" ", 1)
+                employee = Employee.objects.filter(first_name=first_name, last_name=last_name).first()
+            except ValueError:
+                employee = None
+
+            if employee:
+                # ✅ Pass employee object to employee field, not first_name/last_name
+                Leave.objects.create(
+                    employee=employee,
+                    start_date=row.get("start_date"),
+                    end_date=row.get("end_date"),
+                    reason=row.get("reason"),
+                    status=row.get("status")
+                )
+            else:
+                errors.append(f"Line {idx}: Employee '{employee_name}' not found.")
+
+        if errors:
+            return render(request, "hr/pages/bulk_leave_upload.html", {"errors": errors})
+        else:
+            messages.success(request, "CSV file uploaded successfully!")
+            return redirect("leave")
+
+    return render(request, "hr/pages/bulk_leave_upload.html")
+
+
+@login_required
+def download_leave_csv_template(request):
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="leave_template.csv"'
+
+    writer = csv.writer(response)
+  
+    writer.writerow(['first_name', 'start_date', 'end_date', 'reason', 'status'])
+
+    first_employee = Employee.objects.first()
+    if first_employee:
+        writer.writerow([first_employee.name, '2026-03-10', '2026-03-12', 'Sick', 'Pending'])
+
+    return response
+
+@login_required
+def view_export_leave(request):
+    leave = Leave.objects.all().select_related('employee')
+    return render(request, "hr/pages/view_export_leave.html", {"leave": leave})
+
+# Export Excel
+@login_required
+def export_leave_excel(request):
+    leave = Leave.objects.all().select_related('employee')
+    workbook = openpyxl.Workbook()
+    sheet = workbook.active
+    sheet.title = "Leave"
+
+    # Header
+    headers = ['Employee', 'Start Date', 'End Date', 'Reason', 'Status']
+    sheet.append(headers)
+
+    # Data
+    for leave in leave:
+        sheet.append([
+            f"{leave.employee.first_name} {leave.employee.last_name}",
+            leave.start_date,
+            leave.end_date,
+            leave.reason,
+            leave.status
+        ])
+
+    # Prepare response
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename=leave_list.xlsx'
+    workbook.save(response)
+    return response
+
+# Export PDF
+@login_required
+def export_leave_pdf(request):
+    leave = Leave.objects.all().select_related('employee')
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="leave_list.pdf"'
+
+    buffer = BytesIO()
+    p = canvas.Canvas(buffer)
+
+    y = 800
+    p.setFont("Helvetica-Bold", 12)
+    p.drawString(50, y, "Leave List")
+    y -= 30
+
+    # Table header
+    p.setFont("Helvetica-Bold", 10)
+    headers = ['Employee', 'Start Date', 'End Date', 'Reason', 'Status']
+    x_positions = [50, 200, 300, 400, 500]
+    for i, header in enumerate(headers):
+        p.drawString(x_positions[i], y, header)
+    y -= 20
+
+    p.setFont("Helvetica", 10)
+    for leave in leave:
+        if y < 50:
+            p.showPage()
+            y = 800
+        p.drawString(x_positions[0], y, f"{leave.employee.first_name} {leave.employee.last_name}")
+        p.drawString(x_positions[1], y, str(leave.start_date))
+        p.drawString(x_positions[2], y, str(leave.end_date))
+        p.drawString(x_positions[3], y, leave.reason)
+        p.drawString(x_positions[4], y, leave.status)
+        y -= 20
+
+    p.save()
+    pdf = buffer.getvalue()
+    buffer.close()
+    response.write(pdf)
+    return response
 
 #Mbali's code
 

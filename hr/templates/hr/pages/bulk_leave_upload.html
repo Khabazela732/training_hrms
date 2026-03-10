@@ -5,26 +5,25 @@
 <h2>Bulk Leave Upload</h2>
 
 <a href="{% url 'download_leave_template' %}">
-<button>Download CSV Template</button>
+    <button type="button">Download CSV Template</button>
 </a>
 
-<br><br>
+<!-- Display errors if any -->
+{% if errors %}
+    <div style="color:red; margin-top:10px;">
+        <h4>Errors:</h4>
+        <ul>
+            {% for error in errors %}
+                <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endif %}
 
 <form method="POST" enctype="multipart/form-data">
     {% csrf_token %}
-
     <input type="file" name="file" required>
-
     <button type="submit">Upload Leave File</button>
-
 </form>
-
-<br>
-
-{% if messages %}
-    {% for message in messages %}
-        <p>{{ message }}</p>
-    {% endfor %}
-{% endif %}
 
 {% endblock %}

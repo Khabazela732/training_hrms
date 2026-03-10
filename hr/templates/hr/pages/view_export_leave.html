@@ -1,0 +1,46 @@
+{% extends "hr/base/base.html" %}
+
+{% block content %}
+<h2>Leave Table - View & Export</h2>
+
+<div style="margin-bottom: 20px;">
+    <a href="{% url 'export_leave_excel' %}">
+        <button>Export to Excel</button>
+    </a>
+
+    <a href="{% url 'export_leave_pdf' %}">
+        <button>Export to PDF</button>
+    </a>
+
+    <a href="{% url 'leave' %}">
+        <button>Back to Leave List</button>
+    </a>
+</div>
+
+<table class="attendance-table">
+    <thead>
+        <tr>
+            <th>Employee</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th>Reason</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for leave in leave %}
+        <tr>
+            <td>{{ leave.employee.first_name }} {{ leave.employee.last_name }}</td>
+            <td>{{ leave.start_date }}</td>
+            <td>{{ leave.end_date }}</td>
+            <td>{{ leave.reason }}</td>
+            <td>{{ leave.status }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="5">No leave records found.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
