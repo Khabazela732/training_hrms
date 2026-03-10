@@ -55,3 +55,11 @@ class EmployeeAttendanceForm(forms.ModelForm):
             'check_in_time': forms.TimeInput(attrs={'type': 'time'}),
             'check_out_time': forms.TimeInput(attrs={'type': 'time'}),
         }
+class BulkEmployeeUploadForm(forms.Form):
+    file = forms.FileField(label="CSV file")
+
+
+class EmployeeProfileForm(forms.ModelForm):
+    class Meta:
+        model = Employee
+        fields = ['profile_picture']

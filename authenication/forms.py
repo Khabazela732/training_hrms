@@ -15,3 +15,9 @@ class LoginForm(forms.Form):
             'class': 'form-control',
         })
     )
+
+
+
+
+class BulkEmployeeUploadForm(forms.Form):
+    file = forms.FileField(label="CSV file")

@@ -1,0 +1,53 @@
+{% extends "hr/base/base.html" %}
+
+{% block content %}
+<section class="content">
+    <div class="page-header">
+        <h2>Bulk Upload Employees</h2>
+        <a href="{% url 'employees' %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Back
+        </a>
+    </div>
+
+    {% if messages %}
+    <div class="alerts">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <form method="post" enctype="multipart/form-data" class="form-card">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+
+        <div class="form-group">
+            {{ form.file.label_tag }}
+            {{ form.file }}
+            {% for error in form.file.errors %}
+            <div class="error">{{ error }}</div>
+            {% endfor %}
+        </div>
+
+        <button type="submit" class="btn btn-primary">Upload CSV</button>
+    </form>
+
+    <div class="helper">
+        <p>Required CSV columns:</p>
+        <p><strong>username, email, first_name, last_name, department, role</strong></p>
+        
+    </div>
+
+    {% if results %}
+    <h3>Results</h3>
+    <p>Created: {{ results.created }} | Failed: {{ results.failed }}</p>
+    {% if results.errors %}
+    <ul class="error-list">
+        {% for err in results.errors %}
+        <li>{{ err }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    {% endif %}
+</section>
+{% endblock %}
