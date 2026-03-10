@@ -29,6 +29,14 @@ from django.contrib.auth.models import User
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from .forms import EmployeeProfileForm
+from django.views import View
+from django.shortcuts import render
+from django.http import HttpResponse
+from hr.models import Payroll
+from docx import Document
+from docx.shared import RGBColor, Pt
+from docx.oxml import OxmlElement
+from docx.oxml.ns import qn
 
 class DashboardView(View):
     def get(self, request):
@@ -666,9 +674,10 @@ class ViewPayrollReport(View):
 
         if 'export_pdf' in request.POST:
             return self.export_pdf(payrolls)
-
         if 'export_excel' in request.POST:
             return self.export_excel(payrolls)
+        if 'export_word' in request.POST:
+            return self.export_word(payrolls)
 
         return render(request, self.template_name, {'payrolls': payrolls})
 
@@ -748,6 +757,55 @@ class ViewPayrollReport(View):
         response['Content-Disposition'] = 'attachment; filename="monthly_payroll_report.xlsx"'
         return response
 
+         # ---------------- Word Export ----------------
+    def export_word(self, payrolls):
+        document = Document()
+        document.add_heading('Monthly Payroll Report', level=1)
+
+        table = document.add_table(rows=1, cols=6)
+        headers = ["Employee", "Month", "Basic Salary", "Bonus", "Deductions", "Total Salary"]
+
+        # Header row
+        hdr_cells = table.rows[0].cells
+        for i, header in enumerate(headers):
+            hdr_cells[i].text = header
+            self.set_cell_background(hdr_cells[i], "FF0000")  # red header
+            for paragraph in hdr_cells[i].paragraphs:
+                for run in paragraph.runs:
+                    run.font.color.rgb = RGBColor(255, 255, 255)
+                    run.font.bold = True
+                    run.font.size = Pt(11)
+
+        # Data rows with alternate shading
+        for idx, p in enumerate(payrolls):
+            row_cells = table.add_row().cells
+            row_cells[0].text = f"{p.employee.first_name} {p.employee.last_name}"
+            row_cells[1].text = str(p.month)
+            row_cells[2].text = f"R{p.basic_salary:.2f}"
+            row_cells[3].text = f"R{p.bonus:.2f}"
+            row_cells[4].text = f"R{p.deductions:.2f}"
+            row_cells[5].text = f"R{p.total_salary:.2f}"
+
+            if idx % 2 == 0:  # light gray for alternate rows
+                for cell in row_cells:
+                    self.set_cell_background(cell, "F5F5F5")
+
+        response = HttpResponse(
+            content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+        )
+        response['Content-Disposition'] = 'attachment; filename="monthly_payroll_report.docx"'
+        document.save(response)
+        return response
+
+    # ---------------- Helper to set Word cell background ----------------
+    def set_cell_background(self, cell, fill):
+        tc = cell._tc
+        tcPr = tc.get_or_add_tcPr()
+        shd = OxmlElement('w:shd')
+        shd.set(qn('w:fill'), fill)
+        shd.set(qn('w:val'), 'clear')
+        tcPr.append(shd)
+        
 def bulk_upload_payroll(request):
     if request.method != "POST":
         return redirect('payroll')
@@ -815,29 +873,8 @@ def bulk_upload_payroll(request):
         messages.success(request, f"{success_count} payroll record(s) uploaded successfully.")
     return redirect('payroll')
 
-import openpyxl
-from django.http import HttpResponse
 
-def download_payroll_template(request):
-    workbook = openpyxl.Workbook()
-    sheet = workbook.active
-    sheet.title = "Payroll"
 
-    headers = ["employee_name", "basic_salary", "bonus", "deductions", "month"]
-    sheet.append(headers)
-
-    for employee in Employee.objects.all():
-        sheet.append([f"{employee.first_name} {employee.last_name}", "", "", "", ""])
-
-    response = HttpResponse(
-        content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-    )
-    response["Content-Disposition"] = "attachment; filename=payroll_template.xlsx"
-
-    workbook.save(response)
-    return response
-
-User = get_user_model()
 
 def bulk_upload_performance(request):
     if request.method == "POST":
