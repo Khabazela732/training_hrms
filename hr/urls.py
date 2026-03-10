@@ -1,7 +1,7 @@
 from .views import DashboardView, EmployeesView, EmployeeCreateView, EmployeeUpdateView, EmployeeDeleteView, EmployeeDetailView, Attendance_View, LeaveListView, DepartmentsView, DepartmentCreateView, DepartmentUpdateView, DepartmentDeleteView, PayrollView,DepartmentBulkCreateView, AddPayrollView, EditPayrollView, DeletePayrollView, ViewPayrollReport
 from django.urls import path
 from . import views 
-from .views import download_payroll_template
+
 #France
 urlpatterns = [
     path('', DashboardView.as_view(), name='dashboard'),
@@ -54,6 +54,5 @@ urlpatterns = [
     path('edit-payroll/<int:pk>/', EditPayrollView.as_view(), name='edit_payroll'),
     path('delete-payroll/<int:pk>/', DeletePayrollView.as_view(), name='delete_payroll'),
     path('payroll/report/', ViewPayrollReport.as_view(), name='view_payroll_report'),
-    path('payroll/download-template/', views.download_payroll_template, name='download-payroll-template'),
     path('payroll/bulk-upload/', views.bulk_upload_payroll, name='bulk-upload-payroll'),
 ]

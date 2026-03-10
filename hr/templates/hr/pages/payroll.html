@@ -50,9 +50,7 @@
     </div>
 
     <div class="bulk-upload-btns">
-        <a href="{% url 'download-payroll-template' %}" class="bulk-btn">
-            <i class="fa fa-download"></i> Download Template
-        </a>
+    
 
         <form method="POST" action="{% url 'bulk-upload-payroll' %}" enctype="multipart/form-data">
             {% csrf_token %}
