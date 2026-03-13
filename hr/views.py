@@ -64,10 +64,16 @@ from reportlab.platypus import (
     Spacer
 )
 from reportlab.lib.styles import getSampleStyleSheet
+from django.db.models import Avg, Sum
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
+from django.conf import settings
 
 class DashboardView(View):
     def get(self, request):
-        #Mbali  
+
+        # Mbali  
         today = timezone.localdate()
 
         present_today = Attendance.objects.filter(date=today, status="Present").count()
@@ -76,7 +82,7 @@ class DashboardView(View):
 
         employee_count = Employee.objects.count()
 
-        #Lusanda
+        # Lusanda - Department Performance
         performance_stats = (
             Performance.objects
             .values('department__name')
@@ -87,6 +93,30 @@ class DashboardView(View):
         dept_labels = [p['department__name'] for p in performance_stats]
         dept_ratings = [float(round(p['avg_rating'], 2)) for p in performance_stats]
 
+
+        # ================================
+        # Payroll Monthly Statistics
+        # ================================
+        payroll_stats = (
+            Payroll.objects
+            .values('month')
+            .annotate(
+                total_basic=Sum('basic_salary'),
+                total_bonus=Sum('bonus'),
+                total_deductions=Sum('deductions')
+            )
+            .order_by('month')
+        )
+
+        payroll_months = []
+        payroll_amounts = []
+
+        for p in payroll_stats:
+            net = (p['total_basic'] or 0) + (p['total_bonus'] or 0) - (p['total_deductions'] or 0)
+            payroll_months.append(p['month'])
+            payroll_amounts.append(float(net))
+
+
         context = {
             "employee_count": employee_count,
             "present_today": present_today,
@@ -96,11 +126,13 @@ class DashboardView(View):
             "department_count": Department.objects.count(),
             "dept_labels": json.dumps(dept_labels),
             "dept_ratings": json.dumps(dept_ratings),
+
+            # Payroll Chart Data
+            "payroll_months": json.dumps(payroll_months),
+            "payroll_amounts": json.dumps(payroll_amounts),
         }
 
         return render(request, "hr/pages/dashboard.html", context)
-
-
 class EmployeesView(View):
     def get(self, request):
         template = loader.get_template('hr/pages/employees.html')
@@ -876,19 +908,38 @@ class AddPayrollView(View):
             return redirect('payroll')
 
         if Payroll.objects.filter(employee=employee, month=month).exists():
-            messages.error(request, f"Payroll for {employee.first_name} {employee.last_name} in {month} already exists!")
+            messages.error(
+                request,
+                f"Payroll for {employee.first_name} {employee.last_name} in {month} already exists!"
+            )
             return redirect('payroll')
 
-        Payroll.objects.create(
+        payroll = Payroll.objects.create(
             employee=employee,
             basic_salary=basic_salary,
             bonus=bonus,
             deductions=deductions,
             month=month
         )
-        messages.success(request, "Payroll added successfully.")
-        return redirect('payroll')
 
+        
+        html_message = render_to_string('hr/email/payroll_notification.html', {
+            'employee': employee,
+            'payroll': payroll
+        })
+        plain_message = strip_tags(html_message)
+
+        send_mail(
+            "Payroll Notification",
+            plain_message,
+            settings.EMAIL_HOST_USER,
+            [employee.email],
+            html_message=html_message
+        )
+
+     
+        messages.success(request, "Payroll added successfully and notification sent.")
+        return redirect('payroll')
 class EditPayrollView(View):
     def get(self, request, pk):
         payroll = get_object_or_404(Payroll, pk=pk)

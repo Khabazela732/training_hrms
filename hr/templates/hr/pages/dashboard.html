@@ -39,7 +39,14 @@
                 data-ratings='{{ dept_ratings|safe }}'>
             </canvas>
         </div>
-
+       <div class="box large">
+    <h3>Payroll Statistics</h3>
+    <canvas
+        id="payrollChart"
+        data-months='{{ payroll_months|safe }}'
+        data-amounts='{{ payroll_amounts|safe }}'>
+    </canvas>
+</div>
     </div>
 </section>
 
@@ -85,6 +92,8 @@ document.addEventListener("DOMContentLoaded", function(){
     }
 
 });
+
+
 </script>
 
 {% endblock %}

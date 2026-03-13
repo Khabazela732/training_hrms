@@ -5,10 +5,26 @@
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-
-
 <div class="payroll-container">
 
+    
+    <a href="{% url 'view_payroll_report' %}" class="view-report-btn corner-btn">
+        <i class="fa fa-chart-line"></i> View & Export Payroll Report
+    </a>
+
+    
+    <div class="bulk-upload-btns">
+        <form id="bulk-upload-form" method="POST" action="{% url 'bulk-upload-payroll' %}" enctype="multipart/form-data">
+            {% csrf_token %}
+            <label for="file-upload" class="bulk-btn custom-upload-btn">
+                <i class="fa fa-upload"></i> BULK Upload
+            </label>
+            <input id="file-upload" type="file" name="file" accept=".xlsx" required>
+            <span id="file-name" style="margin-left:10px; font-size:14px; color:#2c3e50;"></span>
+        </form>
+    </div>
+
+    
     {% if messages %}
         {% for message in messages %}
             <div class="message-box {% if message.tags == 'success' %}message-success{% else %}message-error{% endif %}">
@@ -22,45 +38,27 @@
         {% endfor %}
     {% endif %}
 
+   
     <div class="payroll-header">
         <h1>P A Y R O L L</h1>
         <p>HR Management System - Salary Overview</p>
     </div>
 
- <div class="stats-cards">
-
-    <div class="card employees-card">
-        <i class="fa fa-users card-icon"></i>
-        <p>Total Employees</p>
-        <h2>{{ total_employees }}</h2>
+   
+    <div class="stats-cards">
+        <div class="card employees-card">
+            <i class="fa fa-users card-icon"></i>
+            <p>Total Employees</p>
+            <h2>{{ total_employees }}</h2>
+        </div>
+        <div class="card records-card">
+            <i class="fa fa-money-bill-wave card-icon"></i>
+            <p>Total Payroll Records</p>
+            <h2>{{ total_payroll }}</h2>
+        </div>
     </div>
 
-    <div class="card records-card">
-        <i class="fa fa-money-bill-wave card-icon"></i>
-        <p>Total Payroll Records</p>
-        <h2>{{ total_payroll }}</h2>
-    </div>
-
-</div>
-
-    <div style="text-align:center; margin-bottom:30px;">
-        <a href="{% url 'view_payroll_report' %}" class="view-report-btn">
-            <i class="fa fa-chart-line"></i> View & Export Payroll Report
-        </a>
-    </div>
-
-    <div class="bulk-upload-btns">
-    
-
-        <form method="POST" action="{% url 'bulk-upload-payroll' %}" enctype="multipart/form-data">
-            {% csrf_token %}
-            <input type="file" name="file" accept=".xlsx" required>
-            <button type="submit" class="bulk-btn">
-                <i class="fa fa-upload"></i> Upload Excel
-            </button>
-        </form>
-    </div>
-
+ 
     <form method="POST" action="{% url 'add_payroll' %}" class="payroll-form">
         {% csrf_token %}
         <select name="employee" required>
@@ -81,6 +79,7 @@
         </button>
     </form>
 
+   
     <table>
         <thead>
             <tr>
@@ -97,10 +96,10 @@
             {% for payroll in payrolls %}
             <tr>
                 <td>{{ payroll.employee.first_name }} {{ payroll.employee.last_name }}</td>
-                <td>{{ payroll.basic_salary }}</td>
-                <td>{{ payroll.bonus }}</td>
-                <td>{{ payroll.deductions }}</td>
-               <td class="total-salary">R{{ payroll.total_salary|floatformat:2 }}</td>
+                <td>R{{ payroll.basic_salary }}</td>
+                <td>{% if payroll.bonus %}R{{ payroll.bonus }}{% else %}R0{% endif %}</td>
+                <td>{% if payroll.deductions %}R{{ payroll.deductions }}{% else %}R0{% endif %}</td>
+                <td class="total-salary">R{{ payroll.total_salary|floatformat:2 }}</td>
                 <td>{{ payroll.month }}</td>
                 <td>
                     <a href="{% url 'edit_payroll' payroll.id %}">
@@ -108,7 +107,7 @@
                     </a>
                     <form method="POST" action="{% url 'delete_payroll' payroll.id %}" style="display:inline;">
                         {% csrf_token %}
-                        <button type="submit" onclick="return confirm('Are you sure?');">
+                        <button type="submit" onclick="return confirm('Are you sure you want to delete this payroll?');">
                             <i class="fa fa-trash"></i> Delete
                         </button>
                     </form>
@@ -123,5 +122,19 @@
     </table>
 
 </div>
+
+
+<script>
+    const fileInput = document.getElementById('file-upload');
+    const form = document.getElementById('bulk-upload-form');
+    const fileNameSpan = document.getElementById('file-name');
+
+    fileInput.addEventListener('change', function() {
+        if (this.files.length > 0) {
+            fileNameSpan.textContent = this.files[0].name; 
+            form.submit(); 
+        }
+    });
+</script>
 
 {% endblock %}

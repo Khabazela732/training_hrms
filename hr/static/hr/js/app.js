@@ -114,3 +114,37 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 });
+// Payroll Statistics Chart
+const payrollCanvas = document.getElementById("payrollChart");
+
+if (payrollCanvas) {
+
+    const months = JSON.parse(payrollCanvas.dataset.months);
+    const amounts = JSON.parse(payrollCanvas.dataset.amounts);
+
+    new Chart(payrollCanvas.getContext("2d"), {
+        type: "bar",
+        data: {
+            labels: months,
+            datasets: [{
+                label: "Monthly Payroll",
+                data: amounts,
+                backgroundColor: "rgba(59,130,246,0.6)",
+                borderColor: "rgb(59,130,246)",
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { position: "top" }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+}
