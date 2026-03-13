@@ -21,6 +21,10 @@ from django.shortcuts import render, get_object_or_404
 import datetime
 import random
 import json
+from django.core.mail import send_mail
+from django.conf import settings
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
 
 
 class EmployeeDashboardView(LoginRequiredMixin, View):
@@ -111,32 +115,51 @@ def employee_attendance_list(request):
 
 @login_required
 def employee_attendance_create(request):
+
     employee = request.user.employee
+    today = timezone.localdate()
 
     if request.method == "POST":
-        status = request.POST.get("status")
+
         check_in_time = request.POST.get("check_in_time")
         check_out_time = request.POST.get("check_out_time")
 
-        today = timezone.now().date()
-        if Attendance.objects.filter(employee=employee, date=today).exists():
-            messages.error(request, "You have already submitted attendance for today.")
-            return redirect("employee_attendance")
-
-        Attendance.objects.create(
+        attendance, created = Attendance.objects.update_or_create(
             employee=employee,
             date=today,
-            status=status,
-            check_in_time=check_in_time if check_in_time else None,
-            check_out_time=check_out_time if check_out_time else None,
+            defaults={
+                "status": "Present",
+                "check_in_time": check_in_time,
+                "check_out_time": check_out_time
+            }
         )
 
-        messages.success(request, "Attendance added successfully!")
+        subject = "Attendance Confirmation"
+
+        html_message = render_to_string(
+            "employee/pages/attendance_email.html",
+            {
+                "employee": employee,
+                "date": today,
+                "check_in_time": check_in_time
+            }
+        )
+
+        plain_message = strip_tags(html_message)
+
+        send_mail(
+            subject,
+            plain_message,
+            settings.EMAIL_HOST_USER,
+            [request.user.email],
+            html_message=html_message,
+            fail_silently=False,
+        )
+
+        messages.success(request, "Attendance recorded successfully. An email is sent to you")
         return redirect("employee_attendance")
 
-    return render(request, "employee/pages/attendance_form.html", {
-        "title": "Add Attendance"
-    })
+    return render(request, "employee/pages/attendance_form.html")
 
 class AttendanceForm(forms.ModelForm):
     class Meta:

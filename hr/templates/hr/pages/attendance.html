@@ -3,17 +3,35 @@
 
 {% block title %}Attendance Management{% endblock %}
 
+
 {% block content %}
+<link rel="stylesheet" href="{% static 'hr/css/attendance.css' %}">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" />
 
-<div class="table-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-    <h3>Attendance Records</h3>
-    <div style="display:flex; gap:10px; align-items:center;">
-        <input type="text" id="search-input" placeholder="Search Employee..." style="padding:6px 10px; border-radius:6px; border:1px solid #ccc;">
-        <a href="{% url 'attendance_create' %}" class="btn-add-attendance">+ Add Attendance</a>
-        <a href="{% url 'bulk_upload_attendance' %}" class="btn-add-attendance">Bulk Upload</a>
-        <button id="delete-selected-btn" class="btn-delete-selected" disabled>Delete Selected</button>
+<div class="attendance-header">
+
+    <div class="attendance-title">
+        <h3>Attendance Records</h3>
     </div>
+
+    <div class="attendance-controls">
+
+        <input type="text" id="search-input" placeholder="Search Employee..." class="search-input">
+
+        <a href="{% url 'attendance_create' %}" class="btn-add-attendance">
+            <i class="fas fa-plus"></i> Add Attendance
+        </a>
+
+        <a href="{% url 'bulk_upload_attendance' %}" class="btn-bulk-upload">
+            <i class="fas fa-upload"></i> Bulk Upload
+        </a>
+
+        <button id="delete-selected-btn" class="btn-delete-selected" disabled>
+            <i class="fas fa-trash"></i> Delete Selected
+        </button>
+
+    </div>
+
 </div>
 
 {% if messages %}
@@ -62,7 +80,7 @@
         </tbody>
     </table>
 </form>
-<div style="margin-top:20px;">
+<div class="attendance-footer">
     <a href="{% url 'attendance_report' %}" class="btn-add-attendance">
         View & Export Attendance
     </a>

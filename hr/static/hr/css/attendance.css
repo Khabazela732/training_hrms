@@ -110,15 +110,15 @@
 }
 
 .status.present {
-    background-color: #28a745;
+    background-color: #115c22;
 }
 
 .status.absent {
-    background-color: #dc3545;
+    background-color: #740f19;
 }
 
 .status.leave {
-    background-color: #ffc107;
+    background-color: #806412;
     color: #212529;
 }
 
@@ -261,7 +261,7 @@
 }
 .btn-edit {
     padding: 6px 12px;
-    background-color: #28a745;
+    background-color: #092e4e;
     color: #fff;
     border-radius: 6px;
     text-decoration: none;
@@ -270,7 +270,7 @@
 }
 
 .btn-edit:hover {
-    background-color: #218838;
+    background-color: #092e4e;
 }
 .attendance-table tbody tr.clickable-row {
     cursor: pointer;
@@ -478,4 +478,174 @@
     margin-bottom: 20px;
     text-align: center;
     font-weight: 500;
+}
+.btn-add-attendance,
+.btn-bulk-upload,
+.btn-view-report {
+    background-color: #0b2c5f;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 14px;
+    border: none;
+    cursor: pointer;
+    display: inline-block;
+    transition: 0.3s ease;
+}
+
+.btn-add-attendance:hover,
+.btn-bulk-upload:hover,
+.btn-view-report:hover {
+    background-color: #174ea6;
+}
+
+.btn-view-report {
+    background-color: #2e7d32;
+}
+
+.btn-view-report:hover {
+    background-color: #1b5e20;
+}
+/* ================= EXPORT BUTTONS ================= */
+
+.export-buttons{
+    display: flex;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+/* Excel Button */
+
+.btn-export-excel{
+    background-color: #1D6F42;
+    color: white;
+    padding: 9px 16px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: 0.3s ease;
+}
+
+.btn-export-excel:hover{
+    background-color: #155a33;
+}
+
+/* PDF Button */
+
+.btn-export-pdf{
+    background-color: #C62828;
+    color: white;
+    padding: 9px 16px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: 0.3s ease;
+}
+
+.btn-export-pdf:hover{
+    background-color: #8e1c1c;
+}
+/* Space between report title and export buttons */
+
+h3 {
+    margin-bottom: 20px;
+}
+
+/* Export buttons container */
+
+.export-buttons{
+    display: flex;
+    gap: 12px;
+    margin-bottom: 25px;
+}
+/* ================= HEADER LAYOUT ================= */
+
+.attendance-header{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    flex-wrap: wrap;
+}
+
+.attendance-title h3{
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.attendance-controls{
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+/* ================= SEARCH ================= */
+
+.search-input{
+    padding: 7px 12px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+}
+
+/* ================= BUTTONS ================= */
+
+.btn-add-attendance{
+    background-color: #092e4e;
+    color: white;
+    padding: 7px 14px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 14px;
+    transition: 0.3s;
+}
+
+.btn-add-attendance:hover{
+    background-color: #174ea6;
+}
+
+.btn-bulk-upload{
+    background-color: #092e4e;
+    color: white;
+    padding: 7px 14px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.btn-bulk-upload:hover{
+    background-color: #1565c0;
+}
+
+.btn-delete-selected{
+    background-color: #851c1c;
+    color: white;
+    padding: 7px 14px;
+    border-radius: 6px;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.btn-delete-selected:disabled{
+    background-color: #f2a7a7;
+    cursor: not-allowed;
+}
+
+/* ================= FOOTER ================= */
+
+.attendance-footer{
+    margin-top: 25px;
 }

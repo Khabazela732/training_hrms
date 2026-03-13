@@ -13,6 +13,7 @@ urlpatterns = [
     path('leaves/', LeaveListView.as_view(), name='leave-list'),
     path('employees/bulk-upload/', views.EmployeeBulkUploadView.as_view(), name='employee_bulk_upload'),
     path('export-employee-profile/', views.export_employee_profileView.as_view(), name='export_employee_profile'),
+   
     # Sethu's code
     path('leave/', views.leave_list, name='leave'),
     path('leave/create/', views.leave_create, name='create'),
