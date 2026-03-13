@@ -1,38 +1,59 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-        <meta charset="UTF-8">
-        <title>HRM System | Dashboard</title>
-        <link rel="stylesheet" href="{% static 'hr/css/global.css' %}">
-        <link rel="stylesheet" href="{% static 'hr/css/attendance.css' %}">
-        <link rel="stylesheet" href="{% static 'hr/css/dashboard.css' %}">
-        <link rel="stylesheet" href="{% static 'hr/css/employee.css' %}">
-        <link rel="stylesheet" href="{% static 'hr/css/leave.css' %}">
-        <link rel="stylesheet" href="{% static 'hr/css/payroll.css' %}">
-        <link rel="stylesheet" href="{% static 'hr/css/performance.css' %}">
-        <link rel="stylesheet" href="{% static 'hr/css/department.css' %}">
-        <link rel="stylesheet" href="{% static 'hr/css/apply_leave.css' %}">
-    </head>
-    <body>
-   
-        <!-- Include the sidebar -->
-        {% include 'hr/essentials/topbar.html' %}
-     <div class="layout">
+
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta charset="UTF-8">
+    <title>HRM System | Dashboard</title>
+
+    <link rel="stylesheet" href="{% static 'hr/css/global.css' %}">
+    <link rel="stylesheet" href="{% static 'hr/css/attendance.css' %}">
+    <link rel="stylesheet" href="{% static 'hr/css/dashboard.css' %}">
+    <link rel="stylesheet" href="{% static 'hr/css/employees.css' %}">
+    <link rel="stylesheet" href="{% static 'hr/css/leave.css' %}">
+    <link rel="stylesheet" href="{% static 'hr/css/payroll.css' %}">
+    <link rel="stylesheet" href="{% static 'hr/css/performance.css' %}">
+    <link rel="stylesheet" href="{% static 'hr/css/department.css' %}">
+    <link rel="stylesheet" href="{% static 'hr/css/apply_leave.css' %}">
+</head>
+
+<body>
+
+    {% include 'hr/essentials/topbar.html' %}
+
+    <div class="layout">
         {% include 'hr/essentials/sidebar.html' %}
+
         <div id="main" class="main-content">
-            <!-- Include the topbar -->
-            
-            
-           
-                {% block content %}
-                <!-- Page-specific content will go here -->
-                {% endblock %}
-            
+
+            {% block content %}
+            {% endblock %}
+
         </div>
     </div>
-    </body>
+
     <script src="{% static 'hr/js/app.js' %}"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    {% if messages %}
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            {% for message in messages %}
+            Swal.fire({
+                icon: "success",
+                title: "Success",
+                text: "{{ message|escapejs }}",
+                confirmButtonColor: "#2563eb"
+            });
+            {% endfor %}
+        });
+    </script>
+    {% endif %}
+
+
+</body>
+
 </html>
