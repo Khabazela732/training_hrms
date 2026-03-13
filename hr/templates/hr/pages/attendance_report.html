@@ -6,9 +6,14 @@
 
 <h3>Attendance Report</h3>
 
-<div style="margin-bottom:20px;">
-    <a href="{% url 'export_attendance_excel' %}" class="btn-add-attendance">Export to Excel</a>
-    <a href="{% url 'export_attendance_pdf' %}" class="btn-add-attendance">Export to PDF</a>
+<div class="export-buttons">
+    <a href="{% url 'export_attendance_excel' %}" class="btn-export-excel">
+        <i class="fas fa-file-excel"></i> Export to Excel
+    </a>
+
+    <a href="{% url 'export_attendance_pdf' %}" class="btn-export-pdf">
+        <i class="fas fa-file-pdf"></i> Export to PDF
+    </a>
 </div>
 
 <table class="attendance-table">

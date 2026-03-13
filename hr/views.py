@@ -43,16 +43,26 @@ from reportlab.pdfgen import canvas
 from decimal import Decimal
 from datetime import datetime
 from io import BytesIO
+from django.utils import timezone
 
 class DashboardView(View):
-    def get(self, request):
-        template = loader.get_template('hr/pages/dashboard.html')
-        employees = Employee.objects.all()
+    def get(self, request):  
+        today = timezone.localdate()
+
+        present_today = Attendance.objects.filter(date=today, status="Present").count()
+        absent_today = Attendance.objects.filter(date=today, status="Absent").count()
+        late_today = Attendance.objects.filter(date=today, status="Late").count()
+
+        employee_count = Employee.objects.count()
+
         context = {
-            'employee_count': employees.count(),
-            'department_count': Department.objects.count(),
+            "employee_count": employee_count,
+            "present_today": present_today,
+            "absent_today": absent_today,
+            "late_today": late_today,
         }
-        return HttpResponse(template.render(context, request))
+
+        return render(request, "hr/pages/dashboard.html", context)
 
 
 class EmployeesView(View):
@@ -1136,7 +1146,6 @@ def export_performance(request, export_format):
     performances = Performance.objects.select_related('employee', 'department').all()
 
     if export_format == 'excel':
-        # Excel export
         response = HttpResponse(
             content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
         )
@@ -1226,11 +1235,6 @@ def export_performance(request, export_format):
     else:
         messages.error(request, "Invalid export format")
         return redirect('performance')
-
-
-
-
-
 
 
 

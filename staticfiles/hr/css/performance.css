@@ -505,3 +505,131 @@
     font-weight: 600;
     color: #1e293b;
 }
+
+/* ===== BULK UPLOAD PAGE ===== */
+
+.bulk-upload-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 70vh;
+    padding: 40px;
+}
+
+.bulk-upload-card {
+    background: white;
+    padding: 40px;
+    border-radius: 14px;
+    width: 420px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+    text-align: center;
+}
+
+.bulk-upload-title {
+    font-size: 26px;
+    margin-bottom: 10px;
+    color: #2c3e50;
+}
+
+.bulk-upload-subtitle {
+    font-size: 14px;
+    color: #7f8c8d;
+    margin-bottom: 25px;
+}
+
+/* File input */
+.file-input-wrapper input[type="file"] {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #dcdcdc;
+    margin-bottom: 20px;
+}
+
+/* Upload button */
+.upload-btn {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    border: none;
+    background: #27ae60;
+    color: white;
+    font-weight: 600;
+    font-size: 15px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.upload-btn:hover {
+    background: #1e874b;
+    transform: translateY(-2px);
+}
+
+/* Fix bootstrap dropdown appearance */
+
+.dropdown-menu{
+    list-style:none;
+    padding:0;
+    margin:0;
+}
+
+.dropdown-menu li{
+    list-style:none;
+}
+
+.page-header .btn{
+    width:auto;
+}
+
+/* ===== EXPORT BUTTONS ===== */
+
+.export-btn{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    padding:8px 14px;
+    border-radius:10px;
+    font-size:14px;
+    font-weight:500;
+    text-decoration:none;
+    transition:all 0.25s ease;
+}
+
+/* Excel */
+
+.excel-btn{
+    background:#e9f7ef;
+    color:#1d8348;
+    border:1px solid #1d8348;
+}
+
+.excel-btn:hover{
+    background:#1d8348;
+    color:white;
+}
+
+/* PDF */
+
+.pdf-btn{
+    background:#fdecea;
+    color:#c0392b;
+    border:1px solid #c0392b;
+}
+
+.pdf-btn:hover{
+    background:#c0392b;
+    color:white;
+}
+
+/* Word */
+
+.word-btn{
+    background:#eaf2ff;
+    color:#2c5dd8;
+    border:1px solid #2c5dd8;
+}
+
+.word-btn:hover{
+    background:#2c5dd8;
+    color:white;
+}

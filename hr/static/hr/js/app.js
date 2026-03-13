@@ -60,28 +60,55 @@ const revenueChart = new Chart(revenueCtx, {
     }
 });
 
-// Monthly Attendance - Line Chart
+// Daily Attendance Chart
+
 const balanceCtx = document.getElementById('balanceChart').getContext('2d');
+
 const balanceChart = new Chart(balanceCtx, {
-    type: 'line',
+    type: 'bar',
+
     data: {
-        labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+        labels: ['Present', 'Absent', 'Late'],
+
         datasets: [{
-            label: 'Present Employees',
-            data: [20, 22, 19, 23],
-            backgroundColor: 'rgba(75, 192, 192, 0.2)',
-            borderColor: 'rgb(13, 95, 95)',
-            borderWidth: 2,
-            tension: 0.3,
-            fill: true,
-            pointRadius: 4
+            label: 'Today\'s Attendance',
+
+            data: [
+                presentToday,
+                absentToday,
+                lateToday
+            ],
+
+            backgroundColor: [
+                'rgba(34,197,94,0.6)',
+                'rgba(239,68,68,0.6)',
+                'rgba(245,158,11,0.6)'
+            ],
+
+            borderColor: [
+                'rgb(34,197,94)',
+                'rgb(239,68,68)',
+                'rgb(245,158,11)'
+            ],
+
+            borderWidth: 2
         }]
     },
+
     options: {
         responsive: true,
-        plugins: { legend: { display: true, position: 'top' } },
+
+        plugins: {
+            legend: {
+                display: true,
+                position: 'top'
+            }
+        },
+
         scales: {
-            y: { beginAtZero: true }
+            y: {
+                beginAtZero: true
+            }
         }
     }
 });
