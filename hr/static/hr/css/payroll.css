@@ -1,46 +1,40 @@
-/* ====== Payroll Container ====== */
+/* ================= Payroll Container ================= */
 .payroll-container {
     padding: 40px;
     background: linear-gradient(to bottom right, #f4f6f8, #dbe9f4);
     min-height: 100vh;
     font-family: 'Poppins', sans-serif;
+    position: relative;
 }
 
-/* ====== Header ====== */
-.payroll-header {
+/* ================= Header ================= */
+.payroll-container .payroll-header {
     text-align: center;
     margin-bottom: 40px;
 }
 
-.payroll-header h1 {
+/* Corner button */
+.payroll-container .corner-btn {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+}
+
+/* Header Title */
+.payroll-container .payroll-header h1 {
     font-size: 42px;
     letter-spacing: 6px;
     color: #2c3e50;
+    margin-bottom: 8px;
 }
 
-/* ====== Stats Cards ====== */
-.stats-cards {
-    display: flex;
-    gap: 20px;
-    justify-content: center;
-    margin-bottom: 30px;
+.payroll-container .payroll-header p {
+    font-size: 16px;
+    color: #7f8c8d;
 }
 
-.card {
-    flex: 1;
-    max-width: 250px;
-    padding: 25px 20px;
-    border-radius: 15px;
-    color: white;
-    text-align: center;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-}
-
-.employees-card { background: linear-gradient(135deg, #1abc9c, #16a085); }
-.records-card { background: linear-gradient(135deg, #3498db, #2980b9); }
-
-/* ====== Messages ====== */
-.message-box {
+/* ================= Flash Messages ================= */
+.payroll-container .message-box {
     display: flex;
     align-items: center;
     gap: 10px;
@@ -51,22 +45,127 @@
     font-size: 14px;
 }
 
-.message-success {
+.payroll-container .message-success {
     background-color: #d4edda;
     color: #155724;
     border: 1px solid #c3e6cb;
 }
 
-.message-error {
+.payroll-container .message-error {
     background-color: #f8d7da;
     color: #721c24;
     border: 1px solid #f5c6cb;
 }
 
-/* ====== View Report Button ====== */
-.view-report-btn {
-    padding: 12px 25px;
-    background: linear-gradient(135deg, #8e44ad, #9b59b6);
+/* ================= Stats Cards ================= */
+.payroll-container .stats-cards {
+    display: flex;
+    justify-content: center;
+    gap: 25px;
+    flex-wrap: wrap;
+    margin-bottom: 40px;
+}
+
+.payroll-container .card {
+    position: relative;
+    width: 180px;
+    padding: 20px;
+    border-radius: 14px;
+    color: white;
+    text-align: center;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.12);
+    transition: all 0.3s ease;
+}
+
+.payroll-container .card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 18px 30px rgba(0,0,0,0.18);
+}
+
+.payroll-container .card p {
+    font-size: 13px;
+    letter-spacing: 1px;
+    opacity: 0.9;
+    margin-bottom: 8px;
+}
+
+.payroll-container .card h2 {
+    font-size: 30px;
+    font-weight: 600;
+    margin: 0;
+}
+
+.payroll-container .employees-card {
+    background: linear-gradient(135deg, #1abc9c, #2980b9);
+}
+
+.payroll-container .records-card {
+    background: linear-gradient(135deg, #3498db, #1abc9c);
+}
+
+.payroll-container .card-icon {
+    font-size: 24px;
+    margin-bottom: 8px;
+    color: white;
+}
+
+/* Decorative circle */
+.payroll-container .card::after {
+    content: "";
+    position: absolute;
+    right: -20px;
+    top: -10px;
+    width: 90px;
+    height: 90px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 50%;
+}
+
+/* ================= Export Buttons ================= */
+.payroll-container .export-btn {
+    padding: 10px 20px;
+    border-radius: 10px;
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    margin-right: 8px;
+    border: none;
+    cursor: pointer;
+    transition: 0.3s;
+    font-size: 13px;
+}
+
+.payroll-container .export-btn.pdf {
+    background: #ad4454;
+}
+
+.payroll-container .export-btn.pdf:hover {
+    background: #59b672;
+    transform: scale(1.05);
+}
+
+.payroll-container .export-btn.excel {
+    background: #59b672;
+}
+
+.payroll-container .export-btn.excel:hover {
+    background: #3498db;
+    transform: scale(1.05);
+}
+
+.payroll-container .export-btn.word {
+    background: #3498db;
+}
+
+.payroll-container .export-btn.word:hover {
+    background: #ad4454;
+    transform: scale(1.05);
+}
+
+/* ================= View Report Button ================= */
+.payroll-container .view-report-btn {
+    padding: 10px 20px;
+    background: linear-gradient(135deg, #44ada1, #598fb6);
     color: white;
     border-radius: 10px;
     text-decoration: none;
@@ -75,13 +174,13 @@
     transition: 0.3s;
 }
 
-.view-report-btn:hover {
+.payroll-container .view-report-btn:hover {
     transform: scale(1.05);
-    background: linear-gradient(135deg, #9b59b6, #8e44ad);
+    background: linear-gradient(135deg, #595eb6, #4457ad);
 }
 
-/* ====== Bulk Upload / Download ====== */
-.bulk-upload-btns {
+/* ================= Bulk Upload ================= */
+.payroll-container .bulk-upload-btns {
     margin-bottom: 30px;
     display: flex;
     gap: 10px;
@@ -90,13 +189,13 @@
     align-items: center;
 }
 
-.bulk-btn {
-    padding: 8px 18px;
+.payroll-container .bulk-btn {
+    padding: 8px 16px;
     border-radius: 8px;
     border: none;
     font-weight: bold;
     cursor: pointer;
-    font-size: 14px;
+    font-size: 13px;
     text-decoration: none;
     display: inline-flex;
     align-items: center;
@@ -104,20 +203,29 @@
     transition: 0.3s;
 }
 
-.bulk-btn:hover { transform: scale(1.05); }
+.payroll-container .bulk-btn:hover {
+    transform: scale(1.05);
+}
 
-.bulk-upload-btns a.bulk-btn { background-color: #27ae60; color: white; }
-.bulk-upload-btns button.bulk-btn { background-color: #2980b9; color: white; }
+.payroll-container .bulk-upload-btns a.bulk-btn {
+    background-color: #27ae60;
+    color: white;
+}
 
-.bulk-upload-btns input[type="file"] {
+.payroll-container .bulk-upload-btns button.bulk-btn {
+    background-color: #2980b9;
+    color: white;
+}
+
+.payroll-container .bulk-upload-btns input[type="file"] {
     padding: 6px 8px;
     border-radius: 8px;
     border: 1px solid #ccc;
-    font-size: 14px;
+    font-size: 13px;
 }
 
-/* ====== Form ====== */
-form.payroll-form {
+/* ================= Payroll Form ================= */
+.payroll-container form.payroll-form {
     background: white;
     padding: 25px;
     border-radius: 15px;
@@ -129,15 +237,16 @@ form.payroll-form {
     justify-content: center;
 }
 
-form.payroll-form select, form.payroll-form input {
+.payroll-container form.payroll-form select,
+.payroll-container form.payroll-form input {
     padding: 10px;
     border-radius: 10px;
     border: 1px solid #ccc;
-    min-width: 180px;
+    min-width: 170px;
 }
 
-form.payroll-form button {
-    padding: 10px 25px;
+.payroll-container form.payroll-form button {
+    padding: 10px 20px;
     border-radius: 10px;
     border: none;
     background: #27ae60;
@@ -145,196 +254,81 @@ form.payroll-form button {
     font-weight: bold;
 }
 
-/* ====== Table ====== */
-table {
+/* ================= Payroll Table ================= */
+.payroll-container table {
     width: 100%;
     border-collapse: collapse;
-    background: rgb(154, 143, 143);
-    border-radius: 15px;
+    border-radius: 10px;
     overflow: hidden;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    background: #fff;
 }
 
-th {
+.payroll-container th {
     background: #34495e;
     color: white;
-    padding: 15px;
+    padding: 12px;
+    font-weight: bold;
 }
 
-td {
-    padding: 15px;
+.payroll-container td {
+    padding: 12px;
     text-align: center;
     border-bottom: 1px solid #ecf0f1;
 }
 
-.total-salary { font-weight: bold; color: #e67e22; }
+.payroll-container .total-salary {
+    font-weight: bold;
+    color: #e67e22;
+}
 
-td a, td button {
+.payroll-container td a {
     padding: 6px 12px;
     border-radius: 8px;
     font-size: 12px;
     text-decoration: none;
     border: none;
     cursor: pointer;
-}
-
-td a { background: #2980b9; color: white; }
-td button { background: #c0392b; color: white; }
-
-.payroll-container {
-    padding: 40px;
-    background: linear-gradient(to bottom right, #f4f6f8, #dbe9f4);
-    min-height: 100vh;
-    font-family: 'Poppins', sans-serif;
-}
-
-.payroll-header {
-    text-align: center;
-    margin-bottom: 30px;
-}
-
-.payroll-header h1 {
-    font-size: 36px;
-    letter-spacing: 4px;
-    color: #2c3e50;
-}
-
-.payroll-header p {
-    font-size: 16px;
-    color: #7f8c8d;
-}
-
-/* Flash Messages */
-.flash-message {
-    text-align: center;
-    margin-bottom: 20px;
-    font-weight: 600;
-    padding: 10px 20px;
-    border-radius: 10px;
-    display: inline-block;
-}
-
-.flash-message.success {
-    background-color: #dff0d8;
-    color: #27ae60;
-}
-
-.flash-message.error {
-    background-color: #f2dede;
-    color: #c0392b;
-}
-
-/* Export Buttons */
-.export-btn {
-    padding: 12px 25px;
-    border-radius: 10px;
+    background: #2980b9;
     color: white;
-    text-decoration: none;
-    font-weight: bold;
-    margin-right: 10px;
+}
+
+.payroll-container td button {
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 12px;
     border: none;
     cursor: pointer;
+    background: #c0392b;
+    color: white;
+}
+/* ================= Bulk Upload Button ================= */
+.bulk-upload-btns {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 30px;
+    position: relative;
+}
+
+.bulk-upload-btns input[type="file"] {
+    display: none;
+}
+
+.custom-upload-btn {
+    background: linear-gradient(135deg, #2c22e6, #00d3b7);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-weight: bold;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
     transition: 0.3s;
 }
-.export-btn.pdf { background: #8e44ad; }
-.export-btn.pdf:hover { background: #9b59b6; transform: scale(1.05); }
-.export-btn.excel { background: #27ae60; }
-.export-btn.excel:hover { background: #2ecc71; transform: scale(1.05); }
 
-/* Table */
-table {
-    width: 100%;
-    border-collapse: collapse;
-    background: rgb(255, 253, 253);
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+.custom-upload-btn:hover {
+    background: linear-gradient(135deg, #0094d3, #22e691);
+    transform: scale(1.05);
 }
 
-th {
-    background: #34495e;
-    color: white;
-    padding: 12px;
-    font-weight: bold;
-    text-align: center;
-}
-
-td {
-    padding: 12px;
-    text-align: center;
-    border-bottom: 1px solid #ecf0f1;
-}
-
-.total-salary {
-    font-weight: bold;
-    color: #e67e22;
-}
-
-/* ===== Stats Cards Container ===== */
-.stats-cards {
-    display: flex;
-    justify-content: center;
-    gap: 30px;
-    margin-bottom: 40px;
-    flex-wrap: wrap;
-}
-
-/* ===== Individual Card ===== */
-.card {
-    position: relative;
-    width: 200px;
-    padding: 25px 20px;
-    border-radius: 14px;
-    color: rgb(32, 29, 29);
-    text-align: center;
-    box-shadow: 0 10px 20px rgba(0,0,0,0.12);
-    transition: all 0.3s ease;
-}
-
-/* Hover animation */
-.card:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 18px 30px rgba(0,0,0,0.18);
-}
-
-/* Card title */
-.card p {
-    font-size: 14px;
-    letter-spacing: 1px;
-    opacity: 0.9;
-    margin-bottom: 10px;
-}
-
-/* Card number */
-.card h2 {
-    font-size: 36px;
-    font-weight: 600;
-    margin: 0;
-}
-
-/* ===== Employees Card ===== */
-.employees-card {
-    background: linear-gradient(135deg, #1abc9c, #16a085);
-}
-
-/* ===== Payroll Records Card ===== */
-.records-card {
-    background: linear-gradient(135deg, #3498db, #2980b9);
-}
-
-/* Decorative circle */
-.card::after {
-    content: "";
-    position: absolute;
-    right: -20px;
-    top: -10px;
-    width: 90px;
-    height: 90px;
-    background: rgba(255,255,255,0.15);
-    border-radius: 50%;
-}
-.card-icon {
-    font-size: 28px;
-    margin-bottom: 10px;
-    opacity: 0.9;
-}
