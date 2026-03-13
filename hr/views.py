@@ -1,52 +1,73 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.http import HttpResponse, FileResponse
 from django.template import loader
-from django.http import HttpResponse
+from django.template.loader import render_to_string
 from django.views import View
-import csv
-from io import TextIOWrapper
-from django.db import IntegrityError, transaction
-from .models import Employee, Department, Role, Leave, Attendance, Performance, Payroll
-from .forms import LeaveForm, EmployeeForm, BulkEmployeeUploadForm
-from .forms import LeaveForm, EmployeeForm
-from django.utils import timezone
-from .forms import AttendanceForm, PerformanceForm, AttendanceUploadForm
-from django.contrib import messages
-from django.db.models import Q
-from django.contrib.messages.views import SuccessMessageMixin
-from django.urls import reverse_lazy
-from django.core.paginator import Paginator
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.detail import DetailView
-from authenication.models import CustomUser
-import csv
-import io
-from authenication.models import CustomUser
-from openpyxl import load_workbook
-from reportlab.pdfgen import canvas
-import openpyxl
-import pandas as pd
+
+from django.contrib import messages
+from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.auth.models import User
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
-from .forms import EmployeeProfileForm
-from django.views import View
-from django.shortcuts import render
-from django.http import HttpResponse
-from hr.models import Payroll
+
+from django.urls import reverse_lazy
+from django.core.paginator import Paginator
+from django.core.mail import send_mail
+from django.conf import settings
+
+from django.utils import timezone
+from django.utils.html import strip_tags
+
+from django.db import IntegrityError, transaction
+from django.db.models import Q, Avg
+
+from .models import Employee, Department, Role, Leave, Attendance, Performance, Payroll
+from .forms import (
+    LeaveForm,
+    EmployeeForm,
+    BulkEmployeeUploadForm,
+    AttendanceForm,
+    PerformanceForm,
+    AttendanceUploadForm,
+    EmployeeProfileForm
+)
+
+from authenication.models import CustomUser
+
+import csv
+import io
+import json
+import pandas as pd
+import openpyxl
+from openpyxl import Workbook, load_workbook
+
+from decimal import Decimal
+from datetime import datetime
+from io import BytesIO
+
 from docx import Document
 from docx.shared import RGBColor, Pt
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
-from openpyxl import Workbook
-from reportlab.lib.pagesizes import letter
+
+from reportlab.lib.pagesizes import letter, A4
+from reportlab.lib.units import inch
+from reportlab.lib import colors
 from reportlab.pdfgen import canvas
-from decimal import Decimal
-from datetime import datetime
-from io import BytesIO
-from django.utils import timezone
+from reportlab.platypus import (
+    SimpleDocTemplate,
+    Table,
+    TableStyle,
+    Paragraph,
+    Spacer
+)
+from reportlab.lib.styles import getSampleStyleSheet
 
 class DashboardView(View):
-    def get(self, request):  
+    def get(self, request):
+        #Mbali  
         today = timezone.localdate()
 
         present_today = Attendance.objects.filter(date=today, status="Present").count()
@@ -55,11 +76,26 @@ class DashboardView(View):
 
         employee_count = Employee.objects.count()
 
+        #Lusanda
+        performance_stats = (
+            Performance.objects
+            .values('department__name')
+            .annotate(avg_rating=Avg('rating'))
+            .order_by('department__name')
+        )
+
+        dept_labels = [p['department__name'] for p in performance_stats]
+        dept_ratings = [float(round(p['avg_rating'], 2)) for p in performance_stats]
+
         context = {
             "employee_count": employee_count,
             "present_today": present_today,
             "absent_today": absent_today,
             "late_today": late_today,
+
+            "department_count": Department.objects.count(),
+            "dept_labels": json.dumps(dept_labels),
+            "dept_ratings": json.dumps(dept_ratings),
         }
 
         return render(request, "hr/pages/dashboard.html", context)
@@ -610,10 +646,34 @@ def performance_list(request):
 def add_performance(request):
     if request.method == 'POST':
         form = PerformanceForm(request.POST)
+
         if form.is_valid():
-            form.save()
-            messages.success(request, 'Performance record added successfully.')
+            performance = form.save()
+            employee = performance.employee
+
+            subject = "New Performance Review Added"
+
+            html_message = render_to_string(
+                'hr/email/performance_notification.html',
+                {
+                    'employee': employee,
+                    'performance': performance
+                }
+            )
+
+            plain_message = strip_tags(html_message)
+
+            send_mail(
+                subject,
+                plain_message,
+                settings.EMAIL_HOST_USER,
+                ["ljpshabane@gmail.com"],
+                html_message=html_message
+            )
+
+            messages.success(request, "Performance added and email notification sent successfully.")
             return redirect('performance')
+
     else:
         form = PerformanceForm()
 

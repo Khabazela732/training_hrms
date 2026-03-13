@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body{
+            font-family: Arial, sans-serif;
+            background:#f4f6f9;
+            padding:20px;
+        }
+
+        .email-container{
+            background:white;
+            padding:25px;
+            border-radius:8px;
+            max-width:600px;
+            margin:auto;
+            box-shadow:0 3px 10px rgba(0,0,0,0.1);
+        }
+
+        .header{
+            background:#2563eb;
+            color:white;
+            padding:15px;
+            border-radius:6px 6px 0 0;
+            text-align:center;
+        }
+
+        .content{
+            padding:20px;
+            color:#333;
+        }
+
+        .details{
+            background:#f1f5f9;
+            padding:15px;
+            border-radius:6px;
+            margin-top:10px;
+        }
+
+        .footer{
+            margin-top:20px;
+            font-size:13px;
+            color:#777;
+            text-align:center;
+        }
+
+        .rating{
+            font-size:18px;
+            font-weight:bold;
+            color:#16a34a;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="email-container">
+
+    <div class="header">
+        <h2>Performance Review Notification</h2>
+    </div>
+
+    <div class="content">
+        <p>Hello <strong>{{ employee.first_name }}</strong>,</p>
+
+        <p>A new performance review has been added to your HR profile.</p>
+
+        <div class="details">
+            <p><strong>Employee:</strong> {{ employee.first_name }} {{ employee.last_name }}</p>
+            <p><strong>Department:</strong> {{ performance.department.name }}</p>
+            <p><strong>Role:</strong> {{ performance.role }}</p>
+            <p><strong>Rating:</strong> <span class="rating">{{ performance.rating }}/5</span></p>
+            <p><strong>Remarks:</strong> {{ performance.remarks }}</p>
+        </div>
+
+        <p>Please log into the HR system to view more details.</p>
+    </div>
+
+    <div class="footer">
+        HR Management System
+    </div>
+
+</div>
+
+</body>
+</html>
