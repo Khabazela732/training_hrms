@@ -137,7 +137,7 @@ def employee_attendance_create(request):
         subject = "Attendance Confirmation"
 
         html_message = render_to_string(
-            "employee/pages/attendance_email.html",
+            "hr/pages/attendance_email.html",
             {
                 "employee": employee,
                 "date": today,

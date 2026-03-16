@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Attendance Confirmation</title>
+</head>
+
+<body style="font-family: Arial, sans-serif; background:#f5f7fb; padding:20px;">
+
+<div style="max-width:600px;margin:auto;background:white;border-radius:8px;padding:25px;border:1px solid #e6e6e6;">
+
+   
+    <div style="background:#2f62d6;color:white;text-align:center;padding:18px;border-radius:6px;margin-bottom:20px;">
+        <h2 style="margin:0;">Attendance Confirmation</h2>
+    </div>
+
+    <p>Hello <strong>{{ employee.first_name }} {{ employee.last_name }}</strong>,</p>
+
+    <p>Your attendance has been successfully recorded.</p>
+
+    
+    <div style="background:#eef1f6;padding:18px;border-radius:6px;border:1px solid #d9dee8;">
+
+        <p style="margin:8px 0;">
+            <strong>Date:</strong> {{ date }}
+        </p>
+
+        <p style="margin:8px 0;">
+            <strong>Check In Time:</strong>
+            <span style="color:#16a34a;font-weight:bold;">
+                {{ check_in_time }}
+            </span>
+        </p>
+
+    </div>
+
+    <p style="margin-top:20px;">
+        Please log into the HR system to view more details.
+    </p>
+
+  
+    <div style="margin-top:25px;font-size:13px;color:#777;border-top:1px solid #eee;padding-top:10px;">
+        This is an automated notification from the HR Management System.
+    </div>
+
+</div>
+
+</body>
+</html>
