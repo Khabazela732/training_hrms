@@ -91,8 +91,6 @@ class DashboardView(View):
             "attendances": attendances
         }
 
-        return render(request, "hr/pages/dashboard.html", context)
-
         # Lusanda - Department Performance
         performance_stats = (
             Performance.objects
@@ -144,6 +142,7 @@ class DashboardView(View):
         }
 
         return render(request, "hr/pages/dashboard.html", context)
+    
 class EmployeesView(View):
     def get(self, request):
         template = loader.get_template('hr/pages/employees.html')
