@@ -1,4 +1,4 @@
-from .views import DashboardView, EmployeesView, EmployeeCreateView, EmployeeUpdateView, EmployeeDeleteView, EmployeeDetailView, Attendance_View, LeaveListView, DepartmentsView, DepartmentCreateView, DepartmentUpdateView, DepartmentDeleteView,DepartmentPDFExportView, PayrollView,DepartmentBulkCreateView, AddPayrollView, EditPayrollView, DeletePayrollView, ViewPayrollReport
+from .views import DashboardView, EmployeesView, EmployeeCreateView, EmployeeUpdateView, EmployeeDeleteView, EmployeeDetailView, Attendance_View, LeaveListView, DepartmentsView, DepartmentCreateView, DepartmentUpdateView, DepartmentDeleteView,DepartmentPDFExportView, PayrollView,DepartmentBulkCreateView, AddPayrollView, EditPayrollView, DeletePayrollView, ViewPayrollReport, update_attendance_status
 from django.urls import path
 from . import views 
 
@@ -38,6 +38,7 @@ urlpatterns = [
     path('attendance/report/', views.attendance_report, name='attendance_report'),
     path('attendance/export/excel/', views.export_attendance_excel, name='export_attendance_excel'),
     path('attendance/export/pdf/', views.export_attendance_pdf, name='export_attendance_pdf'),
+    path('attendance/update-status/', update_attendance_status, name='update_attendance_status'),
 
     #lusanda's code
     path('performance/', views.performance_list, name='performance'),

@@ -148,3 +148,55 @@ if (payrollCanvas) {
     });
 
 }
+//Daily Attendance Chart//
+
+const balanceCtx = document.getElementById('balanceChart').getContext('2d');
+
+const balanceChart = new Chart(balanceCtx, {
+    type: 'bar',
+
+    data: {
+        labels: ['Present', 'Absent', 'Late'],
+
+        datasets: [{
+            label: 'Today\'s Attendance',
+
+            data: [
+                presentToday,
+                absentToday,
+                lateToday
+            ],
+
+            backgroundColor: [
+                'rgba(34,197,94,0.6)',
+                'rgba(239,68,68,0.6)',
+                'rgba(245,158,11,0.6)'
+            ],
+
+            borderColor: [
+                'rgb(34,197,94)',
+                'rgb(239,68,68)',
+                'rgb(245,158,11)'
+            ],
+
+            borderWidth: 2
+        }]
+    },
+
+    options: {
+        responsive: true,
+
+        plugins: {
+            legend: {
+                display: true,
+                position: 'top'
+            }
+        },
+
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});

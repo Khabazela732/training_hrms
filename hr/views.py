@@ -69,11 +69,11 @@ from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from django.conf import settings
+from django.http import JsonResponse
+from django.utils import timezone
 
 class DashboardView(View):
     def get(self, request):
-
-        # Mbali  
         today = timezone.localdate()
 
         present_today = Attendance.objects.filter(date=today, status="Present").count()
@@ -81,6 +81,17 @@ class DashboardView(View):
         late_today = Attendance.objects.filter(date=today, status="Late").count()
 
         employee_count = Employee.objects.count()
+        attendances = Attendance.objects.filter(date=today)
+
+        context = {
+            "employee_count": employee_count,
+            "present_today": present_today,
+            "absent_today": absent_today,
+            "late_today": late_today,
+            "attendances": attendances
+        }
+
+        return render(request, "hr/pages/dashboard.html", context)
 
         # Lusanda - Department Performance
         performance_stats = (
@@ -640,6 +651,30 @@ def export_attendance_pdf(request):
     p.save()
 
     return response
+
+def update_attendance_status(request):
+    if request.method == "POST" and request.is_ajax():
+        attendance_id = request.POST.get("attendance_id")
+        new_status = request.POST.get("status")
+
+        attendance = Attendance.objects.get(id=attendance_id)
+        attendance.status = new_status
+        attendance.save()
+
+        today = timezone.localdate()
+        present_today = Attendance.objects.filter(date=today, status="Present").count()
+        absent_today = Attendance.objects.filter(date=today, status="Absent").count()
+        late_today = Attendance.objects.filter(date=today, status="Late").count()
+
+        data = {
+            "present_today": present_today,
+            "absent_today": absent_today,
+            "late_today": late_today,
+        }
+
+        return JsonResponse(data)
+
+    return JsonResponse({"error": "Invalid request"}, status=400)
 
 #Lusanda code will go here
 
