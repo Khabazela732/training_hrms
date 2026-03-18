@@ -1,0 +1,29 @@
+{% extends "hr/base/base.html" %}
+{% load static %}
+{% block content %}
+<section class="content">
+
+    <div class="topbar">
+        <a href="{% url 'recruitment' %}"><i class="fas fa-arrow-left"></i></a>
+        <h2>Schedule Interview</h2>
+    </div>
+
+    <div class="box">
+        <form method="POST">
+  {% csrf_token %}
+  <label>Interview Date:</label>
+  <input type="datetime-local" name="interview_date" required>
+
+  <label>Interviewer:</label>
+  <input type="text" name="interviewer" required>
+
+  <label>Notes:</label>
+  <textarea name="notes"></textarea>
+
+  <button type="submit">Schedule Interview</button>
+</form>
+    </div>
+
+</section>
+
+{% endblock %}

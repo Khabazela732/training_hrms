@@ -1,4 +1,4 @@
-from .views import DashboardView, EmployeesView, EmployeeCreateView, EmployeeUpdateView, EmployeeDeleteView, EmployeeDetailView, Attendance_View, LeaveListView, DepartmentsView, DepartmentCreateView, DepartmentUpdateView, DepartmentDeleteView,DepartmentPDFExportView, PayrollView,DepartmentBulkCreateView, AddPayrollView, EditPayrollView, DeletePayrollView, ViewPayrollReport, update_attendance_status
+from .views import DashboardView, EmployeesView, EmployeeCreateView, EmployeeUpdateView, EmployeeDeleteView, EmployeeDetailView, Attendance_View, LeaveListView, DepartmentsView, DepartmentCreateView, DepartmentUpdateView, DepartmentDeleteView,DepartmentPDFExportView, PayrollView,DepartmentBulkCreateView, AddPayrollView, EditPayrollView, DeletePayrollView, ViewPayrollReport, update_attendance_status, recruitment_view, create_job_view
 from django.urls import path
 from . import views 
 
@@ -39,6 +39,22 @@ urlpatterns = [
     path('attendance/export/excel/', views.export_attendance_excel, name='export_attendance_excel'),
     path('attendance/export/pdf/', views.export_attendance_pdf, name='export_attendance_pdf'),
     path('attendance/update-status/', update_attendance_status, name='update_attendance_status'),
+    path('recruitment/', recruitment_view, name='recruitment'),
+    path('recruitment/create/', create_job_view, name='create_job'),
+    path('recruitment/job-ads/', views.job_ads_view, name='job_ads'),
+    path('recruitment/job/<int:pk>/edit/', views.edit_job_view, name='edit_job'),
+    path('recruitment/job/<int:pk>/delete/', views.delete_job_view, name='delete_job'),
+    path('recruitment/pipeline/', views.recruitment_pipeline_view, name='recruitment_pipeline'),
+    path('recruitment/candidates/', views.view_candidates, name='view_candidates'),
+    path('recruitment/candidates/schedule/<int:pk>/', views.schedule_interview, name='schedule_interview'),
+    path('recruitment/scheduled-interviews/', views.scheduled_interviews_view, name='scheduled_interviews'),
+    path('recruitment/hires/', views.hires_view, name='hires'),
+    path('candidate/hire/<int:pk>/', views.mark_as_hired, name='mark_as_hired'),
+    path('candidate/onboarding/<int:pk>/', views.complete_onboarding, name='complete_onboarding'),
+    path('recruitment/candidates/edit/<int:pk>/', views.edit_candidate, name='edit_candidate'),
+    path('recruitment/candidates/delete/<int:pk>/', views.delete_candidate, name='delete_candidate'),
+    path('recruitment/candidates/schedule/delete/<int:pk>/', views.delete_interview, name='delete_interview'),
+
 
     #lusanda's code
     path('performance/', views.performance_list, name='performance'),

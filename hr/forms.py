@@ -1,5 +1,5 @@
 from django import forms
-from .models import Leave, Attendance, Performance, Employee
+from .models import Leave, Attendance, Performance, Employee, Job, Candidate, Interview
 
 
 class LeaveForm(forms.ModelForm):
@@ -63,3 +63,17 @@ class EmployeeProfileForm(forms.ModelForm):
     class Meta:
         model = Employee
         fields = ['profile_picture']
+
+class JobForm(forms.ModelForm):
+    class Meta:
+        model = Job
+        fields = '__all__'
+
+class InterviewForm(forms.ModelForm):
+    class Meta:
+        model = Interview
+        fields = ['candidate', 'job', 'date', 'time', 'interviewer', 'status']
+        widgets = {
+            'date': forms.DateInput(attrs={'type':'date'}),
+            'time': forms.TimeInput(attrs={'type':'time'}),
+        }

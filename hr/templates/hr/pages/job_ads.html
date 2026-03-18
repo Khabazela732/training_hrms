@@ -1,0 +1,47 @@
+{% extends "hr/base/base.html" %}
+{% load static %}
+{% block content %}
+
+<section class="content">
+
+    <div class="topbar">
+        <a href="{% url 'recruitment' %}"><i class="fas fa-arrow-left"></i></a>
+        <h2>Job Ads</h2>
+    </div>
+
+    <div class="cards-container">
+        {% for job in jobs %}
+        <div class="job-card-wrapper">
+            <a href="{% url 'edit_job' job.pk %}" class="job-card">
+                <h3>{{ job.title }}</h3>
+                <p><strong>Department:</strong> {{ job.department }}</p>
+                <p><strong>Type:</strong> {{ job.job_type }}</p>
+                <p><strong>Location:</strong> {{ job.location }}</p>
+                <p><strong>Status:</strong> 
+                    <span class="status 
+                        {% if job.status == 'Open' %}present
+                        {% elif job.status == 'Closed' %}absent
+                        {% else %}late{% endif %}">
+                        {{ job.status }}
+                    </span>
+                </p>
+            </a>
+
+            <div class="card-buttons">
+                <form action="{% url 'delete_job' job.pk %}" method="POST" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="delete-btn"
+                        onclick="return confirm('Are you sure you want to delete this job?');">
+                        Delete
+                    </button>
+                </form>
+            </div>
+        </div>
+        {% empty %}
+        <p>No jobs posted yet.</p>
+        {% endfor %}
+    </div>
+
+</section>
+
+{% endblock %}

@@ -71,6 +71,12 @@ from django.utils.html import strip_tags
 from django.conf import settings
 from django.http import JsonResponse
 from django.utils import timezone
+from .models import Job, Interview, InterviewSchedule
+from .forms import JobForm, Candidate, InterviewForm
+from collections import defaultdict
+from django.db.models import Q
+
+
 
 class DashboardView(View):
     def get(self, request):
@@ -674,6 +680,174 @@ def update_attendance_status(request):
         return JsonResponse(data)
 
     return JsonResponse({"error": "Invalid request"}, status=400)
+
+
+def recruitment_view(request):
+    jobs = Job.objects.all().order_by('-posted_date')
+    interviews = InterviewSchedule.objects.all().order_by('-interview_date')  
+
+    context = {
+        'jobs': jobs,
+        'interviews': interviews,
+    }
+    return render(request, 'hr/pages/recruitment.html', context)
+
+def create_job_view(request):
+    if request.method == 'POST':
+        form = JobForm(request.POST, request.FILES)
+        if form.is_valid():
+            job = form.save(commit=False)
+            job.posted_date = timezone.now()  
+            job.save()
+            return redirect('recruitment') 
+    else:
+        form = JobForm()
+    return render(request, 'hr/pages/create_job.html', {'form': form})
+
+def job_ads_view(request):
+    jobs = Job.objects.all().order_by('-posted_date') 
+    return render(request, 'hr/pages/job_ads.html', {'jobs': jobs})
+
+def edit_job_view(request, pk):
+    job = get_object_or_404(Job, pk=pk)
+    if request.method == "POST":
+        form = JobForm(request.POST, request.FILES, instance=job)
+        if form.is_valid():
+            form.save()
+            return redirect('job_ads') 
+    else:
+        form = JobForm(instance=job)
+    
+    return render(request, 'hr/pages/edit_job.html', {'form': form, 'job': job})
+
+def delete_job_view(request, pk):
+    job = get_object_or_404(Job, pk=pk)
+    if request.method == "POST":
+        job.delete()
+        messages.success(request, f"Job '{job.title}' has been deleted.")
+        return redirect('job_ads')
+    return render(request, 'hr/pages/delete_job.html', {'job': job})
+
+def recruitment_pipeline_view(request):
+    candidates = Candidate.objects.all().order_by('applied_job', 'last_name')
+
+    stages = ['Applied','Interview','Hired','Rejected']
+    pipeline = defaultdict(list)
+    for c in candidates:
+        pipeline[c.current_stage].append(c)
+
+    context = {
+        'pipeline': pipeline,
+        'stages': stages
+    }
+    return render(request, 'hr/pages/recruitment_pipeline.html', context)
+
+def view_candidates(request):
+    candidates = Candidate.objects.all().order_by('-id')
+    search = request.GET.get('search', '')
+    job_id = request.GET.get('job')
+    stage = request.GET.get('stage')
+
+    if search:
+        candidates = candidates.filter(
+            Q(first_name__icontains=search) | Q(last_name__icontains=search)
+        )
+    if job_id:
+        candidates = candidates.filter(applied_job_id=job_id)
+    if stage:
+        candidates = candidates.filter(current_stage=stage)
+    jobs = Job.objects.all()
+    stages = ['Applied', 'Interview', 'Hired', 'Rejected']
+    interviews = InterviewSchedule.objects.select_related('candidate').all().order_by('interview_date')
+
+    context = {
+        'candidates': candidates,
+        'jobs': jobs,
+        'stages': stages,
+        'selected_job': int(job_id) if job_id else None,
+        'selected_stage': stage,
+        'interviews': interviews,
+        'request': request,
+    }
+
+    return render(request, 'hr/pages/view_candidates.html', context)
+
+def schedule_interview(request, pk):
+    candidate = get_object_or_404(Candidate, pk=pk)
+
+    if request.method == "POST":
+        interview_date = request.POST.get('interview_date')
+        interviewer = request.POST.get('interviewer')
+        notes = request.POST.get('notes', '')
+
+        if interview_date:  
+            InterviewSchedule.objects.create(
+                candidate=candidate,
+                interview_date=interview_date,
+                interviewer=interviewer,
+                notes=notes
+            )
+            candidate.current_stage = "Interview"
+            candidate.save()
+            return redirect('recruitment')  
+        else:
+            error = "Please provide an interview date."
+            return render(request, "hr/pages/schedule_interview.html", {"candidate": candidate, "error": error})
+
+    return render(request, "hr/pages/schedule_interview.html", {"candidate": candidate})
+
+def scheduled_interviews_view(request):
+    interviews = Interview.objects.all().order_by('date', 'time')
+    return render(request, 'hr/pages/scheduled_interviews.html', {'interviews': interviews})
+
+def delete_interview(request, pk):
+    interview = get_object_or_404(InterviewSchedule, pk=pk)
+    interview.delete()
+    return redirect('recruitment')
+
+def hires_view(request):
+    hires = Candidate.objects.filter(current_stage='Hired').order_by('-id')
+
+    context = {
+        'hires': hires
+    }
+    return render(request, 'hr/pages/hires.html', context)
+
+def mark_as_hired(request, pk):
+    candidate = get_object_or_404(Candidate, pk=pk)
+    candidate.current_stage = 'Hired'
+    candidate.onboarding_status = 'Pending'
+    candidate.save()
+
+    return redirect('recruitment_pipeline')
+
+def complete_onboarding(request, pk):
+    candidate = get_object_or_404(Candidate, pk=pk)
+    candidate.onboarding_status = 'Completed'
+    candidate.save()
+
+    return redirect('hires')
+
+def edit_candidate(request, pk):
+    candidate = get_object_or_404(Candidate, pk=pk)
+
+    if request.method == 'POST':
+        candidate.first_name = request.POST.get('first_name')
+        candidate.last_name = request.POST.get('last_name')
+        candidate.email = request.POST.get('email')
+        candidate.current_stage = request.POST.get('current_stage')
+        candidate.interview_date = request.POST.get('interview_date') or None
+        candidate.save()
+        return redirect('view_candidates')
+
+    return render(request, 'hr/pages/edit_candidate.html', {'candidate': candidate})
+
+def delete_candidate(request, pk):
+    candidate = get_object_or_404(Candidate, pk=pk)
+    if request.method == 'POST':
+        candidate.delete()
+        return redirect('view_candidates')
+    return redirect('view_candidates')
 
 #Lusanda code will go here
 

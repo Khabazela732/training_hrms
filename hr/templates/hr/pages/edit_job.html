@@ -1,0 +1,20 @@
+{% extends "hr/base/base.html" %}
+{% load static %}
+{% block content %}
+
+<section class="content">
+
+    <div class="topbar">
+        <a href="{% url 'job_ads' %}"><i class="fas fa-arrow-left"></i></a>
+        <h2>Edit Job: {{ job.title }}</h2>
+    </div>
+
+    <form method="POST" enctype="multipart/form-data" class="job-form">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="submit-btn">Save Changes</button>
+    </form>
+
+</section>
+
+{% endblock %}
