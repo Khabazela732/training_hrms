@@ -1,0 +1,48 @@
+{% extends "hr/base/base.html" %}
+{% load static %}
+{% load pipeline_extras %}
+
+{% block content %}
+
+<section class="content">
+
+    <div class="topbar">
+        <a href="{% url 'recruitment' %}"><i class="fas fa-arrow-left"></i></a>
+        <h2>Recruitment Pipeline</h2>
+    </div>
+
+    <div class="pipeline-container">
+        {% for stage in stages %}
+        <div class="pipeline-column">
+            <h3>{{ stage }}</h3>
+            {% for candidate in pipeline|get_item:stage %}
+            <div class="candidate-card">
+                <h4>{{ candidate.first_name }} {{ candidate.last_name }}</h4>
+                <p><strong>Job:</strong> {{ candidate.applied_job.title }}</p>
+                {% if candidate.interview_date %}
+                <p><strong>Interview:</strong> {{ candidate.interview_date }}</p>
+                {% endif %}
+                <div class="card-buttons">
+
+                    <a href="{% url 'edit_candidate' candidate.pk %}" class="edit-btn">Edit</a>
+
+                    <form action="{% url 'delete_candidate' candidate.pk %}" method="POST">
+        {% csrf_token %}
+                    <button type="submit" class="delete-btn">Delete</button>
+    </form>
+
+    {% if candidate.current_stage != 'Hired' %}
+                    <a href="{% url 'mark_as_hired' candidate.pk %}" class="hire-btn">
+        Hire
+    </a>
+    {% endif %}
+
+</div>
+            </div>
+            {% empty %}
+            <p>No candidates</p>
+            {% endfor %}
+        </div>
+        {% endfor %}
+    </div>
+    {% endblock %}

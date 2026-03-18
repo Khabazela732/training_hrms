@@ -1,5 +1,6 @@
 from django.db import models
 from authenication.models import CustomUser as User
+
     
 class Department(models.Model):
     name = models.CharField(max_length=100)
@@ -90,6 +91,95 @@ class Attendance(models.Model):
     
     def _str_(self):
         return f"{self.employee} - {self.date} ({self.status})"
+
+class Job(models.Model):
+    POSITION_TYPES = [
+        ('Full-time', 'Full-time'),
+        ('Part-time', 'Part-time'),
+        ('Contract', 'Contract'),
+    ]
+
+    STATUS_CHOICES = [
+        ('Open', 'Open'),
+        ('Closed', 'Closed'),
+        ('Closing Soon', 'Closing Soon'),
+    ]
+
+    title = models.CharField(max_length=100)
+    department = models.CharField(max_length=100)
+    job_type = models.CharField(max_length=20, choices=POSITION_TYPES)
+    location = models.CharField(max_length=100)
+    salary = models.CharField(max_length=100, blank=True)
+
+    description = models.TextField()
+    requirements = models.TextField()
+
+    company_name = models.CharField(max_length=100)
+    company_logo = models.ImageField(upload_to='logos/', blank=True, null=True)
+    application_link = models.URLField(blank=True)
+
+    posted_date = models.DateField(auto_now_add=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Open')
+
+    def __str__(self):
+        return self.title
+
+class Candidate(models.Model):
+    STAGE_CHOICES = [
+        ('Applied','Applied'),
+        ('Interview','Interview'),
+        ('Hired','Hired'),
+        ('Rejected','Rejected'),
+    ]
+
+    ONBOARDING_STATUS = [
+        ('Pending','Pending'),
+        ('Completed','Completed'),
+    ]
+
+    first_name = models.CharField(max_length=100)
+    last_name = models.CharField(max_length=100)
+    email = models.EmailField()
+
+    applied_job = models.ForeignKey('Job', on_delete=models.CASCADE)
+    current_stage = models.CharField(max_length=50, choices=STAGE_CHOICES, default='Applied')
+
+    interview_date = models.DateField(null=True, blank=True)
+
+    onboarding_status = models.CharField(
+        max_length=20,
+        choices=ONBOARDING_STATUS,
+        default='Pending'
+    )
+
+    def __str__(self):
+        return f"{self.first_name} {self.last_name}"
+
+class Interview(models.Model):
+    candidate = models.ForeignKey('Candidate', on_delete=models.CASCADE)
+    job = models.ForeignKey('Job', on_delete=models.CASCADE)
+    date = models.DateField()
+    time = models.TimeField()
+    interviewer = models.CharField(max_length=100)
+    
+    STATUS_CHOICES = [
+        ('Scheduled', 'Scheduled'),
+        ('Completed', 'Completed'),
+        ('Cancelled', 'Cancelled')
+    ]
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Scheduled')
+
+    def __str__(self):
+        return f"{self.candidate.first_name} - {self.job.title} on {self.date}"
+
+class InterviewSchedule(models.Model):
+    candidate = models.ForeignKey(Candidate, on_delete=models.CASCADE)
+    interview_date = models.DateTimeField()
+    interviewer = models.CharField(max_length=100)
+    notes = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.candidate.first_name} {self.candidate.last_name} - {self.interview_date}"
     
 
 class Payroll(models.Model):

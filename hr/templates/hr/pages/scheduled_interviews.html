@@ -1,0 +1,40 @@
+{% extends "hr/base/base.html" %}
+{% block content %}
+<section class="content">
+    <div class="topbar">
+        <a href="{% url 'recruitment' %}"><i class="fas fa-arrow-left"></i></a>
+        <h2>Scheduled Interviews</h2>
+    </div>
+
+    <div class="box">
+        <table class="attendance-table">
+            <thead>
+                <tr>
+                    <th>Candidate</th>
+                    <th>Job</th>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Interviewer</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for interview in interviews %}
+                <tr>
+                    <td>{{ interview.candidate.first_name }} {{ interview.candidate.last_name }}</td>
+                    <td>{{ interview.job.title }}</td>
+                    <td>{{ interview.date }}</td>
+                    <td>{{ interview.time }}</td>
+                    <td>{{ interview.interviewer }}</td>
+                    <td>{{ interview.status }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6">No interviews scheduled</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}
