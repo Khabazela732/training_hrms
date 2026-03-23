@@ -214,5 +214,19 @@ class Performance(models.Model):
     def __str__(self):
         return f"{self.employee} - {self.rating}"
 
+class Achievement(models.Model):
+    ACHIEVEMENT_TYPES = [
+        ('employee_of_the_month', 'Employee of the month'),
+        ('certification', 'Certification'),
+        ('service_awards', 'Service Award'),
+    ]
+
+    employee = models.ForeignKey('Employee', on_delete=models.CASCADE)
+    achievement_type = models.CharField(max_length=50, choices=ACHIEVEMENT_TYPES)
+    description = models.TextField(max_length=255)
+    date_awarded = models.DateField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('employee', 'achievement_type', 'description')
 
 

@@ -17,7 +17,8 @@
     <link rel="stylesheet" href="{% static 'hr/css/performance.css' %}">
     <link rel="stylesheet" href="{% static 'hr/css/department.css' %}">
     <link rel="stylesheet" href="{% static 'hr/css/apply_leave.css' %}">
-    <link rel="stylesheet" href="{% static 'hr/css/recruitment.css' %}">
+
+    {% block extra_head %}{% endblock %}
 </head>
 
 <body>
@@ -27,7 +28,7 @@
     <div class="layout">
         {% include 'hr/essentials/sidebar.html' %}
 
-        <div id="main" class="main-content">
+        <div id="main" class="main-content {% block main_class %}{% endblock %}">
 
             {% block content %}
             {% endblock %}

@@ -1,0 +1,42 @@
+{% extends "hr/base/base.html" %}
+
+{% block content %}
+{% load static %}
+
+<link rel="stylesheet" href="{% static 'hr/css/service_awards.css' %}">
+<section class="content">
+
+    <div class="page-header">
+        <h2>Service Awards</h2>
+
+        <a href="{% url 'achievements' %}" class="back-btn">
+            ← Back
+        </a>
+    </div>
+    <table class="cert-table">
+        <thead>
+            <tr>
+                <th>Employee</th>
+                <th>Award</th>
+                <th>Date</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for award in awards %}
+            <tr>
+                <td>{{ award.employee.first_name }} {{ award.employee.last_name }}</td>
+                <td>{{ award.description }}</td>
+                <td>{{ award.date_awarded|date:"F Y" }}</td>
+                <td>
+                    <a href="{% url 'send_achievement_email' award.id %}" class="send-btn">
+                        Send Email
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</section>
+{% endblock %}

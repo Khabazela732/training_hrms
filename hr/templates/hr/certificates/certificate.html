@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Georgia', serif;
+            background: #f5f5f5;
+            border: 5px solid red;;
+        }
+
+        .wrapper {
+            display: flex;
+            justify-content: center;
+            padding: 40px 0;
+        }
+
+        .certificate {
+            width: 800px;
+            padding: 40px;
+            background: #ffffff;
+            border: 12px solid #d4af37;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            text-align: center;
+            position: relative;
+            page-break-inside: avoid;
+        }
+
+        .certificate::before {
+            content: "";
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            right: 15px;
+            bottom: 15px;
+            border: 3px solid #d4af37;
+            pointer-events: none;
+        }
+
+        h1 {
+            font-size: 48px;
+            margin-bottom: 10px;
+            color: #333;
+            letter-spacing: 2px;
+        }
+
+        .subtitle {
+            font-size: 18px;
+            margin-bottom: 40px;
+            color: #666;
+        }
+
+        .name {
+            font-size: 36px;
+            font-weight: bold;
+            margin: 30px 0;
+            color: #111;
+            border-bottom: 2px solid #d4af37;
+            display: inline-block;
+            padding-bottom: 10px;
+        }
+
+        .department {
+            font-size: 18px;
+            margin-top: 10px;
+            color: #555;
+        }
+
+        .achievement-text {
+            font-size: 20px;
+            margin-top: 30px;
+            font-style: italic;
+            color: #444;
+        }
+
+        .date {
+            margin-top: 40px;
+            font-size: 16px;
+            color: #777;
+        }
+
+        .footer {
+            margin-top: 40px;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 50px;
+            font-size: 16px;
+        }
+
+        .signature {
+            border-top: 1px solid #333;
+            width: 200px;
+            text-align: center;
+            padding-top: 5px;
+        }
+
+        .logo {
+            position: absolute;
+            top: 30px;
+            left: 30px;
+            width: 80px;
+        }
+
+        @page {
+            size: A4;
+            margin: 20mm;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="wrapper">
+
+    <div class="certificate">
+
+        <!-- Optional Logo -->
+        <!-- <img src="{% static 'images/logo.png' %}" class="logo"> -->
+
+        <h1>Certificate of Achievement</h1>
+
+        <p class="subtitle">This certificate is proudly presented to</p>
+
+        <div class="name">
+            {{ employee.first_name }} {{ employee.last_name }}
+        </div>
+
+        <div class="department">
+            Department: {{ employee.department.name }}
+        </div>
+
+        <div class="achievement-text">
+            {% if achievement.achievement_type == 'employee_of_the_month' %}
+                Employee of the Month — {{ achievement.date_awarded|date:"F Y" }}
+
+            {% elif achievement.achievement_type == 'service_awards' %}
+                {{ achievement.description }}
+
+            {% elif achievement.achievement_type == 'certification' %}
+                {{ achievement.description }}
+
+            {% endif %}
+        </div>
+
+        <div class="date">
+            Date Awarded: {{ achievement.date_awarded|date:"F d, Y" }}
+        </div>
+
+        <div class="footer">
+            <div class="signature">HR Manager</div>
+            <div class="signature">CEO</div>
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>

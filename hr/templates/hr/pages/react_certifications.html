@@ -1,0 +1,56 @@
+{% extends "hr/base/base.html" %}
+{% load static %}
+
+{% block content %}
+
+<link rel="stylesheet" href="{% static 'hr/css/react_certifications.css' %}">
+
+<section class="content">
+
+    <!-- ✅ HEADER WITH BACK BUTTON -->
+    <div class="page-header">
+        <h2>Employee Certifications</h2>
+        <a href="{% url 'achievements' %}" class="back-btn">← Back</a>
+    </div>
+
+    {% for cert, items in certifications.items %}
+    <div class="year-block">
+        <h3 class="year-title">{{ cert }}</h3>
+
+        <table class="cert-table">
+            <thead>
+                <tr>
+                    <th>Employee</th>
+                    <th>Date</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for item in items %}
+                <tr>
+                    <td>
+                        {{ item.employee.first_name }} {{ item.employee.last_name }}
+                    </td>
+                    <td>
+                        {{ item.date_awarded|date:"F d, Y" }}
+                    </td>
+                    <td>
+                        <a href="{% url 'send_achievement_email' item.id %}" class="send-btn">
+                            Send Email
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+
+        </table>
+    </div>
+
+    {% empty %}
+    <p>No certifications available.</p>
+    {% endfor %}
+
+</section>
+
+{% endblock %}

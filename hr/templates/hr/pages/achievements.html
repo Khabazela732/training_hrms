@@ -1,0 +1,130 @@
+{% extends "hr/base/base.html" %}
+
+{% block main_class %}full-width-main{% endblock %}
+
+{% block content %}
+
+{% load static %}
+
+<link rel="stylesheet" href="{% static 'hr/css/achievements.css' %}">
+
+<section class="content full-width">
+
+    <h2>Employee Achievements</h2>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <h3>{{ total_achievements }}</h3>
+            <p>Total Achievements</p>
+        </div>
+        <div class="stat-card">
+            <h3>{{ employee_of_the_month_count }}</h3>
+            <p>Employee of the Month</p>
+        </div>
+        <div class="stat-card">
+            <h3>{{ certifications|length }}</h3>
+            <p>Certifications</p>
+        </div>
+        <div class="stat-card">
+            <h3>{{ total_service_awards }}</h3>
+            <p>Service Awards</p>
+        </div>
+    </div>
+
+    <div class="achievement-grid">
+
+        <div class="achievement-card"
+            onclick="location.href='{% url 'employee_of_month_history' %}'"
+            style="cursor:pointer;">
+            <h4>
+                Employee of the Month
+                <span class="badge gold">Performance</span>
+            </h4>
+
+            {% if employee_of_the_month %}
+            <p><strong>
+                    {{ employee_of_the_month.first_name }}
+                    {{ employee_of_the_month.last_name }}
+                </strong></p>
+
+            {% if employee_of_the_month.performance_set.first %}
+            <small>
+                {{ employee_of_the_month.performance_set.first.created_at|date:"F Y" }}
+            </small>
+            {% endif %}
+
+            {% else %}
+            <p>No data available</p>
+            {% endif %}
+        </div>
+
+        <div class="achievement-card"
+            onclick="location.href='{% url 'service_awards_history' %}'"
+            style="cursor:pointer;">
+            <h4>
+                5 Years of Service
+                <span class="badge blue">Milestone</span>
+            </h4>
+
+            {% if five_year_service %}
+            <p><strong>
+                    {{ five_year_service.employee.first_name }}
+                    {{ five_year_service.employee.last_name }}
+                </strong></p>
+
+            <small>
+                {{ five_year_service.date_awarded|date:"F Y" }}
+            </small>
+
+            {% else %}
+            <p>No employee yet</p>
+            {% endif %}
+        </div>
+
+
+        <div class="achievement-card" 
+            onclick="location.href='{% url 'react_certifications' %}'"
+            style="cursor:pointer;">
+            <h4>
+                React Certification
+                <span class="badge green">Certification</span>
+            </h4>
+
+            <p><strong>{{ react_certification_count }} Employees</strong></p>
+
+            <small>
+                {{ employee_of_the_month_date|date:"F Y" }}
+            </small>
+
+        </div>
+
+    </div>
+
+    <div class="box">
+        <h3>Achievement History</h3>
+        <table class="achievement-table">
+            <thead>
+                <tr>
+                    <th>Employee</th>
+                    <th>Achievement</th>
+                    <th>Description</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for achievement in all_achievements %}
+                <tr>
+                    <td>{{ achievement.employee.first_name }}
+                        {{ achievement.employee.last_name }}
+                    </td>
+                    <td>{{ achievement.get_achievement_type_display }}</td>
+                    <td>{{ achievement.description }}</td>
+                    <td>{{ achievement.date_awarded|date:"F d, Y" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</section>
+{% endblock %}
