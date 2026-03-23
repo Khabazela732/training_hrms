@@ -6,7 +6,7 @@
     <div class="cards">
         <div class="card" onclick="location.href='calendar.html'">Calendar</div>
         <a href="{% url 'recruitment' %}" class="card">Recruitment</a>
-        <a href="applicants.html" class="card">Applicants</a>
+        <a href="{% url 'applicants_dashboard' %}" class="card">Applicants</a>
         <a href="onboarding.html" class="card">Onboarding/Offboarding</a>
         <a href="achievements.html" class="card">Achievements</a>
         <a href="{% url 'employees' %}" class="card">

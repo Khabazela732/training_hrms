@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Interview Invitation</title>
+</head>
+<body style="font-family: Arial; background-color:#f4f4f4; padding:20px;">
+
+    <div style="background:#ffffff; padding:20px; border-radius:10px;">
+        
+        <h2 style="color:#333;">Interview Invitation</h2>
+
+        <p>Hi {{ candidate.first_name }},</p>
+
+        <p>
+            We are pleased to inform you that you have been selected for an interview 
+            for the position of <strong>{{ candidate.applied_job.title }}</strong>.
+        </p>
+
+        <p>
+            <strong>Date & Time:</strong> {{ interview_date }}
+        </p>
+
+        <p>
+            Please make sure you are available at the scheduled time.
+        </p>
+
+        <br>
+
+        <p>Best regards,<br>HR Team</p>
+
+    </div>
+
+</body>
+</html>

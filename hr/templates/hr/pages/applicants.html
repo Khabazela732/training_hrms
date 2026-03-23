@@ -1,0 +1,124 @@
+{% extends "hr/base/base.html" %}
+{% load static %}
+
+{% block content %}
+<section class="content">
+
+    
+    <div class="topbar">
+        <a href="{% url 'dashboard' %}">
+            <i class="fas fa-arrow-left"></i>
+        </a>
+        <h2>Applicants List</h2>
+    </div>
+    <div class="stats-grid">
+
+    <a href="?stage=Applied" class="stat-card applied 
+        {% if selected_stage == 'Applied' %}active{% endif %}">
+        <h3>{{ applied_count }}</h3>
+        <p>Applied</p>
+    </a>
+
+    <a href="?stage=Interview" class="stat-card interview 
+        {% if selected_stage == 'Interview' %}active{% endif %}">
+        <h3>{{ interview_count }}</h3>
+        <p>Interview</p>
+    </a>
+
+    <a href="?stage=Hired" class="stat-card hired 
+        {% if selected_stage == 'Hired' %}active{% endif %}">
+        <h3>{{ hired_count }}</h3>
+        <p>Hired</p>
+    </a>
+
+    <a href="?stage=Rejected" class="stat-card rejected 
+        {% if selected_stage == 'Rejected' %}active{% endif %}">
+        <h3>{{ rejected_count }}</h3>
+        <p>Rejected</p>
+    </a>
+
+</div>
+    <div class="box">
+        <div style="margin-bottom: 15px;">
+    <a href="{% url 'applicants_dashboard' %}" class="btn-clear">
+        🔄 Show All Applicants
+    </a>
+</div>
+
+        <table class="applicant-table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Job Title</th>
+                    <th>Stage</th>
+                    <th>Applied Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for candidate in candidates %}
+                <tr>
+                    <td>
+                        {{ candidate.first_name }} {{ candidate.last_name }}
+                    </td>
+
+                    <td>
+                        {{ candidate.applied_job.title }}
+                    </td>
+
+                    <td>
+                        <span class="status 
+                            {% if candidate.current_stage == 'Applied' %}applied
+                            {% elif candidate.current_stage == 'Interview' %}interview
+                            {% elif candidate.current_stage == 'Hired' %}hired
+                            {% else %}rejected{% endif %}">
+                            {{ candidate.current_stage }}
+                        </span>
+                    </td>
+
+                    <td>
+                        {{ candidate.applied_date|date:"d M Y" }}
+                    </td>
+
+<td>
+    <div class="action-buttons">
+
+        <a href="{% url 'view_candidate' candidate.pk %}" class="view-btn">
+            👁 View
+        </a>
+
+        {% if candidate.current_stage == "Hired" %}
+            <a href="{% url 'create_employee_from_candidate' candidate.pk %}" class="edit-btn">
+                ➕ Add to Employees
+            </a>
+        {% else %}
+            <a href="{% url 'edit_candidate' candidate.pk %}" class="edit-btn">
+                ✏ Edit
+            </a>
+        {% endif %}
+
+        <form action="{% url 'delete_candidate' candidate.pk %}" method="POST" class="inline-form">
+            {% csrf_token %}
+            <button type="submit" class="delete-btn"
+                onclick="return confirm('Delete this applicant?');">
+                🗑 Delete
+            </button>
+        </form>
+
+    </div>
+</td>
+                </tr>
+
+                {% empty %}
+                <tr>
+                    <td colspan="5">No applicants found</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+
+        </table>
+    </div>
+
+</section>
+{% endblock %}

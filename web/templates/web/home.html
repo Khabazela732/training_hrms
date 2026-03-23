@@ -1,6 +1,13 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
+  {% if messages %}
+    {% for message in messages %}
+        <div class="alert-success">
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endif %}
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />

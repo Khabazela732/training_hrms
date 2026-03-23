@@ -54,8 +54,11 @@ urlpatterns = [
     path('recruitment/candidates/edit/<int:pk>/', views.edit_candidate, name='edit_candidate'),
     path('recruitment/candidates/delete/<int:pk>/', views.delete_candidate, name='delete_candidate'),
     path('recruitment/candidates/schedule/delete/<int:pk>/', views.delete_interview, name='delete_interview'),
-
-
+    path('recruitment/candidates/cancel/<int:pk>/', views.cancel_interview, name='cancel_interview'),
+    path('recruitment/applicants/', views.applicants_dashboard, name='applicants_dashboard'),
+    path('recruitment/candidate/<int:pk>/', views.view_candidate, name='view_candidate'),
+    path('recruitment/candidate/<int:pk>/hire/', views.create_employee_from_candidate, name='create_employee_from_candidate'),
+    
     #lusanda's code
     path('performance/', views.performance_list, name='performance'),
     path('performance/add/', views.add_performance, name='add_performance'),

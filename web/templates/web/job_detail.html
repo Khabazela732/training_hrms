@@ -6,25 +6,28 @@
 </head>
 <body>
 
-<h2>{{ job.title }}</h2>
-<p><strong>Department:</strong> {{ job.department }}</p>
-<p><strong>Location:</strong> {{ job.location }}</p>
-<p><strong>Description:</strong> {{ job.description }}</p>
-<p><strong>Requirements:</strong> {{ job.requirements }}</p>
+    <h2>{{ job.title }}</h2>
+     <p><strong>Department:</strong> {{ job.department }}</p>
+     <p><strong>Location:</strong> {{ job.location }}</p>
+     <p><strong>Description:</strong> {{ job.description }}</p>
+     <p><strong>Requirements:</strong> {{ job.requirements }}</p>
 
-<hr>
+     <hr>
 
-<h3>Apply for this job</h3>
-
-<form method="POST">
+    <h3>Apply for this job</h3>
+     {% if messages %}
+        {% for message in messages %}
+          <div class="alert-success">
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endif %}
+     <form method="POST">
     {% csrf_token %}
-    
-    <input type="text" name="first_name" placeholder="First Name" required><br><br>
-    <input type="text" name="last_name" placeholder="Last Name" required><br><br>
-    <input type="email" name="email" placeholder="Email" required><br><br>
-
-    <button type="submit">Submit Application</button>
+         <input type="text" name="first_name" placeholder="First Name" required><br><br>
+         <input type="text" name="last_name" placeholder="Last Name" required><br><br>
+          <input type="email" name="email" placeholder="Email" required><br><br>
+         <button type="submit">Submit Application</button>
 </form>
-
 </body>
 </html>

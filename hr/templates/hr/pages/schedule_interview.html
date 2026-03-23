@@ -1,29 +1,52 @@
 {% extends "hr/base/base.html" %}
 {% load static %}
+
 {% block content %}
 <section class="content">
 
     <div class="topbar">
         <a href="{% url 'recruitment' %}"><i class="fas fa-arrow-left"></i></a>
-        <h2>Schedule Interview</h2>
+        <h2>{% if is_reschedule %}Reschedule{% else %}Schedule{% endif %} Interview</h2>
     </div>
 
-    <div class="box">
+    <div class="form-card">
+
+        <h3 class="form-title">Interview Details</h3>
+
         <form method="POST">
-  {% csrf_token %}
-  <label>Interview Date:</label>
-  <input type="datetime-local" name="interview_date" required>
+            {% csrf_token %}
 
-  <label>Interviewer:</label>
-  <input type="text" name="interviewer" required>
+            <div class="form-group">
+                <label>Interview Date</label>
+                <input type="date" name="interview_date"
+                       value="{% if interview %}{{ interview.interview_date|date:'Y-m-d' }}{% endif %}" required>
+            </div>
 
-  <label>Notes:</label>
-  <textarea name="notes"></textarea>
+            <div class="form-group">
+                <label>Interview Time</label>
+                <input type="time" name="interview_time"
+                       value="{% if interview %}{{ interview.interview_date|time:'H:i' }}{% endif %}" required>
+            </div>
 
-  <button type="submit">Schedule Interview</button>
-</form>
+            <div class="form-group">
+                <label>Interviewer</label>
+                <input type="text" name="interviewer" placeholder="Enter interviewer name"
+                       value="{% if interview %}{{ interview.interviewer }}{% endif %}" required>
+            </div>
+
+            <div class="form-group">
+                <label>Notes</label>
+                <textarea name="notes" placeholder="Optional notes...">{% if interview %}{{ interview.notes }}{% endif %}</textarea>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn-save">{% if is_reschedule %}Reschedule{% else %}Schedule{% endif %}</button>
+                <a href="{% url 'recruitment' %}" class="btn-cancel">Cancel</a>
+            </div>
+
+        </form>
+
     </div>
 
 </section>
-
 {% endblock %}

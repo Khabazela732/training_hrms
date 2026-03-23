@@ -61,42 +61,50 @@
     <br>
 
     <div class="box">
-        <h3>Scheduled Interviews</h3>
-        <table class="interview-table">
-            <thead>
-                <tr>
-                    <th>Candidate</th>
-                    <th>Interview Date</th>
-                    <th>Interviewer</th>
-                    <th>Notes</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for interview in interviews %}
-                <tr>
-                    <td>{{ interview.candidate.first_name }} {{ interview.candidate.last_name }}</td>
-                    <td>{{ interview.interview_date }}</td>
-                    <td>{{ interview.interviewer }}</td>
-                    <td>{{ interview.notes|default:"-" }}</td>
-                    <td>
-                        <form action="{% url 'delete_interview' interview.pk %}" method="POST" style="display:inline;">
-                            {% csrf_token %}
-                            <button type="submit" class="delete-btn"
-                                onclick="return confirm('Are you sure you want to delete this interview?');">
-                                🗑 Delete
-                            </button>
-                        </form>
-                    </td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="5">No interviews scheduled yet</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+    <h3>Scheduled Interviews</h3>
+    <table class="interview-table">
+        <thead>
+            <tr>
+                <th>Candidate</th>
+                <th>Interview Date</th>
+                <th>Interviewer</th>
+                <th>Notes</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for interview in interviews %}
+            <tr>
+                <td>{{ interview.candidate.first_name }} {{ interview.candidate.last_name }}</td>
+                <td>{{ interview.interview_date }}</td>
+                <td>{{ interview.interviewer }}</td>
+                <td>{{ interview.notes|default:"-" }}</td>
+                <td>
+    
+    <form action="{% url 'delete_interview' interview.pk %}" method="POST" style="display:inline;">
+        {% csrf_token %}
+        <button type="submit" class="delete-btn"
+            onclick="return confirm('Are you sure you want to delete this interview?');">
+            🗑 Delete
+        </button>
+    </form>
+
+ 
+    <form action="{% url 'schedule_interview' interview.candidate.pk %}" method="GET" style="display:inline;">
+        <button type="submit" class="reschedule-btn">
+            🔄 Reschedule
+        </button>
+    </form>
+</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5">No interviews scheduled yet</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 
 </section>
 {% endblock %}
