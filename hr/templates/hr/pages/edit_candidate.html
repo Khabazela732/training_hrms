@@ -4,31 +4,49 @@
 
 {% block content %}
 <div class="container mt-4">
-    <h2>Edit Candidate</h2>
-    <form method="POST">
-        {% csrf_token %}
-        <div class="mb-3">
-            <label for="first_name" class="form-label">First Name</label>
-            <input type="text" name="first_name" value="{{ candidate.first_name }}" class="form-control" required>
-        </div>
-        <div class="mb-3">
-            <label for="last_name" class="form-label">Last Name</label>
-            <input type="text" name="last_name" value="{{ candidate.last_name }}" class="form-control" required>
-        </div>
-        <div class="mb-3">
-            <label for="email" class="form-label">Email</label>
-            <input type="email" name="email" value="{{ candidate.email }}" class="form-control" required>
-        </div>
-        <div class="mb-3">
-            <label for="current_stage" class="form-label">Current Stage</label>
-            <input type="text" name="current_stage" value="{{ candidate.current_stage }}" class="form-control">
-        </div>
-        <div class="mb-3">
-            <label for="interview_date" class="form-label">Interview Date</label>
-            <input type="date" name="interview_date" value="{{ candidate.interview_date|date:'Y-m-d' }}" class="form-control">
-        </div>
-        <button type="submit" class="btn btn-success">Save Changes</button>
-        <a href="{% url 'view_candidates' %}" class="btn btn-secondary">Cancel</a>
-    </form>
+
+    <div class="form-card">
+        <h2 class="form-title">Edit Candidate</h2>
+
+        <form method="POST">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label>First Name</label>
+                <input type="text" name="first_name" value="{{ candidate.first_name }}" required>
+            </div>
+
+            <div class="form-group">
+                <label>Last Name</label>
+                <input type="text" name="last_name" value="{{ candidate.last_name }}" required>
+            </div>
+
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" name="email" value="{{ candidate.email }}" required>
+            </div>
+            <div class="form-group">
+                <label>Current Stage</label>
+                <select name="current_stage">
+                    <option value="Applied" {% if candidate.current_stage == "Applied" %}selected{% endif %}>Applied</option>
+                    <option value="Interview" {% if candidate.current_stage == "Interview" %}selected{% endif %}>Interview</option>
+                    <option value="Hired" {% if candidate.current_stage == "Hired" %}selected{% endif %}>Hired</option>
+                    <option value="Rejected" {% if candidate.current_stage == "Rejected" %}selected{% endif %}>Rejected</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Interview Date</label>
+                <input type="date" name="interview_date" value="{{ candidate.interview_date|date:'Y-m-d' }}">
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn-save">Save Changes</button>
+                <a href="{% url 'view_candidates' %}" class="btn-cancel">Cancel</a>
+            </div>
+
+        </form>
+    </div>
+
 </div>
 {% endblock %}

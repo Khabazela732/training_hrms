@@ -774,27 +774,92 @@ def view_candidates(request):
 
 def schedule_interview(request, pk):
     candidate = get_object_or_404(Candidate, pk=pk)
+    interview = InterviewSchedule.objects.filter(candidate=candidate).order_by('-id').first()
+    is_reschedule = bool(interview)
 
     if request.method == "POST":
-        interview_date = request.POST.get('interview_date')
+        date = request.POST.get('interview_date')
+        time = request.POST.get('interview_time')
         interviewer = request.POST.get('interviewer')
-        notes = request.POST.get('notes', '')
+        notes = request.POST.get('notes')
 
-        if interview_date:  
-            InterviewSchedule.objects.create(
+        interview_datetime = datetime.strptime(f"{date} {time}", "%Y-%m-%d %H:%M")
+
+        if interview:
+            
+            interview.interview_date = interview_datetime
+            interview.interviewer = interviewer
+            interview.notes = notes
+            interview.save()
+        else:
+        
+            interview = InterviewSchedule.objects.create(
                 candidate=candidate,
-                interview_date=interview_date,
+                interview_date=interview_datetime,
                 interviewer=interviewer,
                 notes=notes
             )
-            candidate.current_stage = "Interview"
-            candidate.save()
-            return redirect('recruitment')  
-        else:
-            error = "Please provide an interview date."
-            return render(request, "hr/pages/schedule_interview.html", {"candidate": candidate, "error": error})
 
-    return render(request, "hr/pages/schedule_interview.html", {"candidate": candidate})
+        candidate.current_stage = "Interview"
+        candidate.interview_date = interview_datetime
+        candidate.save()
+
+        if is_reschedule:
+            subject = "Interview Rescheduled"
+            template = 'hr/email/interview_rescheduled.html'
+        else:
+            subject = "Interview Scheduled"
+            template = 'hr/email/interview_email.html'
+
+        message = render_to_string(template, {
+            'candidate': candidate,
+            'interview_date': interview_datetime,
+            'interviewer': interviewer,
+            'notes': notes
+        })
+
+        send_mail(
+            subject,
+            '', 
+            settings.DEFAULT_FROM_EMAIL,
+            [candidate.email],
+            html_message=message
+        )
+
+        return redirect('recruitment')
+    context = {
+        'candidate': candidate,
+        'interview': interview,  
+        'is_reschedule': is_reschedule,
+    }
+    return render(request, 'hr/pages/schedule_interview.html', context)
+
+def cancel_interview(request, pk):
+    candidate = get_object_or_404(Candidate, pk=pk)
+
+    interview = InterviewSchedule.objects.filter(candidate=candidate).order_by('-id').first()
+
+    if interview:
+        subject = "Interview Cancelled"
+
+        message = render_to_string('hr/email/interview_cancelled.html', {
+            'candidate': candidate,
+        })
+
+        send_mail(
+            subject,
+            '',
+            settings.DEFAULT_FROM_EMAIL,
+            [candidate.email],
+            html_message=message
+        )
+
+        interview.delete()
+        candidate.current_stage = "Applied"
+        candidate.interview_date = None
+        candidate.save()
+
+    return redirect('recruitment')
 
 def scheduled_interviews_view(request):
     interviews = Interview.objects.all().order_by('date', 'time')
@@ -848,6 +913,54 @@ def delete_candidate(request, pk):
         candidate.delete()
         return redirect('view_candidates')
     return redirect('view_candidates')
+
+def applicants_dashboard(request):
+    candidates = Candidate.objects.all().order_by('-id')
+    stage_filter = request.GET.get('stage')
+
+    if stage_filter:
+        candidates = candidates.filter(current_stage=stage_filter)
+    all_candidates = Candidate.objects.all()
+
+    applied_count = all_candidates.filter(current_stage='Applied').count()
+    interview_count = all_candidates.filter(current_stage='Interview').count()
+    hired_count = all_candidates.filter(current_stage='Hired').count()
+    rejected_count = all_candidates.filter(current_stage='Rejected').count()
+
+    context = {
+        'candidates': candidates,
+        'applied_count': applied_count,
+        'interview_count': interview_count,
+        'hired_count': hired_count,
+        'rejected_count': rejected_count,
+        'selected_stage': stage_filter,
+    }
+
+    return render(request, 'hr/pages/applicants.html', context)
+
+def view_candidate(request, pk):
+    candidate = get_object_or_404(Candidate, pk=pk)
+    return render(request, 'hr/pages/view_candidate.html', {'candidate': candidate})
+
+def create_employee_from_candidate(request, pk):
+    candidate = get_object_or_404(Candidate, pk=pk)
+
+    if request.method == "POST":
+        form = EmployeeForm(request.POST, request.FILES)
+        if form.is_valid():
+            employee = form.save()
+            candidate.delete()
+
+            messages.success(request, "Employee created successfully!")
+            return redirect('employees')
+    else:
+        form = EmployeeForm(initial={
+            'first_name': candidate.first_name,
+            'last_name': candidate.last_name,
+            'email': candidate.email,
+        })
+
+    return render(request, 'hr/pages/employee_form.html', {'form': form})
 
 #Lusanda code will go here
 
