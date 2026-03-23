@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django.contrib.sites",
     "authenication",
     "hr",
     "web",
@@ -135,7 +136,7 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 
-EMAIL_HOST_USER = 'pmaphosa973@gmail.com'
-EMAIL_HOST_PASSWORD = 'pluynsnkggpsmsxa'
+EMAIL_HOST_USER = 'ljpshabane@gmail.com'
+EMAIL_HOST_PASSWORD = 'uuvovwxpnfxyihar'
 
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER

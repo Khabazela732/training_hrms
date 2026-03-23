@@ -1,0 +1,54 @@
+{% extends "hr/base/base.html" %}
+{% load static %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'hr/css/employee_of_month_history.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="content">
+
+    <div class="page-header">
+        <h2>Employee of the Month History</h2>
+        <a href="{% url 'achievements' %}" class="back-btn">← Back</a>
+    </div>
+
+    <form method="get" class="search-form">
+        <input type="text" name="q" placeholder="Search by employee" value="{{ query }}">
+        <button type="submit">Search</button>
+    </form>
+
+    {% for emp_id, data in employee_data.items %}
+    <div class="employee-block">
+        <h3>{{ data.first_name }} {{ data.last_name }} | {{ data.role }} | {{ data.win_count }}
+            {% if data.win_count > 1 %}⭐ Multiple Wins{% endif %}
+        </h3>
+        <p><strong>Department:</strong> {{ data.department }}</p>
+
+        <table class="cert-table">
+            <thead>
+                <tr>
+                    <th>Category</th>
+                    <th>Date Awarded</th>
+                     <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in data.dates %}
+                <tr>
+                    <td>Employee of the Month</td>
+                    <td>{{ item.date }}</td>
+                    <td>
+                        <a href="{% url 'send_achievement_email' item.id %}" class="send-btn">
+                            Send Email
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endfor %}
+
+</section>
+{% endblock %}

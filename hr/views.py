@@ -23,7 +23,7 @@ from django.utils.html import strip_tags
 from django.db import IntegrityError, transaction
 from django.db.models import Q, Avg
 
-from .models import Employee, Department, Role, Leave, Attendance, Performance, Payroll
+from .models import Employee, Department, Role, Leave, Attendance, Performance, Payroll, Achievement
 from .forms import (
     LeaveForm,
     EmployeeForm,
@@ -1065,6 +1065,216 @@ def delete_performance(request, pk):
     return render(request, 'hr/pages/performance_confirm_delete.html', {
         'performance': performance
     })
+
+def achievements_view(request):
+    total_achievements = Achievement.objects.count()
+
+    employee_of_the_month_count = Achievement.objects.filter(
+        achievement_type='employee_of_the_month'
+    ).count()
+
+    top_performance = Performance.objects.order_by('-rating')\
+                                         .select_related('employee')\
+                                         .first()
+
+    employee_of_the_month = top_performance.employee if top_performance else None
+    employee_of_the_month_date = top_performance.created_at if top_performance else None
+
+    five_year_service = Achievement.objects.filter(
+        achievement_type='service_awards',
+        description__icontains='5 years'
+    ).select_related('employee').order_by('-date_awarded').first()
+
+    react_certification_count = Achievement.objects.filter(
+        achievement_type='certification'
+    ).count()
+
+    total_service_awards = Achievement.objects.filter(
+        achievement_type='service_awards'
+    ).count()
+
+    all_achievements = Achievement.objects.select_related('employee')\
+                                          .order_by('-date_awarded')
+
+    context = {
+        'total_achievements': total_achievements,
+        'employee_of_the_month_count': employee_of_the_month_count,
+        'employee_of_the_month': employee_of_the_month,
+        'employee_of_the_month_date': employee_of_the_month_date,
+        'five_year_service': five_year_service,
+        'react_certification_count': react_certification_count,
+        'total_service_awards': total_service_awards,
+        'all_achievements': all_achievements,
+    }
+
+    return render(request, 'hr/pages/achievements.html', context)
+
+def employee_of_month_history(request):
+    query = request.GET.get('q', '').strip()
+    
+    achievements = Achievement.objects.filter(
+        achievement_type='employee_of_the_month'
+    ).select_related('employee', 'employee__department', 'employee__role').order_by('-date_awarded')
+
+    employee_data = defaultdict(lambda: {'first_name': '', 'last_name': '', 'role': '', 'department': '', 'win_count': 0, 'dates': []})
+
+    for ach in achievements:
+        emp = ach.employee
+        if query and query.lower() not in (emp.first_name + ' ' + emp.last_name).lower():
+            continue
+
+        data = employee_data[emp.id]
+        data['first_name'] = emp.first_name
+        data['last_name'] = emp.last_name
+        data['role'] = emp.role.name
+        data['department'] = emp.department.name
+        data['win_count'] += 1
+        data['dates'].append({
+            'date': ach.date_awarded.strftime("%B %Y"),
+            'id': ach.id
+})
+
+    context = {
+        'employee_data': dict(employee_data),
+        'query': query
+    }
+
+    return render(request, 'hr/pages/employee_of_month_history.html', context)
+
+def react_certifications_view(request):
+    achievements = Achievement.objects.filter(
+        achievement_type='certification'
+    ).select_related('employee').order_by('-date_awarded')
+
+    grouped = defaultdict(list)
+
+    for item in achievements:
+        grouped[item.description].append(item)
+
+    return render(request, 'hr/pages/react_certifications.html', {
+        'certifications': dict(grouped)
+    })
+
+def service_awards_history(request):
+    awards = Achievement.objects.filter(
+        achievement_type='service_awards'
+    ).select_related('employee').order_by('-date_awarded')
+
+    return render(request, 'hr/pages/service_awards_history.html', {
+        'awards': awards
+    })
+
+def download_certificate(request, achievement_id):
+    achievement = get_object_or_404(Achievement, id=achievement_id)
+    employee = achievement.employee
+
+    buffer = BytesIO()
+
+    p = canvas.Canvas(buffer, pagesize=A4)
+
+    width, height = A4
+
+    p.setFont("Helvetica-Bold", 24)
+    p.drawCentredString(width / 2, height - 100, "Certificate of Achievement")
+
+    p.setFont("Helvetica", 14)
+    p.drawCentredString(width / 2, height - 150, "This certificate is proudly presented to")
+
+    p.setFont("Helvetica-Bold", 20)
+    p.drawCentredString(
+        width / 2,
+        height - 200,
+        f"{employee.first_name} {employee.last_name}"
+    )
+
+    p.setFont("Helvetica", 14)
+    p.drawCentredString(
+        width / 2,
+        height - 240,
+        f"Department: {employee.department.name}"
+    )
+
+    if achievement.achievement_type == 'employee_of_the_month':
+        text = f"Employee of the Month - {achievement.date_awarded.strftime('%B %Y')}"
+
+    elif achievement.achievement_type == 'service_awards':
+        text = f"Awarded for {achievement.description}"
+
+    elif achievement.achievement_type == 'certification':
+        text = f"Certification: {achievement.description}"
+
+    else:
+        text = "Achievement"
+
+    p.setFont("Helvetica-Oblique", 16)
+    p.drawCentredString(width / 2, height - 300, text)
+
+    p.setFont("Helvetica", 10)
+    p.drawCentredString(width / 2, 100, "HR Management System")
+
+    p.showPage()
+    p.save()
+
+    buffer.seek(0)
+
+    return FileResponse(buffer, as_attachment=True, filename="certificate.pdf")
+
+def send_achievement_email_view(request, achievement_id):
+    achievement = get_object_or_404(Achievement, id=achievement_id)
+    employee = achievement.employee
+
+    if not employee.email:
+        messages.error(request, "Employee has no email address.")
+        return redirect(request.META.get('HTTP_REFERER', 'achievements'))
+
+    certificate_url = request.build_absolute_uri(
+        reverse('download_certificate', args=[achievement.id])
+    )
+
+    # STANDARDIZED EMAIL MESSAGE
+    subject = ""
+    message = ""
+
+    if achievement.achievement_type == 'employee_of_the_month':
+        subject = "🎉 Employee of the Month"
+        message = (
+            f"Congratulations {employee.first_name},\n\n"
+            f"You have been selected as Employee of the Month!\n\n"
+            f"Download your certificate here:\n{certificate_url}"
+        )
+
+    elif achievement.achievement_type == 'service_awards':
+        subject = "🎖️ Service Award"
+        message = (
+            f"Congratulations {employee.first_name},\n\n"
+            f"You have received a {achievement.description}.\n\n"
+            f"Download your certificate here:\n{certificate_url}"
+        )
+
+    elif achievement.achievement_type == 'certification':
+        subject = "📜 Certification Achieved"
+        message = (
+            f"Congratulations {employee.first_name},\n\n"
+            f"You earned: {achievement.description}.\n\n"
+            f"Download your certificate here:\n{certificate_url}"
+        )
+
+    try:
+        send_mail(
+            subject,
+            message,
+            settings.DEFAULT_FROM_EMAIL,
+            [employee.email],
+            fail_silently=False
+        )
+
+        messages.success(request, f"Email sent to {employee.email}")
+
+    except Exception as e:
+        messages.error(request, f"Email failed: {str(e)}")
+
+    return redirect(request.META.get('HTTP_REFERER', 'achievements'))
+
 
 #Senzo's Code 
 class DepartmentsView(View):

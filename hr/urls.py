@@ -67,6 +67,15 @@ urlpatterns = [
     path('performance/bulk-upload/', views.bulk_upload_performance, name='bulk_upload_performance'),
     path('performance/export/<str:export_format>/', views.export_performance, name='export_performance'),
 
+    path('achievements/', views.achievements_view, name='achievements'),
+    path('react-certifications/', views.react_certifications_view, name='react_certifications'),
+    path('employee-of-month/', views.employee_of_month_history, name='employee_of_month_history'),
+    path('certifications/', views.react_certifications_view, name='react_certifications'),
+    path('service-awards/', views.service_awards_history, name='service_awards_history'),
+    path('certificate/<int:achievement_id>/', views.download_certificate, name='download_certificate'),
+    path('send-email/<int:achievement_id>/', views.send_achievement_email_view, name='send_achievement_email'),
+
+
     #Senzo's code
     path('employees/', EmployeesView.as_view(), name='employees'),
     path('departments/', DepartmentsView.as_view(), name='department_list'),
